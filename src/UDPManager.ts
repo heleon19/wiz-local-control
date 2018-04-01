@@ -30,14 +30,14 @@ class UDPManager {
   startListening() {
     const socket = dgram.createSocket("udp4");
     socket.bind(networkConstants.LIGHT_UDP_BROADCAST_PORT);
-    socket.on("message", (msg, rinfo) => {
+    socket.on("message", async (msg, rinfo) => {
       const str = String.fromCharCode.apply(null, new Uint8Array(msg));
       const obj = JSON.parse(str);
       logger.info(
         `message received - ${str} with info - ${JSON.stringify(rinfo)}`
       );
 
-      this.processMessage(obj, rinfo.address);
+      await this.processMessage(obj, rinfo.address);
     });
     this.socket = socket;
     registerAllLamps();
