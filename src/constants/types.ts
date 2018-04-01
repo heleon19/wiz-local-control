@@ -34,6 +34,9 @@ export type LightMode =
     colorTemperature: number
   };
 
+/**
+ * Incoming message that lamp sends to report its status
+ */
 export type SyncPilotMessage = {
   method: "syncPilot",
   id: number,
@@ -55,6 +58,10 @@ export type SyncPilotMessage = {
   }
 };
 
+/**
+ * Acknowledgement message device should send to 
+ * the lamp on receiving SyncPilot message
+ */
 export type SyncPilotAckMessage = {
   method: "syncPilot",
   id: number,
@@ -64,12 +71,19 @@ export type SyncPilotAckMessage = {
   }
 };
 
+/**
+ * Message sent to the lamp requesting its status
+ */
 export type GetPilotMessage = {
   method: "getPilot",
   version: number,
   id: number
 };
 
+/**
+ * Control message sent to the lamp to change its status
+ * (current scene, color, dimming, state, etc.)
+ */
 export class SetPilotMessage {
   method: "setPilot";
   version: number;
@@ -87,6 +101,10 @@ export class SetPilotMessage {
     dimming?: number
   };
 
+  /**
+   * Constructs dimming control message
+   * @param dimming - Integer, valid range is 10-100
+   */
   static buildDimmingControlMessage(dimming: number): SetPilotMessage {
     const msg = new SetPilotMessage();
     msg.method = networkConstants.setPilotMethod;
@@ -98,6 +116,10 @@ export class SetPilotMessage {
     return msg;
   }
 
+  /**
+   * Constructs status control message
+   * @param status - Boolean, true - turn the lamp on, false - off
+   */
   static buildStatusControlMessage(status: boolean): SetPilotMessage {
     const msg = new SetPilotMessage();
     msg.method = networkConstants.setPilotMethod;
@@ -109,6 +131,10 @@ export class SetPilotMessage {
     return msg;
   }
 
+  /**
+   * Constructs scene control message
+   * @param scene - Scene object, from the list of static scenes
+   */
   static buildSceneControlMessage(scene: Scene): SetPilotMessage {
     const msg = new SetPilotMessage();
     msg.method = networkConstants.setPilotMethod;
@@ -120,6 +146,15 @@ export class SetPilotMessage {
     return msg;
   }
 
+  /**
+   * Constructs color control message.
+   * Valid combinations: R+G+B, R+G+W, G+B+W. R+B+W.
+   * R+G+B+W could not be played due to limitations in the light engine
+   * @param red - Integer, valid range 0-255
+   * @param green - Integer, valid range 0-255
+   * @param blue - Integer, valid range 0-255 
+   * @param whiteLevel - Integer, valid range 0-255 
+   */
   static buildColorControlMessage(
     red: number,
     green: number,
@@ -138,6 +173,10 @@ export class SetPilotMessage {
     return msg;
   }
 
+  /**
+   * Constructs color temperature control message.
+   * @param colorTemperature - Integer, valid range 2200-6500
+   */
   static buildColorTemperatureControlMessage(colorTemperature: number) {
     const msg = new SetPilotMessage();
     msg.method = networkConstants.setPilotMethod;
@@ -150,6 +189,10 @@ export class SetPilotMessage {
   }
 }
 
+/**
+ * Message broadcasted by the light after booting,
+ * way to inform nearby devices about its presence
+ */
 export type FirstBeatMessage = {
   method: "firstBeat",
   id: number,
@@ -160,6 +203,11 @@ export type FirstBeatMessage = {
   }
 };
 
+/**
+ * Message sent by device to the lamp (via broadcast or unicast)
+ * Lamp will add specified IP to the list devices that it notifies on status change using
+ * SyncPilot messages
+ */
 export class RegistrationMessage {
   method: "registration";
   version: number;
