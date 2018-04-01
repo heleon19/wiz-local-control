@@ -1,5 +1,3 @@
-// @flow
-
 import * as pino from 'pino';
 import * as dgram from "dgram";
 import * as networkConstants from "./constants/communication";

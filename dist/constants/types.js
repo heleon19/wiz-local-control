@@ -1,5 +1,4 @@
 "use strict";
-// @flow
 Object.defineProperty(exports, "__esModule", { value: true });
 const networkConstants = require("../constants/communication");
 class Light {

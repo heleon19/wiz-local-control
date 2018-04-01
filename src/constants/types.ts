@@ -1,5 +1,3 @@
-// @flow
-
 import * as networkConstants from "../constants/communication";
 
 export class Light {

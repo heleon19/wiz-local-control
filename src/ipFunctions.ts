@@ -1,5 +1,3 @@
-// @flow
-
 import * as ip from "ip";
 
 export function getLocalIPAddress(interfaceName: string = "wlan0"): Promise<string> {

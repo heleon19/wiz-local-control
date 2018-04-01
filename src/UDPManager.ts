@@ -1,5 +1,3 @@
-// @flow
-
 import * as dgram from "dgram";
 import * as buffer from "buffer";
 import * as pino from "pino";

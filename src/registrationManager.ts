@@ -1,5 +1,3 @@
-// @flow
-
 import * as dgram from "dgram";
 import { RegistrationMessage } from "./constants/types";
 import { getLocalIPAddress, getLocalMac } from "./ipFunctions";

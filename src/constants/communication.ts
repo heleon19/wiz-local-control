@@ -1,5 +1,3 @@
-// @flow
-
 export const LIGHT_UDP_BROADCAST_PORT = 38900;
 export const LIGHT_UDP_CONTROL_PORT = 38899;
 

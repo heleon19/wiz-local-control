@@ -1,5 +1,4 @@
 "use strict";
-// @flow
 Object.defineProperty(exports, "__esModule", { value: true });
 const dgram = require("dgram");
 const types_1 = require("./constants/types");
