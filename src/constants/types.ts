@@ -1,75 +1,24 @@
 import * as networkConstants from "../constants/communication";
 
-export class Light {
-  ip: string;
-  mac: string;
-  name: string;
-  status: boolean;
-  dimming: number;
-  r: number | undefined;
-  g: number | undefined;
-  b: number | undefined;
-  cw: number | undefined;
-  ww: number | undefined;
-  sceneId: number | undefined;
-  colorTemperature: number | undefined;
-  rssi: number | undefined;
-  lastCommunicationDate: Date;
-  firmwareVersion: string | undefined;
-
-  constructor(mac: string) {
-    this.mac = mac;
-  }
-
-  set lightMode(lightMode: LightMode) {
-    switch (lightMode.type) {
-      case "scene":
-        this.sceneId = lightMode.sceneId;
-        break;
-      case "temperature":
-        this.colorTemperature = lightMode.colorTemperature;
-        break;
-      case "color":
-        this.r = lightMode.r;
-        this.g = lightMode.g;
-        this.b = lightMode.b;
-        this.cw = lightMode.cw;
-        this.ww = lightMode.ww;
-        break;
-      default:
-        break;
-    }
-  }
-}
-
-export type LightsState = {
-  lights: Array<Light>
-};
-
-export type LightManufacturingData = {
-  mac: string,
-  modelId: number,
-  model_name: string,
-  type: number,
-  productionDate: Date
-};
-
-export type LightModel = {
-  id: number,
-  name: string,
-  image: {
-    url: string,
-    loading: boolean,
-    localPath: string,
-    urlExpiryDate: Date
-  }
-};
-
+/**
+ * Scene type – built in the bulb scenes. Could be one of the scenes listed 
+ * in staticScenes const
+ */
 export type Scene = {
   type: "scene",
   sceneId: number,
   name: string,
 };
+
+/**
+ * Light Mode type, 
+ * could be either 
+ * 1. Scene – determined by sceneId (1-28)
+ * 2. Color - determined by Red, Green, Blue, Cool White, Warm White
+ * (0-255). There is a limit on a maximum amount of channels used in the same time:
+ * 3 RGB or 2 RGB + 1 White or 2 Whites
+ * 3. Color temperature – form color temperature using Cool and Warm white LEDs (2200-6500)
+ */
 export type LightMode =
   | Scene
   | {
@@ -160,13 +109,13 @@ export class SetPilotMessage {
     return msg;
   }
 
-  static buildSceneControlMessage(sceneId: number): SetPilotMessage {
+  static buildSceneControlMessage(scene: Scene): SetPilotMessage {
     const msg = new SetPilotMessage();
     msg.method = networkConstants.setPilotMethod;
     msg.id = Math.floor(Math.random() * 10000 + 1);
     msg.version = 1;
     msg.params = {
-      sceneId
+      sceneId: scene.sceneId
     };
     return msg;
   }
@@ -185,7 +134,6 @@ export class SetPilotMessage {
       r: red,
       g: green,
       b: blue
-      // ww: whiteLevel,
     };
     return msg;
   }
@@ -253,7 +201,6 @@ export type Result =
     message: string
   };
 
-// light mode
 
 export const staticScenes: Array<LightMode> = [
   {
@@ -335,7 +282,67 @@ export const staticScenes: Array<LightMode> = [
     type: "scene",
     sceneId: 16,
     name: "Relax"
-  }
+  },
+  {
+    type: "scene",
+    sceneId: 17,
+    name: "True colors"
+  },
+  {
+    type: "scene",
+    sceneId: 18,
+    name: "TV Time"
+  },
+  {
+    type: "scene",
+    sceneId: 19,
+    name: "Plant growth"
+  },
+  {
+    type: "scene",
+    sceneId: 20,
+    name: "Spring"
+  },
+  {
+    type: "scene",
+    sceneId: 21,
+    name: "Summer"
+  },
+  {
+    type: "scene",
+    sceneId: 22,
+    name: "Fall"
+  },
+  {
+    type: "scene",
+    sceneId: 23,
+    name: "Deep dive"
+  },
+  {
+    type: "scene",
+    sceneId: 24,
+    name: "Jungle"
+  },
+  {
+    type: "scene",
+    sceneId: 25,
+    name: "Mojito"
+  },
+  {
+    type: "scene",
+    sceneId: 26,
+    name: "Club"
+  },
+  {
+    type: "scene",
+    sceneId: 27,
+    name: "Christmas"
+  },
+  {
+    type: "scene",
+    sceneId: 28,
+    name: "Halloween"
+  },
 ];
 
 export type Color = {
