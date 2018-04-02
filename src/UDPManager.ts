@@ -8,7 +8,7 @@ import {
   SyncPilotAckMessage
 } from "./constants/types";
 import {
-  registerPhoneWithLightIp,
+  registerDeviceWithLightIp,
   registerAllLamps
 } from "./registrationManager";
 import {
@@ -58,7 +58,7 @@ class UDPManager {
           this.receivedMsgCallback(msg)
           break;
         case networkConstants.firstBeatMethod:
-          registerPhoneWithLightIp(sourceIp);
+          registerDeviceWithLightIp(sourceIp);
           break;
         default:
           break;

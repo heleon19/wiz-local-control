@@ -48,7 +48,7 @@ class UDPManager {
                         this.receivedMsgCallback(msg);
                         break;
                     case networkConstants.firstBeatMethod:
-                        registrationManager_1.registerPhoneWithLightIp(sourceIp);
+                        registrationManager_1.registerDeviceWithLightIp(sourceIp);
                         break;
                     default:
                         break;

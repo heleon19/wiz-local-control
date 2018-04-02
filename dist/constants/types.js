@@ -1,32 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const networkConstants = require("../constants/communication");
-class Light {
-    constructor(mac) {
-        this.mac = mac;
-    }
-    set lightMode(lightMode) {
-        switch (lightMode.type) {
-            case "scene":
-                this.sceneId = lightMode.sceneId;
-                break;
-            case "temperature":
-                this.colorTemperature = lightMode.colorTemperature;
-                break;
-            case "color":
-                this.r = lightMode.r;
-                this.g = lightMode.g;
-                this.b = lightMode.b;
-                this.cw = lightMode.cw;
-                this.ww = lightMode.ww;
-                break;
-            default:
-                break;
-        }
-    }
-}
-exports.Light = Light;
+/**
+ * Control message sent to the lamp to change its status
+ * (current scene, color, dimming, state, etc.)
+ */
 class SetPilotMessage {
+    /**
+     * Constructs dimming control message
+     * @param dimming - Integer, valid range is 10-100
+     */
     static buildDimmingControlMessage(dimming) {
         const msg = new SetPilotMessage();
         msg.method = networkConstants.setPilotMethod;
@@ -37,6 +20,10 @@ class SetPilotMessage {
         };
         return msg;
     }
+    /**
+     * Constructs status control message
+     * @param status - Boolean, true - turn the lamp on, false - off
+     */
     static buildStatusControlMessage(status) {
         const msg = new SetPilotMessage();
         msg.method = networkConstants.setPilotMethod;
@@ -47,16 +34,29 @@ class SetPilotMessage {
         };
         return msg;
     }
-    static buildSceneControlMessage(sceneId) {
+    /**
+     * Constructs scene control message
+     * @param scene - Scene object, from the list of static scenes
+     */
+    static buildSceneControlMessage(scene) {
         const msg = new SetPilotMessage();
         msg.method = networkConstants.setPilotMethod;
         msg.id = Math.floor(Math.random() * 10000 + 1);
         msg.version = 1;
         msg.params = {
-            sceneId
+            sceneId: scene.sceneId
         };
         return msg;
     }
+    /**
+     * Constructs color control message.
+     * Valid combinations: R+G+B, R+G+W, G+B+W. R+B+W.
+     * R+G+B+W could not be played due to limitations in the light engine
+     * @param red - Integer, valid range 0-255
+     * @param green - Integer, valid range 0-255
+     * @param blue - Integer, valid range 0-255
+     * @param whiteLevel - Integer, valid range 0-255
+     */
     static buildColorControlMessage(red, green, blue, whiteLevel) {
         const msg = new SetPilotMessage();
         msg.method = networkConstants.setPilotMethod;
@@ -66,10 +66,13 @@ class SetPilotMessage {
             r: red,
             g: green,
             b: blue
-            // ww: whiteLevel,
         };
         return msg;
     }
+    /**
+     * Constructs color temperature control message.
+     * @param colorTemperature - Integer, valid range 2200-6500
+     */
     static buildColorTemperatureControlMessage(colorTemperature) {
         const msg = new SetPilotMessage();
         msg.method = networkConstants.setPilotMethod;
@@ -82,6 +85,11 @@ class SetPilotMessage {
     }
 }
 exports.SetPilotMessage = SetPilotMessage;
+/**
+ * Message sent by device to the lamp (via broadcast or unicast)
+ * Lamp will add specified IP to the list devices that it notifies on status change using
+ * SyncPilot messages
+ */
 class RegistrationMessage {
     constructor(ip, mac) {
         this.method = networkConstants.registrationMethod;
@@ -95,7 +103,6 @@ class RegistrationMessage {
     }
 }
 exports.RegistrationMessage = RegistrationMessage;
-// light mode
 exports.staticScenes = [
     {
         type: "scene",
@@ -176,6 +183,66 @@ exports.staticScenes = [
         type: "scene",
         sceneId: 16,
         name: "Relax"
-    }
+    },
+    {
+        type: "scene",
+        sceneId: 17,
+        name: "True colors"
+    },
+    {
+        type: "scene",
+        sceneId: 18,
+        name: "TV Time"
+    },
+    {
+        type: "scene",
+        sceneId: 19,
+        name: "Plant growth"
+    },
+    {
+        type: "scene",
+        sceneId: 20,
+        name: "Spring"
+    },
+    {
+        type: "scene",
+        sceneId: 21,
+        name: "Summer"
+    },
+    {
+        type: "scene",
+        sceneId: 22,
+        name: "Fall"
+    },
+    {
+        type: "scene",
+        sceneId: 23,
+        name: "Deep dive"
+    },
+    {
+        type: "scene",
+        sceneId: 24,
+        name: "Jungle"
+    },
+    {
+        type: "scene",
+        sceneId: 25,
+        name: "Mojito"
+    },
+    {
+        type: "scene",
+        sceneId: 26,
+        name: "Club"
+    },
+    {
+        type: "scene",
+        sceneId: 27,
+        name: "Christmas"
+    },
+    {
+        type: "scene",
+        sceneId: 28,
+        name: "Halloween"
+    },
 ];
 //# sourceMappingURL=types.js.map

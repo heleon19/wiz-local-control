@@ -1,47 +1,21 @@
-export declare class Light {
-    ip: string;
-    mac: string;
-    name: string;
-    status: boolean;
-    dimming: number;
-    r: number | undefined;
-    g: number | undefined;
-    b: number | undefined;
-    cw: number | undefined;
-    ww: number | undefined;
-    sceneId: number | undefined;
-    colorTemperature: number | undefined;
-    rssi: number | undefined;
-    lastCommunicationDate: Date;
-    firmwareVersion: string | undefined;
-    constructor(mac: string);
-    lightMode: LightMode;
-}
-export declare type LightsState = {
-    lights: Array<Light>;
-};
-export declare type LightManufacturingData = {
-    mac: string;
-    modelId: number;
-    model_name: string;
-    type: number;
-    productionDate: Date;
-};
-export declare type LightModel = {
-    id: number;
-    name: string;
-    image: {
-        url: string;
-        loading: boolean;
-        localPath: string;
-        urlExpiryDate: Date;
-    };
-};
+/**
+ * Scene type – built in the bulb scenes. Could be one of the scenes listed
+ * in staticScenes const
+ */
 export declare type Scene = {
     type: "scene";
     sceneId: number;
     name: string;
 };
+/**
+ * Light Mode type,
+ * could be either
+ * 1. Scene – determined by sceneId (1-28)
+ * 2. Color - determined by Red, Green, Blue, Cool White, Warm White
+ * (0-255). There is a limit on a maximum amount of channels used in the same time:
+ * 3 RGB or 2 RGB + 1 White or 2 Whites
+ * 3. Color temperature – form color temperature using Cool and Warm white LEDs (2200-6500)
+ */
 export declare type LightMode = Scene | {
     type: "color";
     r: number;
@@ -53,6 +27,9 @@ export declare type LightMode = Scene | {
     type: "temperature";
     colorTemperature: number;
 };
+/**
+ * Incoming message that lamp sends to report its status
+ */
 export declare type SyncPilotMessage = {
     method: "syncPilot";
     id: number;
@@ -73,6 +50,10 @@ export declare type SyncPilotMessage = {
         mac: string;
     };
 };
+/**
+ * Acknowledgement message device should send to
+ * the lamp on receiving SyncPilot message
+ */
 export declare type SyncPilotAckMessage = {
     method: "syncPilot";
     id: number;
@@ -81,11 +62,18 @@ export declare type SyncPilotAckMessage = {
         mac: string;
     };
 };
+/**
+ * Message sent to the lamp requesting its status
+ */
 export declare type GetPilotMessage = {
     method: "getPilot";
     version: number;
     id: number;
 };
+/**
+ * Control message sent to the lamp to change its status
+ * (current scene, color, dimming, state, etc.)
+ */
 export declare class SetPilotMessage {
     method: "setPilot";
     version: number;
@@ -102,12 +90,41 @@ export declare class SetPilotMessage {
         temp?: number;
         dimming?: number;
     };
+    /**
+     * Constructs dimming control message
+     * @param dimming - Integer, valid range is 10-100
+     */
     static buildDimmingControlMessage(dimming: number): SetPilotMessage;
+    /**
+     * Constructs status control message
+     * @param status - Boolean, true - turn the lamp on, false - off
+     */
     static buildStatusControlMessage(status: boolean): SetPilotMessage;
-    static buildSceneControlMessage(sceneId: number): SetPilotMessage;
+    /**
+     * Constructs scene control message
+     * @param scene - Scene object, from the list of static scenes
+     */
+    static buildSceneControlMessage(scene: Scene): SetPilotMessage;
+    /**
+     * Constructs color control message.
+     * Valid combinations: R+G+B, R+G+W, G+B+W. R+B+W.
+     * R+G+B+W could not be played due to limitations in the light engine
+     * @param red - Integer, valid range 0-255
+     * @param green - Integer, valid range 0-255
+     * @param blue - Integer, valid range 0-255
+     * @param whiteLevel - Integer, valid range 0-255
+     */
     static buildColorControlMessage(red: number, green: number, blue: number, whiteLevel: number): SetPilotMessage;
+    /**
+     * Constructs color temperature control message.
+     * @param colorTemperature - Integer, valid range 2200-6500
+     */
     static buildColorTemperatureControlMessage(colorTemperature: number): SetPilotMessage;
 }
+/**
+ * Message broadcasted by the light after booting,
+ * way to inform nearby devices about its presence
+ */
 export declare type FirstBeatMessage = {
     method: "firstBeat";
     id: number;
@@ -117,6 +134,11 @@ export declare type FirstBeatMessage = {
         fwVersion: string;
     };
 };
+/**
+ * Message sent by device to the lamp (via broadcast or unicast)
+ * Lamp will add specified IP to the list devices that it notifies on status change using
+ * SyncPilot messages
+ */
 export declare class RegistrationMessage {
     method: "registration";
     version: number;
