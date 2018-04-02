@@ -19,6 +19,10 @@ import { Socket } from "dgram";
 
 const logger = pino();
 
+/**
+ * Class that manages UDP sockets, listens to the incoming messages
+ * from WiZ devices and sends control commands
+ */
 class UDPManager {
   socket: Socket;
   receivedMsgCallback: (msg: WiZMessage) => void
@@ -27,6 +31,9 @@ class UDPManager {
     this.receivedMsgCallback = receivedMsgCallback;
   }
 
+  /**
+   * Creates socket and starts listening on UDP port LIGHT_UDP_BROADCAST_PORT
+   */
   startListening() {
     const socket = dgram.createSocket("udp4");
     socket.bind(networkConstants.LIGHT_UDP_BROADCAST_PORT);
@@ -43,15 +50,26 @@ class UDPManager {
     registerAllLamps();
   }
 
+  /**
+   * Stops listening
+   */
   stopListening() {
     this.socket.close();
   }
 
+  /**
+   * Processes incoming message from WiZ device 
+   * and either 
+   * 1. sends registration packet if incoming message is FirstBeat
+   * 2. invokes callbacks if incoming message is SyncPilot
+   * @param msg Incoming message from the WiZ device
+   * @param sourceIp IP of the WiZ device
+   */
   async processMessage(msg: WiZMessage, sourceIp: string) {
     if (msg) {
       switch (msg.method) {
         case networkConstants.syncPilotMethod:
-          UDPManager.sendSyncPilotAcknowledgement(msg, sourceIp);
+          this.sendSyncPilotAcknowledgement(msg, sourceIp);
           msg.timestamp = new Date();
           msg.ip = sourceIp;
           // if lamp is first noticed – need to query API about manufacturing data
@@ -66,7 +84,14 @@ class UDPManager {
     }
   }
 
-  static sendSyncPilotAcknowledgement(
+  /**
+   * Sends acknowledgement about receiving WiZ Message
+   * We need to send acknowledgement on receiving every message, this way
+   * we let WiZ Device know that we're still interested in receiving status updates
+   * @param sourceMsg Source message we need to send acknowledgement for
+   * @param sourceIp WiZ device IP
+   */
+  sendSyncPilotAcknowledgement(
     sourceMsg: SyncPilotMessage,
     sourceIp: string
   ) {

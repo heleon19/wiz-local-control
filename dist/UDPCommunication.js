@@ -12,6 +12,11 @@ const pino = require("pino");
 const dgram = require("dgram");
 const networkConstants = require("./constants/communication");
 const logger = pino();
+/**
+ * Sends message to the WiZ device
+ * @param msg WiZ Control message to be sent to the lamp
+ * @param ip WiZ device IP address
+ */
 function sendCommand(msg, ip) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve) => {
