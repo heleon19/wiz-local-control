@@ -82,10 +82,9 @@ export type GetPilotMessage = {
 };
 
 /**
- * Control message sent to the lamp to change its status
- * (current scene, color, dimming, state, etc.)
+ * Set Pilot messages parameters for changing color
  */
-export class SetPilotParams {
+export class SetPilotParametersColor {
   @IsInt()
   @Min(0)
   @Max(255)
@@ -106,24 +105,89 @@ export class SetPilotParams {
   @Min(0)
   @Max(255)
   c?: number;
-  state?: boolean;
+
+  constructor(r: number, g: number, b: number, whiteLevel: number) {
+    this.r = r;
+    this.g = g;
+    this.b = b;
+    this.w = whiteLevel;
+  }
+}
+
+/**
+ * Set Pilot messages parameters for scene
+ */
+export class SetPilotParametersScene {
   @IsInt()
   @Min(1)
   @Max(28)
   sceneId?: number;
-  @IsInt()
-  @Min(20)
-  @Max(200)
-  speed?: number;
-  @IsInt()
-  @Min(2200)
-  @Max(6500)
-  temp?: number;
+
+  constructor(sceneId: number) {
+    this.sceneId = sceneId;
+  }
+}
+
+/**
+ * Set Pilot messages parameters for status
+ */
+export class SetPilotParametersStatus {
+  state?: boolean;
+
+  constructor(status: boolean) {
+    this.state = status;
+  }
+}
+
+/**
+ * Set Pilot messages parameters for changing dimming
+ */
+export class SetPilotParametersDimming {
   @IsInt()
   @Min(10)
   @Max(100)
   dimming?: number;
+
+  constructor(dimming: number) {
+    this.dimming = dimming;
+  }
 }
+
+/**
+ * Set Pilot messages parameters for changing speed
+ */
+export class SetPilotParametersSpeed {
+  @IsInt()
+  @Min(20)
+  @Max(200)
+  speed?: number;
+
+  constructor(speed: number) {
+    this.speed = speed;
+  }
+}
+
+/**
+ * Set Pilot messages parameters for changing color temperature
+ */
+export class SetPilotParametersColorTemperature {
+  @IsInt()
+  @Min(2200)
+  @Max(6500)
+  temp?: number;
+
+  constructor(temperature: number) {
+    this.temp = temperature;
+  }
+}
+
+export type SetPilotParams =
+  | SetPilotParametersColor
+  | SetPilotParametersColorTemperature
+  | SetPilotParametersDimming
+  | SetPilotParametersScene
+  | SetPilotParametersSpeed
+  | SetPilotParametersStatus;
 
 export class SetPilotMessage {
   method: "setPilot";
@@ -142,9 +206,7 @@ export class SetPilotMessage {
    */
   static buildDimmingControlMessage(dimming: number): SetPilotMessage {
     const msg = new SetPilotMessage();
-    msg.params = {
-      dimming,
-    };
+    msg.params = new SetPilotParametersDimming(dimming);
     return msg;
   }
 
@@ -154,9 +216,7 @@ export class SetPilotMessage {
    */
   static buildStatusControlMessage(status: boolean): SetPilotMessage {
     const msg = new SetPilotMessage();
-    msg.params = {
-      state: status,
-    };
+    msg.params = new SetPilotParametersStatus(status);
     return msg;
   }
 
@@ -166,9 +226,7 @@ export class SetPilotMessage {
    */
   static buildSceneControlMessage(scene: Scene): SetPilotMessage {
     const msg = new SetPilotMessage();
-    msg.params = {
-      sceneId: scene.sceneId,
-    };
+    msg.params = new SetPilotParametersScene(scene.sceneId);
     return msg;
   }
 
@@ -188,11 +246,7 @@ export class SetPilotMessage {
     whiteLevel: number,
   ) {
     const msg = new SetPilotMessage();
-    msg.params = {
-      r: red,
-      g: green,
-      b: blue,
-    };
+    msg.params = new SetPilotParametersColor(red, green, blue, whiteLevel);
     return msg;
   }
 
@@ -202,9 +256,7 @@ export class SetPilotMessage {
    */
   static buildColorTemperatureControlMessage(colorTemperature: number) {
     const msg = new SetPilotMessage();
-    msg.params = {
-      temp: colorTemperature,
-    };
+    msg.params = new SetPilotParametersColorTemperature(colorTemperature);
     return msg;
   }
 
@@ -215,9 +267,7 @@ export class SetPilotMessage {
    */
   static buildSpeedControlMessage(speed: number) {
     const msg = new SetPilotMessage();
-    msg.params = {
-      temp: speed,
-    };
+    msg.params = new SetPilotParametersSpeed(speed);
     return msg;
   }
 }
