@@ -10,6 +10,7 @@ export default class WiZLocalControl {
   constructor(
     incomingMsgCallback: (msg: WiZMessage) => void,
     udpManager: UDPManager | undefined = undefined,
+    interfaceName: string = "eth0",
     sendCommandImpl: (
       msg: SetPilotMessage,
       ip: string,
@@ -18,7 +19,7 @@ export default class WiZLocalControl {
     if (udpManager != undefined) {
       this.udpManager = udpManager;
     } else {
-      this.udpManager = new UDPManager(incomingMsgCallback);
+      this.udpManager = new UDPManager(incomingMsgCallback, interfaceName);
     }
     this.sendCommandImpl = sendCommandImpl;
   }
@@ -26,14 +27,14 @@ export default class WiZLocalControl {
   /**
    * Starts listening to status updates of WiZ lights
    */
-  startListening() {
-    this.udpManager.startListening();
+  async startListening() {
+    return this.udpManager.startListening();
   }
   /**
    * Stops listening to status updates of WiZ lights
    */
-  stopListening() {
-    this.udpManager.stopListening();
+  async stopListening() {
+    await this.udpManager.stopListening();
   }
   /**
    * Changes brightness of WiZ Light

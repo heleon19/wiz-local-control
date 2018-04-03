@@ -7,53 +7,72 @@ import {
   SyncPilotMessage,
   SyncPilotAckMessage,
 } from "./constants/types";
-import {
-  registerDeviceWithLightIp,
-  registerAllLamps,
-} from "./registrationManager";
+import { registerDevice, registerAllLights } from "./registrationManager";
 import { getLocalMac } from "./ipFunctions";
 import sendCommand from "./UDPCommunication";
 import { Socket } from "dgram";
 
 const logger = pino();
-
 /**
  * Class that manages UDP sockets, listens to the incoming messages
  * from WiZ devices and sends control commands
  */
 class UDPManager {
-  socket: Socket;
+  socket: Socket | undefined;
+  interfaceName: string;
+  registerLightsTimer: NodeJS.Timer | undefined;
+  broadcastUDPPort: number;
+  controlUDPPort: number;
+
   receivedMsgCallback: (msg: WiZMessage) => void;
-  constructor(receivedMsgCallback: (msg: WiZMessage) => void) {
+  constructor(
+    receivedMsgCallback: (msg: WiZMessage) => void,
+    interfaceName: string,
+    broadcastUDPPort: number = networkConstants.DEVICE_UDP_LISTEN_PORT,
+    controlUDPPort: number = networkConstants.LIGHT_UDP_CONTROL_PORT,
+  ) {
+    this.interfaceName = interfaceName;
     global.Buffer = global.Buffer || buffer.Buffer;
     this.receivedMsgCallback = receivedMsgCallback;
+    this.broadcastUDPPort = broadcastUDPPort;
+    this.controlUDPPort = controlUDPPort;
   }
 
   /**
-   * Creates socket, starts listening on UDP port LIGHT_UDP_BROADCAST_PORT
+   * Creates socket, starts listening on UDP port DEVICE_UDP_LISTEN_PORT
    * and initiates WiZ device registration procedure
    */
-  startListening() {
-    const socket = dgram.createSocket("udp4");
-    socket.bind(networkConstants.LIGHT_UDP_BROADCAST_PORT);
+  async startListening() {
+    await this.stopListening();
+    const socket = await dgram.createSocket("udp4");
+    await socket.bind(this.broadcastUDPPort);
     socket.on("message", async (msg, rinfo) => {
       const str = String.fromCharCode.apply(null, new Uint8Array(msg));
       const obj = JSON.parse(str);
       logger.info(
         `message received - ${str} with info - ${JSON.stringify(rinfo)}`,
       );
-
       await this.processMessage(obj, rinfo.address);
     });
     this.socket = socket;
-    registerAllLamps();
+    this.registerLightsTimer = await registerAllLights(
+      this.interfaceName,
+      this.controlUDPPort,
+    );
   }
 
   /**
    * Stops listening
    */
-  stopListening() {
-    this.socket.close();
+  async stopListening() {
+    if (this.registerLightsTimer != undefined) {
+      clearInterval(this.registerLightsTimer);
+      this.registerLightsTimer = undefined;
+    }
+    if (this.socket != undefined) {
+      return this.socket.close();
+    }
+    return;
   }
 
   /**
@@ -75,7 +94,7 @@ class UDPManager {
           this.receivedMsgCallback(msg);
           break;
         case networkConstants.firstBeatMethod:
-          registerDeviceWithLightIp(sourceIp);
+          registerDevice(sourceIp, this.interfaceName, this.controlUDPPort);
           break;
         default:
           break;

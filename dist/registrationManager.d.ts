@@ -8,4 +8,4 @@ export declare function registerDeviceWithLightIp(lightIp: string): void;
 /**
  * Sends broadcast registration packet immediately 3 times and once every 15 secs.
  */
-export declare function registerAllLamps(): void;
+export declare function registerAllLights(): void;

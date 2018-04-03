@@ -12,33 +12,36 @@ describe("Creating instance", () => {
   });
 
   it("should use existing UDP manager when passed as a parameter", () => {
-    const manager = new UDPManager(() => {});
+    const manager = new UDPManager(() => {}, "eth0");
     const control = new WiZLocalControl(() => {}, manager);
     expect(control.udpManager).to.equal(manager);
   });
 
-  it("should start listening when asked", () => {
-    const manager = new UDPManager(() => {});
-    const spy = sinon.stub(manager, "startListening");
+  it("should start listening when asked", async () => {
+    const manager = new UDPManager(() => {}, "eth0");
+    const spyStart = sinon.spy(manager, "startListening");
+
     const control = new WiZLocalControl(() => {}, manager);
-    control.startListening();
-    expect(spy.calledOnce).to.be.true;
+    await control.startListening();
+    await control.stopListening();
+    expect(spyStart.calledOnce).to.be.true;
   });
 
-  it("should stop listening when asked", () => {
-    const manager = new UDPManager(() => {});
-    const spy = sinon.stub(manager, "stopListening");
+  it("should stop listening when asked", async () => {
+    const manager = new UDPManager(() => {}, "eth0");
+    const spy = sinon.spy(manager, "stopListening");
     const control = new WiZLocalControl(() => {}, manager);
-    control.stopListening();
-    expect(spy.calledOnce).to.be.true;
+    await control.startListening();
+    await control.stopListening();
+    expect(spy.called).to.be.true;
   });
 });
 
 describe("Sending commands", () => {
   beforeEach(() => {
-    const manager = new UDPManager(() => {});
+    const manager = new UDPManager(() => {}, "eth0");
     const spy = sinon.spy();
-    this.control = new WiZLocalControl(() => {}, manager, spy);
+    this.control = new WiZLocalControl(() => {}, manager, "eth0", spy);
     this.sendCommandSpy = spy;
   });
 
