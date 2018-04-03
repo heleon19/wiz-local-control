@@ -2,7 +2,7 @@ import * as dgram from "dgram";
 import { RegistrationMessage } from "./constants/types";
 import { getLocalIPAddress, getLocalMac } from "./ipFunctions";
 import * as networkConstants from "./constants/communication";
-
+import sendCommand from "./UDPCommunication";
 /**
  * To let WiZ bulb know that there is a device nearby, that
  * wants to listen for the status update, we need to send so-called
@@ -14,31 +14,12 @@ export async function registerDevice(
   interfaceName: string,
   udpPort: number,
   broadcast: boolean = false,
-  callback: (err: Error | null) => void = err => {
-    if (err) {
-      throw err;
-    }
-  },
   socket: dgram.Socket = dgram.createSocket("udp4"),
 ) {
   const ip = await getLocalIPAddress(interfaceName);
   const msg = new RegistrationMessage(ip, getLocalMac());
-  await socket.bind();
-  // if there is no response in 1sec => safely close socket, packet is lost,
-  // UDP delivery is not guaranteed
-  setTimeout(async () => {
-    try {
-      await socket.close();
-    } catch (e) {}
-  }, 1000);
-  socket.once("listening", () => {
-    const buf = Buffer.from(JSON.stringify(msg), "utf8");
-    socket.setBroadcast(broadcast);
-    socket.send(buf, 0, buf.length, udpPort, lightIp, callback);
-  });
-  socket.on("message", incomingMsg => {
-    socket.close();
-  });
+
+  return sendCommand(msg, lightIp, udpPort, broadcast, socket);
 }
 
 /**
@@ -47,22 +28,14 @@ export async function registerDevice(
 export async function registerAllLights(
   interfaceName: string,
   udpPort: number,
-  callback?: (err: Error | null) => void,
 ): Promise<NodeJS.Timer> {
   const ip = await getLocalIPAddress(interfaceName);
   const msg = new RegistrationMessage(ip, getLocalMac());
   for (const i of Array(3).keys()) {
-    await registerDevice(
-      "255.255.255.255",
-      interfaceName,
-      udpPort,
-      true,
-      callback,
-    );
+    await registerDevice("255.255.255.255", interfaceName, udpPort, true);
   }
   return setInterval(
-    () =>
-      registerDevice("255.255.255.255", interfaceName, udpPort, true, callback),
+    () => registerDevice("255.255.255.255", interfaceName, udpPort, true),
     15000,
   );
 }

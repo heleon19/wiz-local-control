@@ -44,7 +44,7 @@ class UDPManager {
    */
   async startListening() {
     await this.stopListening();
-    const socket = await dgram.createSocket("udp4");
+    const socket = dgram.createSocket("udp4");
     await socket.bind(this.broadcastUDPPort);
     socket.on("message", async (msg, rinfo) => {
       const str = String.fromCharCode.apply(null, new Uint8Array(msg));

@@ -13,15 +13,17 @@ const logger = pino();
 export default async function sendCommand(
   msg: WiZControlMessage,
   ip: string,
+  udpPort: number,
+  broadcast: boolean = false,
+  socket: dgram.Socket = dgram.createSocket("udp4"),
 ): Promise<Result> {
   return new Promise(async (resolve: (value: Result) => void) => {
     logger.info(`sending ${JSON.stringify(msg)} to ip ${ip}`);
-    const socket = await dgram.createSocket("udp4");
     await socket.bind();
     // if there is no response in 1sec => safely close socket, packet is lost
-    setTimeout(() => {
+    setTimeout(async () => {
       try {
-        socket.close();
+        await socket.close();
         resolve({
           type: "error",
           message: "Timeout",
@@ -30,20 +32,14 @@ export default async function sendCommand(
     }, 1000);
     socket.once("listening", () => {
       const buf = Buffer.from(JSON.stringify(msg), "utf8");
-      socket.send(
-        buf,
-        0,
-        buf.length,
-        networkConstants.LIGHT_UDP_CONTROL_PORT,
-        ip,
-        err => {
-          if (err)
-            resolve({
-              type: "error",
-              message: JSON.stringify(err),
-            });
-        },
-      );
+      socket.setBroadcast(broadcast);
+      socket.send(buf, 0, buf.length, udpPort, ip, err => {
+        if (err)
+          resolve({
+            type: "error",
+            message: JSON.stringify(err),
+          });
+      });
     });
     socket.on("error", err =>
       resolve({

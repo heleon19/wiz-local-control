@@ -2,10 +2,17 @@ import { WiZMessage, Result, LightMode } from "./constants/types";
 import UDPManager from "./UDPManager";
 import { SetPilotMessage } from "./constants/types";
 import sendCommand from "./UDPCommunication";
+import * as dgram from "dgram";
 
 export default class WiZLocalControl {
   udpManager: UDPManager;
-  sendCommandImpl: (msg: SetPilotMessage, ip: string) => Promise<Result>;
+  sendCommandImpl: (
+    msg: SetPilotMessage,
+    ip: string,
+    udpPort?: number,
+    broadcast?: boolean,
+    socket?: dgram.Socket,
+  ) => Promise<Result>;
 
   constructor(
     incomingMsgCallback: (msg: WiZMessage) => void,
@@ -14,6 +21,9 @@ export default class WiZLocalControl {
     sendCommandImpl: (
       msg: SetPilotMessage,
       ip: string,
+      udpPort?: number,
+      broadcast?: boolean,
+      socket?: dgram.Socket,
     ) => Promise<Result> = sendCommand,
   ) {
     if (udpManager != undefined) {

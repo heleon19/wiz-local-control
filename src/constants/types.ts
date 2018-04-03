@@ -312,7 +312,10 @@ export class RegistrationMessage {
   }
 }
 
-export type WiZControlMessage = SetPilotMessage | SyncPilotAckMessage;
+export type WiZControlMessage =
+  | SetPilotMessage
+  | SyncPilotAckMessage
+  | RegistrationMessage;
 
 export type WiZMessage =
   | GetPilotMessage
