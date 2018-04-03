@@ -5,22 +5,15 @@
     "noImplicitAny": true,
     "moduleResolution": "node",
     "sourceMap": true,
+    "experimentalDecorators": true,
     "strictNullChecks": true,
     "outDir": "dist",
     "baseUrl": ".",
     "paths": {
-      "*": [
-        "node_modules/*",
-        "src/types/*"
-      ]
+      "*": ["node_modules/*", "src/types/*"]
     },
-    "lib": [
-      "es6",
-      "esnext"
-    ],
+    "lib": ["es6", "esnext"],
     "declaration": true
   },
-  "include": [
-    "src/**/*"
-  ]
+  "include": ["src/**/*"]
 }

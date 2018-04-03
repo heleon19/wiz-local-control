@@ -10,7 +10,8 @@ declare class UDPManager {
     receivedMsgCallback: (msg: WiZMessage) => void;
     constructor(receivedMsgCallback: (msg: WiZMessage) => void);
     /**
-     * Creates socket and starts listening on UDP port LIGHT_UDP_BROADCAST_PORT
+     * Creates socket, starts listening on UDP port LIGHT_UDP_BROADCAST_PORT
+     * and initiates WiZ device registration procedure
      */
     startListening(): void;
     /**

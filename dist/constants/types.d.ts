@@ -74,22 +74,24 @@ export declare type GetPilotMessage = {
  * Control message sent to the lamp to change its status
  * (current scene, color, dimming, state, etc.)
  */
+export declare class SetPilotParams {
+    r?: number;
+    g?: number;
+    b?: number;
+    w?: number;
+    c?: number;
+    state?: boolean;
+    sceneId?: number;
+    speed?: number;
+    temp?: number;
+    dimming?: number;
+}
 export declare class SetPilotMessage {
     method: "setPilot";
     version: number;
     id: number;
-    params: {
-        r?: number;
-        g?: number;
-        b?: number;
-        w?: number;
-        c?: number;
-        state?: boolean;
-        sceneId?: number;
-        speed?: number;
-        temp?: number;
-        dimming?: number;
-    };
+    params: SetPilotParams;
+    constructor();
     /**
      * Constructs dimming control message
      * @param dimming - Integer, valid range is 10-100
@@ -120,6 +122,12 @@ export declare class SetPilotMessage {
      * @param colorTemperature - Integer, valid range 2200-6500
      */
     static buildColorTemperatureControlMessage(colorTemperature: number): SetPilotMessage;
+    /**
+     * Constructs playing speed control message.
+     * Valid only for dynamic scenes
+     * @param speed Playing speed, valid range 20-200
+     */
+    static buildSpeedControlMessage(speed: number): SetPilotMessage;
 }
 /**
  * Message broadcasted by the light after booting,

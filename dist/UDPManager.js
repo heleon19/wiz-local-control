@@ -26,7 +26,8 @@ class UDPManager {
         this.receivedMsgCallback = receivedMsgCallback;
     }
     /**
-     * Creates socket and starts listening on UDP port LIGHT_UDP_BROADCAST_PORT
+     * Creates socket, starts listening on UDP port LIGHT_UDP_BROADCAST_PORT
+     * and initiates WiZ device registration procedure
      */
     startListening() {
         const socket = dgram.createSocket("udp4");
@@ -87,10 +88,12 @@ class UDPManager {
             id: sourceMsg.id,
             env: sourceMsg.env,
             result: {
-                mac: ipFunctions_1.getLocalMac()
-            }
+                mac: ipFunctions_1.getLocalMac(),
+            },
         };
-        UDPCommunication_1.default(msg, sourceIp).then(() => { }).catch(() => { });
+        UDPCommunication_1.default(msg, sourceIp)
+            .then(() => { })
+            .catch(() => { });
     }
 }
 exports.default = UDPManager;

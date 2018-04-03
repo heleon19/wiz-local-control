@@ -5,15 +5,13 @@ import * as networkConstants from "./constants/communication";
 import {
   WiZMessage,
   SyncPilotMessage,
-  SyncPilotAckMessage
+  SyncPilotAckMessage,
 } from "./constants/types";
 import {
   registerDeviceWithLightIp,
-  registerAllLamps
+  registerAllLamps,
 } from "./registrationManager";
-import {
-  getLocalMac
-} from "./ipFunctions";
+import { getLocalMac } from "./ipFunctions";
 import sendCommand from "./UDPCommunication";
 import { Socket } from "dgram";
 
@@ -25,14 +23,15 @@ const logger = pino();
  */
 class UDPManager {
   socket: Socket;
-  receivedMsgCallback: (msg: WiZMessage) => void
+  receivedMsgCallback: (msg: WiZMessage) => void;
   constructor(receivedMsgCallback: (msg: WiZMessage) => void) {
     global.Buffer = global.Buffer || buffer.Buffer;
     this.receivedMsgCallback = receivedMsgCallback;
   }
 
   /**
-   * Creates socket and starts listening on UDP port LIGHT_UDP_BROADCAST_PORT
+   * Creates socket, starts listening on UDP port LIGHT_UDP_BROADCAST_PORT
+   * and initiates WiZ device registration procedure
    */
   startListening() {
     const socket = dgram.createSocket("udp4");
@@ -41,7 +40,7 @@ class UDPManager {
       const str = String.fromCharCode.apply(null, new Uint8Array(msg));
       const obj = JSON.parse(str);
       logger.info(
-        `message received - ${str} with info - ${JSON.stringify(rinfo)}`
+        `message received - ${str} with info - ${JSON.stringify(rinfo)}`,
       );
 
       await this.processMessage(obj, rinfo.address);
@@ -58,8 +57,8 @@ class UDPManager {
   }
 
   /**
-   * Processes incoming message from WiZ device 
-   * and either 
+   * Processes incoming message from WiZ device
+   * and either
    * 1. sends registration packet if incoming message is FirstBeat
    * 2. invokes callbacks if incoming message is SyncPilot
    * @param msg Incoming message from the WiZ device
@@ -73,7 +72,7 @@ class UDPManager {
           msg.timestamp = new Date();
           msg.ip = sourceIp;
           // if lamp is first noticed – need to query API about manufacturing data
-          this.receivedMsgCallback(msg)
+          this.receivedMsgCallback(msg);
           break;
         case networkConstants.firstBeatMethod:
           registerDeviceWithLightIp(sourceIp);
@@ -91,19 +90,18 @@ class UDPManager {
    * @param sourceMsg Source message we need to send acknowledgement for
    * @param sourceIp WiZ device IP
    */
-  sendSyncPilotAcknowledgement(
-    sourceMsg: SyncPilotMessage,
-    sourceIp: string
-  ) {
+  sendSyncPilotAcknowledgement(sourceMsg: SyncPilotMessage, sourceIp: string) {
     const msg: SyncPilotAckMessage = {
       method: networkConstants.syncPilotMethod,
       id: sourceMsg.id,
       env: sourceMsg.env,
       result: {
-        mac: getLocalMac()
-      }
+        mac: getLocalMac(),
+      },
     };
-    sendCommand(msg, sourceIp).then(() => { }).catch(() => { });
+    sendCommand(msg, sourceIp)
+      .then(() => {})
+      .catch(() => {});
   }
 }
 

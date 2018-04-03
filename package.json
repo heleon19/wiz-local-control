@@ -19,6 +19,7 @@
     "typescript": "^2.8.1"
   },
   "dependencies": {
+    "class-validator": "^0.8.5",
     "dgram": "^1.0.1",
     "ip": "^1.1.5",
     "pino": "^4.15.3"
