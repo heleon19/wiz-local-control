@@ -12,18 +12,26 @@ export default class WiZLocalControl {
     udpPort?: number,
     broadcast?: boolean,
     socket?: dgram.Socket,
-  ) => Promise<Result> = sendCommand;
+  ) => Promise<Result>;
 
   constructor(
     incomingMsgCallback: (msg: WiZMessage, sourceIp: string) => void,
     udpManager: UDPManager | undefined = undefined,
     interfaceName: string = "eth0",
+    sendCommandImpl: (
+      msg: SetPilotMessage,
+      ip: string,
+      udpPort?: number,
+      broadcast?: boolean,
+      socket?: dgram.Socket,
+    ) => Promise<Result> = sendCommand
   ) {
     if (udpManager != undefined) {
       this.udpManager = udpManager;
     } else {
       this.udpManager = new UDPManager(incomingMsgCallback, interfaceName);
     }
+    this.sendCommandImpl = sendCommandImpl;
   }
 
   /**

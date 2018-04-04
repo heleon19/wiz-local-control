@@ -12,14 +12,14 @@ const UDPManager_1 = require("./UDPManager");
 const types_1 = require("./constants/types");
 const UDPCommunication_1 = require("./UDPCommunication");
 class WiZLocalControl {
-    constructor(incomingMsgCallback, udpManager = undefined, interfaceName = "eth0") {
-        this.sendCommandImpl = UDPCommunication_1.default;
+    constructor(incomingMsgCallback, udpManager = undefined, interfaceName = "eth0", sendCommandImpl = UDPCommunication_1.default) {
         if (udpManager != undefined) {
             this.udpManager = udpManager;
         }
         else {
             this.udpManager = new UDPManager_1.default(incomingMsgCallback, interfaceName);
         }
+        this.sendCommandImpl = sendCommandImpl;
     }
     /**
      * Starts listening to status updates of WiZ lights
