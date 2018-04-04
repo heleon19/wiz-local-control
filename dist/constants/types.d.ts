@@ -71,21 +71,52 @@ export declare type GetPilotMessage = {
     id: number;
 };
 /**
- * Control message sent to the lamp to change its status
- * (current scene, color, dimming, state, etc.)
+ * Set Pilot messages parameters for changing color
  */
-export declare class SetPilotParams {
+export declare class SetPilotParametersColor {
     r?: number;
     g?: number;
     b?: number;
     w?: number;
     c?: number;
-    state?: boolean;
-    sceneId?: number;
-    speed?: number;
-    temp?: number;
-    dimming?: number;
+    constructor(r: number, g: number, b: number, whiteLevel: number);
 }
+/**
+ * Set Pilot messages parameters for scene
+ */
+export declare class SetPilotParametersScene {
+    sceneId?: number;
+    constructor(sceneId: number);
+}
+/**
+ * Set Pilot messages parameters for status
+ */
+export declare class SetPilotParametersStatus {
+    state?: boolean;
+    constructor(status: boolean);
+}
+/**
+ * Set Pilot messages parameters for changing dimming
+ */
+export declare class SetPilotParametersDimming {
+    dimming?: number;
+    constructor(dimming: number);
+}
+/**
+ * Set Pilot messages parameters for changing speed
+ */
+export declare class SetPilotParametersSpeed {
+    speed?: number;
+    constructor(speed: number);
+}
+/**
+ * Set Pilot messages parameters for changing color temperature
+ */
+export declare class SetPilotParametersColorTemperature {
+    temp?: number;
+    constructor(temperature: number);
+}
+export declare type SetPilotParams = SetPilotParametersColor | SetPilotParametersColorTemperature | SetPilotParametersDimming | SetPilotParametersScene | SetPilotParametersSpeed | SetPilotParametersStatus;
 export declare class SetPilotMessage {
     method: "setPilot";
     version: number;
@@ -158,7 +189,7 @@ export declare class RegistrationMessage {
     };
     constructor(ip: string, mac: string);
 }
-export declare type WiZControlMessage = SetPilotMessage | SyncPilotAckMessage;
+export declare type WiZControlMessage = SetPilotMessage | SyncPilotAckMessage | RegistrationMessage;
 export declare type WiZMessage = GetPilotMessage | SetPilotMessage | SyncPilotMessage | FirstBeatMessage | RegistrationMessage;
 export declare type Result = {
     type: "success";

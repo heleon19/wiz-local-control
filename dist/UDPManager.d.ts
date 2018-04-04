@@ -1,5 +1,6 @@
 /// <reference types="node" />
 import { WiZMessage, SyncPilotMessage } from "./constants/types";
+import RegistrationManager from "./registrationManager";
 import { Socket } from "dgram";
 /**
  * Class that manages UDP sockets, listens to the incoming messages
@@ -7,17 +8,23 @@ import { Socket } from "dgram";
  */
 declare class UDPManager {
     socket: Socket;
+    interfaceName: string;
+    registerLightsTimer: NodeJS.Timer | undefined;
+    broadcastUDPPort: number;
+    controlUDPPort: number;
+    registrationManager: RegistrationManager;
     receivedMsgCallback: (msg: WiZMessage) => void;
-    constructor(receivedMsgCallback: (msg: WiZMessage) => void);
+    constructor(receivedMsgCallback: (msg: WiZMessage) => void, interfaceName: string, broadcastUDPPort?: number, controlUDPPort?: number, registrationManager?: RegistrationManager);
+    createSocket(): Promise<void>;
     /**
-     * Creates socket, starts listening on UDP port LIGHT_UDP_BROADCAST_PORT
+     * Creates socket, starts listening on UDP port DEVICE_UDP_LISTEN_PORT
      * and initiates WiZ device registration procedure
      */
-    startListening(): void;
+    startListening(): Promise<void>;
     /**
      * Stops listening
      */
-    stopListening(): void;
+    stopListening(): Promise<void>;
     /**
      * Processes incoming message from WiZ device
      * and either

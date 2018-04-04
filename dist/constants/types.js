@@ -9,57 +9,107 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const networkConstants = require("../constants/communication");
 const class_validator_1 = require("class-validator");
 /**
- * Control message sent to the lamp to change its status
- * (current scene, color, dimming, state, etc.)
+ * Set Pilot messages parameters for changing color
  */
-class SetPilotParams {
+class SetPilotParametersColor {
+    constructor(r, g, b, whiteLevel) {
+        this.r = r;
+        this.g = g;
+        this.b = b;
+        this.w = whiteLevel;
+    }
 }
 __decorate([
     class_validator_1.IsInt(),
     class_validator_1.Min(0),
     class_validator_1.Max(255)
-], SetPilotParams.prototype, "r", void 0);
+], SetPilotParametersColor.prototype, "r", void 0);
 __decorate([
     class_validator_1.IsInt(),
     class_validator_1.Min(0),
     class_validator_1.Max(255)
-], SetPilotParams.prototype, "g", void 0);
+], SetPilotParametersColor.prototype, "g", void 0);
 __decorate([
     class_validator_1.IsInt(),
     class_validator_1.Min(0),
     class_validator_1.Max(255)
-], SetPilotParams.prototype, "b", void 0);
+], SetPilotParametersColor.prototype, "b", void 0);
 __decorate([
     class_validator_1.IsInt(),
     class_validator_1.Min(0),
     class_validator_1.Max(255)
-], SetPilotParams.prototype, "w", void 0);
+], SetPilotParametersColor.prototype, "w", void 0);
 __decorate([
     class_validator_1.IsInt(),
     class_validator_1.Min(0),
     class_validator_1.Max(255)
-], SetPilotParams.prototype, "c", void 0);
+], SetPilotParametersColor.prototype, "c", void 0);
+exports.SetPilotParametersColor = SetPilotParametersColor;
+/**
+ * Set Pilot messages parameters for scene
+ */
+class SetPilotParametersScene {
+    constructor(sceneId) {
+        this.sceneId = sceneId;
+    }
+}
 __decorate([
     class_validator_1.IsInt(),
     class_validator_1.Min(1),
     class_validator_1.Max(28)
-], SetPilotParams.prototype, "sceneId", void 0);
-__decorate([
-    class_validator_1.IsInt(),
-    class_validator_1.Min(20),
-    class_validator_1.Max(200)
-], SetPilotParams.prototype, "speed", void 0);
-__decorate([
-    class_validator_1.IsInt(),
-    class_validator_1.Min(2200),
-    class_validator_1.Max(6500)
-], SetPilotParams.prototype, "temp", void 0);
+], SetPilotParametersScene.prototype, "sceneId", void 0);
+exports.SetPilotParametersScene = SetPilotParametersScene;
+/**
+ * Set Pilot messages parameters for status
+ */
+class SetPilotParametersStatus {
+    constructor(status) {
+        this.state = status;
+    }
+}
+exports.SetPilotParametersStatus = SetPilotParametersStatus;
+/**
+ * Set Pilot messages parameters for changing dimming
+ */
+class SetPilotParametersDimming {
+    constructor(dimming) {
+        this.dimming = dimming;
+    }
+}
 __decorate([
     class_validator_1.IsInt(),
     class_validator_1.Min(10),
     class_validator_1.Max(100)
-], SetPilotParams.prototype, "dimming", void 0);
-exports.SetPilotParams = SetPilotParams;
+], SetPilotParametersDimming.prototype, "dimming", void 0);
+exports.SetPilotParametersDimming = SetPilotParametersDimming;
+/**
+ * Set Pilot messages parameters for changing speed
+ */
+class SetPilotParametersSpeed {
+    constructor(speed) {
+        this.speed = speed;
+    }
+}
+__decorate([
+    class_validator_1.IsInt(),
+    class_validator_1.Min(20),
+    class_validator_1.Max(200)
+], SetPilotParametersSpeed.prototype, "speed", void 0);
+exports.SetPilotParametersSpeed = SetPilotParametersSpeed;
+/**
+ * Set Pilot messages parameters for changing color temperature
+ */
+class SetPilotParametersColorTemperature {
+    constructor(temperature) {
+        this.temp = temperature;
+    }
+}
+__decorate([
+    class_validator_1.IsInt(),
+    class_validator_1.Min(2200),
+    class_validator_1.Max(6500)
+], SetPilotParametersColorTemperature.prototype, "temp", void 0);
+exports.SetPilotParametersColorTemperature = SetPilotParametersColorTemperature;
 class SetPilotMessage {
     constructor() {
         this.method = networkConstants.setPilotMethod;
@@ -72,9 +122,7 @@ class SetPilotMessage {
      */
     static buildDimmingControlMessage(dimming) {
         const msg = new SetPilotMessage();
-        msg.params = {
-            dimming,
-        };
+        msg.params = new SetPilotParametersDimming(dimming);
         return msg;
     }
     /**
@@ -83,9 +131,7 @@ class SetPilotMessage {
      */
     static buildStatusControlMessage(status) {
         const msg = new SetPilotMessage();
-        msg.params = {
-            state: status,
-        };
+        msg.params = new SetPilotParametersStatus(status);
         return msg;
     }
     /**
@@ -94,9 +140,7 @@ class SetPilotMessage {
      */
     static buildSceneControlMessage(scene) {
         const msg = new SetPilotMessage();
-        msg.params = {
-            sceneId: scene.sceneId,
-        };
+        msg.params = new SetPilotParametersScene(scene.sceneId);
         return msg;
     }
     /**
@@ -110,11 +154,7 @@ class SetPilotMessage {
      */
     static buildColorControlMessage(red, green, blue, whiteLevel) {
         const msg = new SetPilotMessage();
-        msg.params = {
-            r: red,
-            g: green,
-            b: blue,
-        };
+        msg.params = new SetPilotParametersColor(red, green, blue, whiteLevel);
         return msg;
     }
     /**
@@ -123,9 +163,7 @@ class SetPilotMessage {
      */
     static buildColorTemperatureControlMessage(colorTemperature) {
         const msg = new SetPilotMessage();
-        msg.params = {
-            temp: colorTemperature,
-        };
+        msg.params = new SetPilotParametersColorTemperature(colorTemperature);
         return msg;
     }
     /**
@@ -135,9 +173,7 @@ class SetPilotMessage {
      */
     static buildSpeedControlMessage(speed) {
         const msg = new SetPilotMessage();
-        msg.params = {
-            temp: speed,
-        };
+        msg.params = new SetPilotParametersSpeed(speed);
         return msg;
     }
 }

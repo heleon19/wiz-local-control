@@ -21,31 +21,55 @@ const logger = pino();
  * from WiZ devices and sends control commands
  */
 class UDPManager {
-    constructor(receivedMsgCallback) {
+    constructor(receivedMsgCallback, interfaceName, broadcastUDPPort = networkConstants.DEVICE_UDP_LISTEN_PORT, controlUDPPort = networkConstants.LIGHT_UDP_CONTROL_PORT, registrationManager = new registrationManager_1.default()) {
+        this.interfaceName = interfaceName;
         global.Buffer = global.Buffer || buffer.Buffer;
         this.receivedMsgCallback = receivedMsgCallback;
+        this.broadcastUDPPort = broadcastUDPPort;
+        this.controlUDPPort = controlUDPPort;
+        this.createSocket();
+        this.registrationManager = registrationManager;
+    }
+    createSocket() {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.socket = yield dgram.createSocket("udp4");
+        });
     }
     /**
-     * Creates socket, starts listening on UDP port LIGHT_UDP_BROADCAST_PORT
+     * Creates socket, starts listening on UDP port DEVICE_UDP_LISTEN_PORT
      * and initiates WiZ device registration procedure
      */
     startListening() {
-        const socket = dgram.createSocket("udp4");
-        socket.bind(networkConstants.LIGHT_UDP_BROADCAST_PORT);
-        socket.on("message", (msg, rinfo) => __awaiter(this, void 0, void 0, function* () {
-            const str = String.fromCharCode.apply(null, new Uint8Array(msg));
-            const obj = JSON.parse(str);
-            logger.info(`message received - ${str} with info - ${JSON.stringify(rinfo)}`);
-            yield this.processMessage(obj, rinfo.address);
-        }));
-        this.socket = socket;
-        registrationManager_1.registerAllLamps();
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.stopListening();
+            yield this.socket.bind(this.broadcastUDPPort);
+            this.socket.on("message", (msg, rinfo) => __awaiter(this, void 0, void 0, function* () {
+                const str = String.fromCharCode.apply(null, new Uint8Array(msg));
+                const obj = JSON.parse(str);
+                logger.info(`message received - ${str} with info - ${JSON.stringify(rinfo)}`);
+                yield this.processMessage(obj, rinfo.address);
+            }));
+            this.registerLightsTimer = yield this.registrationManager.registerAllLights(this.interfaceName, this.controlUDPPort);
+        });
     }
     /**
      * Stops listening
      */
     stopListening() {
-        this.socket.close();
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this.registerLightsTimer != undefined) {
+                clearInterval(this.registerLightsTimer);
+                this.registerLightsTimer = undefined;
+            }
+            if (this.socket != undefined) {
+                try {
+                    yield this.socket.close();
+                }
+                catch (e) { }
+                this.createSocket();
+            }
+            return;
+        });
     }
     /**
      * Processes incoming message from WiZ device
@@ -67,7 +91,7 @@ class UDPManager {
                         this.receivedMsgCallback(msg);
                         break;
                     case networkConstants.firstBeatMethod:
-                        registrationManager_1.registerDeviceWithLightIp(sourceIp);
+                        this.registrationManager.registerDevice(sourceIp, this.interfaceName, this.controlUDPPort);
                         break;
                     default:
                         break;
@@ -91,7 +115,7 @@ class UDPManager {
                 mac: ipFunctions_1.getLocalMac(),
             },
         };
-        UDPCommunication_1.default(msg, sourceIp)
+        UDPCommunication_1.default(msg, sourceIp, this.controlUDPPort)
             .then(() => { })
             .catch(() => { });
     }

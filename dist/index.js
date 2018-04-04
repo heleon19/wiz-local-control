@@ -12,22 +12,30 @@ const UDPManager_1 = require("./UDPManager");
 const types_1 = require("./constants/types");
 const UDPCommunication_1 = require("./UDPCommunication");
 class WiZLocalControl {
-    constructor(incomingMsgCallback) {
-        const udpManager = new UDPManager_1.default(incomingMsgCallback);
-        udpManager.startListening();
-        this.udpManager = udpManager;
+    constructor(incomingMsgCallback, udpManager = undefined, interfaceName = "eth0") {
+        this.sendCommandImpl = UDPCommunication_1.default;
+        if (udpManager != undefined) {
+            this.udpManager = udpManager;
+        }
+        else {
+            this.udpManager = new UDPManager_1.default(incomingMsgCallback, interfaceName);
+        }
     }
     /**
      * Starts listening to status updates of WiZ lights
      */
     startListening() {
-        this.udpManager.startListening();
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.udpManager.startListening();
+        });
     }
     /**
      * Stops listening to status updates of WiZ lights
      */
     stopListening() {
-        this.udpManager.stopListening();
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.udpManager.stopListening();
+        });
     }
     /**
      * Changes brightness of WiZ Light
@@ -37,7 +45,7 @@ class WiZLocalControl {
     changeBrightness(brightness, lightIp) {
         return __awaiter(this, void 0, void 0, function* () {
             const msg = types_1.SetPilotMessage.buildDimmingControlMessage(brightness);
-            return UDPCommunication_1.default(msg, lightIp);
+            return this.sendCommandImpl(msg, lightIp);
         });
     }
     /**
@@ -50,15 +58,15 @@ class WiZLocalControl {
             switch (lightMode.type) {
                 case "scene": {
                     const msg = types_1.SetPilotMessage.buildSceneControlMessage(lightMode);
-                    return UDPCommunication_1.default(msg, lightIp);
+                    return this.sendCommandImpl(msg, lightIp);
                 }
                 case "color": {
                     const msg = types_1.SetPilotMessage.buildColorControlMessage(lightMode.r, lightMode.g, lightMode.b, lightMode.ww);
-                    return UDPCommunication_1.default(msg, lightIp);
+                    return this.sendCommandImpl(msg, lightIp);
                 }
                 case "temperature": {
                     const msg = types_1.SetPilotMessage.buildColorTemperatureControlMessage(lightMode.colorTemperature);
-                    return UDPCommunication_1.default(msg, lightIp);
+                    return this.sendCommandImpl(msg, lightIp);
                 }
             }
         });
@@ -71,7 +79,7 @@ class WiZLocalControl {
     changeSpeed(speed, lightIp) {
         return __awaiter(this, void 0, void 0, function* () {
             const msg = types_1.SetPilotMessage.buildSpeedControlMessage(speed);
-            return UDPCommunication_1.default(msg, lightIp);
+            return this.sendCommandImpl(msg, lightIp);
         });
     }
     /**
@@ -82,7 +90,7 @@ class WiZLocalControl {
     changeStatus(status, lightIp) {
         return __awaiter(this, void 0, void 0, function* () {
             const msg = types_1.SetPilotMessage.buildStatusControlMessage(status);
-            return UDPCommunication_1.default(msg, lightIp);
+            return this.sendCommandImpl(msg, lightIp);
         });
     }
 }
