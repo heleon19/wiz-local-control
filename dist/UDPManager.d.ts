@@ -13,8 +13,8 @@ declare class UDPManager {
     broadcastUDPPort: number;
     controlUDPPort: number;
     registrationManager: RegistrationManager;
-    receivedMsgCallback: (msg: WiZMessage) => void;
-    constructor(receivedMsgCallback: (msg: WiZMessage) => void, interfaceName: string, broadcastUDPPort?: number, controlUDPPort?: number, registrationManager?: RegistrationManager);
+    receivedMsgCallback: (msg: WiZMessage, sourceIp: string) => void;
+    constructor(receivedMsgCallback: (msg: WiZMessage, sourceIp: string) => void, interfaceName: string, broadcastUDPPort?: number, controlUDPPort?: number, registrationManager?: RegistrationManager);
     createSocket(): Promise<void>;
     /**
      * Creates socket, starts listening on UDP port DEVICE_UDP_LISTEN_PORT

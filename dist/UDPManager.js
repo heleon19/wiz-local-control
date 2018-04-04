@@ -88,7 +88,7 @@ class UDPManager {
                         msg.timestamp = new Date();
                         msg.ip = sourceIp;
                         // if lamp is first noticed – need to query API about manufacturing data
-                        this.receivedMsgCallback(msg);
+                        this.receivedMsgCallback(msg, sourceIp);
                         break;
                     case networkConstants.firstBeatMethod:
                         this.registrationManager.registerDevice(sourceIp, this.interfaceName, this.controlUDPPort);

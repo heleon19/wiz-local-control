@@ -15,7 +15,7 @@ export default class WiZLocalControl {
   ) => Promise<Result> = sendCommand;
 
   constructor(
-    incomingMsgCallback: (msg: WiZMessage) => void,
+    incomingMsgCallback: (msg: WiZMessage, sourceIp: string) => void,
     udpManager: UDPManager | undefined = undefined,
     interfaceName: string = "eth0",
   ) {

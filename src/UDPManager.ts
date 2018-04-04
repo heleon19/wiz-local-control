@@ -24,10 +24,10 @@ class UDPManager {
   broadcastUDPPort: number;
   controlUDPPort: number;
   registrationManager: RegistrationManager;
-  receivedMsgCallback: (msg: WiZMessage) => void;
+  receivedMsgCallback: (msg: WiZMessage, sourceIp: string) => void;
 
   constructor(
-    receivedMsgCallback: (msg: WiZMessage) => void,
+    receivedMsgCallback: (msg: WiZMessage, sourceIp: string) => void,
     interfaceName: string,
     broadcastUDPPort: number = networkConstants.DEVICE_UDP_LISTEN_PORT,
     controlUDPPort: number = networkConstants.LIGHT_UDP_CONTROL_PORT,
@@ -77,7 +77,7 @@ class UDPManager {
     if (this.socket != undefined) {
       try {
         await this.socket.close();
-      } catch (e) {}
+      } catch (e) { }
       this.createSocket();
     }
     return;
@@ -99,7 +99,7 @@ class UDPManager {
           msg.timestamp = new Date();
           msg.ip = sourceIp;
           // if lamp is first noticed – need to query API about manufacturing data
-          this.receivedMsgCallback(msg);
+          this.receivedMsgCallback(msg, sourceIp);
           break;
         case networkConstants.firstBeatMethod:
           this.registrationManager.registerDevice(
@@ -131,8 +131,8 @@ class UDPManager {
       },
     };
     sendCommand(msg, sourceIp, this.controlUDPPort)
-      .then(() => {})
-      .catch(() => {});
+      .then(() => { })
+      .catch(() => { });
   }
 }
 
