@@ -10,13 +10,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const pino = require("pino");
 const dgram = require("dgram");
+const networkConstants = require("./constants/communication");
 const logger = pino();
 /**
  * Sends message to the WiZ device
  * @param msg WiZ Control message to be sent to the lamp
  * @param ip WiZ device IP address
  */
-function sendCommand(msg, ip, udpPort, broadcast = false, socket = dgram.createSocket("udp4")) {
+function sendCommand(msg, ip, udpPort = networkConstants.LIGHT_UDP_CONTROL_PORT, broadcast = false, socket = dgram.createSocket("udp4")) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
             logger.info(`sending ${JSON.stringify(msg)} to ip ${ip}`);
