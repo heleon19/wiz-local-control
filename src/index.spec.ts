@@ -43,8 +43,8 @@ describe("Creating instance", () => {
 describe("Sending commands", () => {
   beforeEach(() => {
     const manager = new UDPManager(() => {}, "eth0");
-    const spy = sinon.spy();
-    this.control = new WiZLocalControl(() => {}, manager, "eth0", spy);
+    this.control = new WiZLocalControl(() => {}, manager, "eth0");
+    const spy = sinon.stub(this.control, "sendCommandImpl");
     this.sendCommandSpy = spy;
   });
 
