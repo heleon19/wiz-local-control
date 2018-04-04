@@ -6,7 +6,7 @@ import * as dgram from "dgram";
 export default class WiZLocalControl {
     udpManager: UDPManager;
     sendCommandImpl: (msg: SetPilotMessage, ip: string, udpPort?: number, broadcast?: boolean, socket?: dgram.Socket) => Promise<Result>;
-    constructor(incomingMsgCallback: (msg: WiZMessage, sourceIp: string) => void, udpManager?: UDPManager | undefined, interfaceName?: string, sendCommandImpl?: (msg: SetPilotMessage, ip: string, udpPort?: number, broadcast?: boolean, socket?: dgram.Socket) => Promise<Result>);
+    constructor(incomingMsgCallback: (msg: WiZMessage, sourceIp: string) => void, udpManager?: UDPManager | undefined, interfaceName?: string);
     /**
      * Starts listening to status updates of WiZ lights
      */
