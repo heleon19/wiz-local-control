@@ -1,12 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const chai_1 = require("chai");
 const sinon = require("sinon");
@@ -23,24 +15,24 @@ describe("Creating instance", () => {
         const control = new index_1.default(() => { }, manager);
         chai_1.expect(control.udpManager).to.equal(manager);
     });
-    it("should start listening when asked", () => __awaiter(this, void 0, void 0, function* () {
+    it("should start listening when asked", async () => {
         const manager = new UDPManager_1.default(() => { }, "eth0");
         const spyStart = sinon.stub(manager, "startListening");
         const spyStop = sinon.stub(manager, "stopListening");
         const control = new index_1.default(() => { }, manager);
-        yield control.startListening();
-        yield control.stopListening();
+        await control.startListening();
+        await control.stopListening();
         chai_1.expect(spyStart.calledOnce).to.be.true;
-    }));
-    it("should stop listening when asked", () => __awaiter(this, void 0, void 0, function* () {
+    });
+    it("should stop listening when asked", async () => {
         const manager = new UDPManager_1.default(() => { }, "eth0");
         const spyStart = sinon.stub(manager, "startListening");
         const spyStop = sinon.stub(manager, "stopListening");
         const control = new index_1.default(() => { }, manager);
-        yield control.startListening();
-        yield control.stopListening();
+        await control.startListening();
+        await control.stopListening();
         chai_1.expect(spyStop.called).to.be.true;
-    }));
+    });
 });
 describe("Sending commands", () => {
     beforeEach(() => {
