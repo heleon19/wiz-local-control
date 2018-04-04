@@ -19,7 +19,7 @@ export async function registerDevice(
   const ip = await getLocalIPAddress(interfaceName);
   const msg = new RegistrationMessage(ip, getLocalMac());
 
-  return sendCommand(msg, lightIp, udpPort, broadcast, socket);
+  return await sendCommand(msg, lightIp, udpPort, broadcast, socket);
 }
 
 /**
@@ -28,14 +28,20 @@ export async function registerDevice(
 export async function registerAllLights(
   interfaceName: string,
   udpPort: number,
+  socket: dgram.Socket = dgram.createSocket("udp4"),
 ): Promise<NodeJS.Timer> {
-  const ip = await getLocalIPAddress(interfaceName);
-  const msg = new RegistrationMessage(ip, getLocalMac());
   for (const i of Array(3).keys()) {
-    await registerDevice("255.255.255.255", interfaceName, udpPort, true);
+    await registerDevice(
+      "255.255.255.255",
+      interfaceName,
+      udpPort,
+      true,
+      socket,
+    );
   }
   return setInterval(
-    () => registerDevice("255.255.255.255", interfaceName, udpPort, true),
+    () =>
+      registerDevice("255.255.255.255", interfaceName, udpPort, true, socket),
     15000,
   );
 }

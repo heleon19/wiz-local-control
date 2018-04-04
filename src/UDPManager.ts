@@ -118,7 +118,7 @@ class UDPManager {
         mac: getLocalMac(),
       },
     };
-    sendCommand(msg, sourceIp)
+    sendCommand(msg, sourceIp, this.controlUDPPort)
       .then(() => {})
       .catch(() => {});
   }

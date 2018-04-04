@@ -19,7 +19,14 @@ export default async function sendCommand(
 ): Promise<Result> {
   return new Promise(async (resolve: (value: Result) => void) => {
     logger.info(`sending ${JSON.stringify(msg)} to ip ${ip}`);
-    await socket.bind();
+    try {
+      await socket.bind();
+    } catch (e) {
+      resolve({
+        type: "error",
+        message: `Error when binding socket - ${e}`,
+      });
+    }
     // if there is no response in 1sec => safely close socket, packet is lost
     setTimeout(async () => {
       try {
@@ -63,6 +70,11 @@ export default async function sendCommand(
           resolve({
             type: "error",
             message: JSON.stringify(msgObj.error),
+          });
+        } else {
+          resolve({
+            type: "error",
+            message: "Malformed response",
           });
         }
       } catch (e) {

@@ -10,20 +10,36 @@ import * as networkConstants from "./constants/communication";
 describe("Register light with IP", function() {});
 
 describe("Register all lights", () => {
-  it("should send registration packet 3 times", async () => {
-    const lightIp = "127.0.0.1";
+  beforeEach(() => {
     const socket = dgram.createSocket("udp4");
-    const callback = sinon.spy();
+    const stubBind = sinon.stub(socket, "bind");
+    stubBind.throws("mockup");
+    this.socket = socket;
+    this.stubBind = stubBind;
+  });
+  it("should send registration packet 3 times", async () => {
     const timer = await registrationManager.registerAllLights(
       "eth0",
       networkConstants.LIGHT_UDP_CONTROL_PORT,
+      this.socket,
     );
     clearInterval(timer);
+
     return new Promise(resolve => {
       setTimeout(() => {
-        expect(callback.calledThrice).to.be.true;
+        expect(this.stubBind.calledThrice).to.be.true;
         resolve();
       }, 50);
     });
+  });
+
+  it("should return timer after for canceling interval", async () => {
+    const timer = await registrationManager.registerAllLights(
+      "eth0",
+      networkConstants.LIGHT_UDP_CONTROL_PORT,
+      this.socket,
+    );
+    clearInterval(timer);
+    expect(timer).to.not.be.undefined;
   });
 });

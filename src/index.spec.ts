@@ -19,7 +19,8 @@ describe("Creating instance", () => {
 
   it("should start listening when asked", async () => {
     const manager = new UDPManager(() => {}, "eth0");
-    const spyStart = sinon.spy(manager, "startListening");
+    const spyStart = sinon.stub(manager, "startListening");
+    const spyStop = sinon.stub(manager, "stopListening");
 
     const control = new WiZLocalControl(() => {}, manager);
     await control.startListening();
@@ -29,11 +30,13 @@ describe("Creating instance", () => {
 
   it("should stop listening when asked", async () => {
     const manager = new UDPManager(() => {}, "eth0");
-    const spy = sinon.spy(manager, "stopListening");
+    const spyStart = sinon.stub(manager, "startListening");
+    const spyStop = sinon.stub(manager, "stopListening");
+
     const control = new WiZLocalControl(() => {}, manager);
     await control.startListening();
     await control.stopListening();
-    expect(spy.called).to.be.true;
+    expect(spyStop.called).to.be.true;
   });
 });
 
