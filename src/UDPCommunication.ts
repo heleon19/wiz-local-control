@@ -21,7 +21,7 @@ export default async function sendCommand(
   return new Promise(async (resolve: (value: Result) => void) => {
     logger.info(`sending ${JSON.stringify(msg)} to ip ${ip}`);
     try {
-      await socket.bind({ address: localIp, port: udpPort });
+      await socket.bind(undefined, localIp);
     } catch (e) {
       resolve({
         type: "error",

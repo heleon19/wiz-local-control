@@ -13,7 +13,7 @@ async function sendCommand(msg, ip, localIp, udpPort = networkConstants.LIGHT_UD
     return new Promise(async (resolve) => {
         logger.info(`sending ${JSON.stringify(msg)} to ip ${ip}`);
         try {
-            await socket.bind({ address: localIp, port: udpPort });
+            await socket.bind(undefined, localIp);
         }
         catch (e) {
             resolve({
