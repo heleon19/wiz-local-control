@@ -7,19 +7,15 @@ const UDPManager_1 = require("./UDPManager");
 const types_1 = require("./constants/types");
 describe("Creating instance", () => {
     it("should create UDP manager when creating new instance", () => {
-        const control = new index_1.default(() => { });
+        const control = new index_1.default({ incomingMsgCallback: () => { } });
         chai_1.expect(control.udpManager).to.be.instanceof(UDPManager_1.default);
-    });
-    it("should use existing UDP manager when passed as a parameter", () => {
-        const manager = new UDPManager_1.default(() => { }, "eth0");
-        const control = new index_1.default(() => { }, manager);
-        chai_1.expect(control.udpManager).to.equal(manager);
     });
     it("should start listening when asked", async () => {
         const manager = new UDPManager_1.default(() => { }, "eth0");
         const spyStart = sinon.stub(manager, "startListening");
         const spyStop = sinon.stub(manager, "stopListening");
-        const control = new index_1.default(() => { }, manager);
+        const control = new index_1.default({ incomingMsgCallback: () => { } });
+        control.udpManager = manager;
         await control.startListening();
         await control.stopListening();
         chai_1.expect(spyStart.calledOnce).to.be.true;
@@ -28,7 +24,8 @@ describe("Creating instance", () => {
         const manager = new UDPManager_1.default(() => { }, "eth0");
         const spyStart = sinon.stub(manager, "startListening");
         const spyStop = sinon.stub(manager, "stopListening");
-        const control = new index_1.default(() => { }, manager);
+        const control = new index_1.default({ incomingMsgCallback: () => { } });
+        control.udpManager = manager;
         await control.startListening();
         await control.stopListening();
         chai_1.expect(spyStop.called).to.be.true;
@@ -36,8 +33,7 @@ describe("Creating instance", () => {
 });
 describe("Sending commands", () => {
     beforeEach(() => {
-        const manager = new UDPManager_1.default(() => { }, "eth0");
-        this.control = new index_1.default(() => { }, manager, "eth0");
+        this.control = new index_1.default({ incomingMsgCallback: () => { } });
         const spy = sinon.stub(this.control, "sendCommandImpl");
         this.sendCommandSpy = spy;
     });

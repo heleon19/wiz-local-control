@@ -4,6 +4,10 @@ import { SetPilotMessage } from "./constants/types";
 import sendCommand from "./UDPCommunication";
 import * as dgram from "dgram";
 
+export type WiZLocalControlConfig = {
+  incomingMsgCallback: (msg: WiZMessage, sourceIp: string) => void;
+  interfaceName?: string;
+};
 export default class WiZLocalControl {
   udpManager: UDPManager;
   sendCommandImpl: (
@@ -14,16 +18,12 @@ export default class WiZLocalControl {
     socket?: dgram.Socket,
   ) => Promise<Result> = sendCommand;
 
-  constructor(
-    incomingMsgCallback: (msg: WiZMessage, sourceIp: string) => void,
-    udpManager: UDPManager | undefined = undefined,
-    interfaceName: string = "eth0",
-  ) {
-    if (udpManager != undefined) {
-      this.udpManager = udpManager;
-    } else {
-      this.udpManager = new UDPManager(incomingMsgCallback, interfaceName);
-    }
+  constructor(options: WiZLocalControlConfig) {
+    const interfaceName = options.interfaceName || "eth0";
+    this.udpManager = new UDPManager(
+      options.incomingMsgCallback,
+      interfaceName,
+    );
   }
 
   /**

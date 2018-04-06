@@ -7,14 +7,8 @@ import { SetPilotMessage, SetPilotParametersDimming } from "./constants/types";
 
 describe("Creating instance", () => {
   it("should create UDP manager when creating new instance", () => {
-    const control = new WiZLocalControl(() => {});
+    const control = new WiZLocalControl({ incomingMsgCallback: () => {} });
     expect(control.udpManager).to.be.instanceof(UDPManager);
-  });
-
-  it("should use existing UDP manager when passed as a parameter", () => {
-    const manager = new UDPManager(() => {}, "eth0");
-    const control = new WiZLocalControl(() => {}, manager);
-    expect(control.udpManager).to.equal(manager);
   });
 
   it("should start listening when asked", async () => {
@@ -22,7 +16,8 @@ describe("Creating instance", () => {
     const spyStart = sinon.stub(manager, "startListening");
     const spyStop = sinon.stub(manager, "stopListening");
 
-    const control = new WiZLocalControl(() => {}, manager);
+    const control = new WiZLocalControl({ incomingMsgCallback: () => {} });
+    control.udpManager = manager;
     await control.startListening();
     await control.stopListening();
     expect(spyStart.calledOnce).to.be.true;
@@ -33,7 +28,9 @@ describe("Creating instance", () => {
     const spyStart = sinon.stub(manager, "startListening");
     const spyStop = sinon.stub(manager, "stopListening");
 
-    const control = new WiZLocalControl(() => {}, manager);
+    const control = new WiZLocalControl({ incomingMsgCallback: () => {} });
+    control.udpManager = manager;
+
     await control.startListening();
     await control.stopListening();
     expect(spyStop.called).to.be.true;
@@ -42,8 +39,7 @@ describe("Creating instance", () => {
 
 describe("Sending commands", () => {
   beforeEach(() => {
-    const manager = new UDPManager(() => {}, "eth0");
-    this.control = new WiZLocalControl(() => {}, manager, "eth0");
+    this.control = new WiZLocalControl({ incomingMsgCallback: () => {} });
     const spy = sinon.stub(this.control, "sendCommandImpl");
     this.sendCommandSpy = spy;
   });
