@@ -3,7 +3,7 @@
 ### Prerequisites
 
 1.  MacOS/Linux OS
-2.  NodeJS >8.11.1 (current LTS version)
+2.  NodeJS >8.11.1
 
 ### Usage
 
