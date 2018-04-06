@@ -11,6 +11,15 @@ describe("Creating instance", () => {
     expect(control.udpManager).to.be.instanceof(UDPManager);
   });
 
+  it("should pass interface name to UDP manager when provided", () => {
+    const interfaceName = "test";
+    const control = new WiZLocalControl({
+      incomingMsgCallback: () => {},
+      interfaceName,
+    });
+    expect(control.udpManager.interfaceName).to.be.equal(interfaceName);
+  });
+
   it("should start listening when asked", async () => {
     const manager = new UDPManager(() => {}, "eth0");
     const spyStart = sinon.stub(manager, "startListening");
