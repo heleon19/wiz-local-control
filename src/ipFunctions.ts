@@ -7,9 +7,7 @@ import * as ip from "ip";
  * for example when this package is installed on access point
  * @param interfaceName Interface name, defaults to 'wlan0'
  */
-export function getLocalIPAddress(
-  interfaceName: string = "wlan0",
-): Promise<string> {
+export function getLocalIPAddress(interfaceName: string): Promise<string> {
   return new Promise(resolve => {
     let ipaddr;
     try {
