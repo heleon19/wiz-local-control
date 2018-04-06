@@ -5,5 +5,5 @@
  * for example when this package is installed on access point
  * @param interfaceName Interface name, defaults to 'wlan0'
  */
-export declare function getLocalIPAddress(interfaceName?: string): Promise<string>;
+export declare function getLocalIPAddress(interfaceName: string): Promise<string>;
 export declare function getLocalMac(): string;

@@ -10,6 +10,14 @@ describe("Creating instance", () => {
         const control = new index_1.default({ incomingMsgCallback: () => { } });
         chai_1.expect(control.udpManager).to.be.instanceof(UDPManager_1.default);
     });
+    it("should pass interface name to UDP manager when provided", () => {
+        const interfaceName = "test";
+        const control = new index_1.default({
+            incomingMsgCallback: () => { },
+            interfaceName,
+        });
+        chai_1.expect(control.udpManager.interfaceName).to.be.equal(interfaceName);
+    });
     it("should start listening when asked", async () => {
         const manager = new UDPManager_1.default(() => { }, "eth0");
         const spyStart = sinon.stub(manager, "startListening");

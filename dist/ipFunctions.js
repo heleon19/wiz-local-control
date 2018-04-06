@@ -8,7 +8,7 @@ const ip = require("ip");
  * for example when this package is installed on access point
  * @param interfaceName Interface name, defaults to 'wlan0'
  */
-function getLocalIPAddress(interfaceName = "wlan0") {
+function getLocalIPAddress(interfaceName) {
     return new Promise(resolve => {
         let ipaddr;
         try {

@@ -5,16 +5,9 @@ import * as sinon from "sinon";
 import * as ipFunctions from "./ipFunctions";
 
 describe("Local IP obtaining", () => {
-  it("should obtain default current IP", async () => {
-    const ip = await ipFunctions.getLocalIPAddress();
-    expect(ip).to.not.be.undefined;
-  });
-
   it("should obtain default current IP if passed invalid interface", async () => {
     const ip = await ipFunctions.getLocalIPAddress("undefinedInterface");
-    const defaultIP = await ipFunctions.getLocalIPAddress();
     expect(ip).to.not.be.undefined;
-    expect(defaultIP).to.equal(ip);
   });
 });
 
