@@ -3,6 +3,7 @@ import UDPManager from "./UDPManager";
 import { SetPilotMessage } from "./constants/types";
 import sendCommand from "./UDPCommunication";
 import * as dgram from "dgram";
+import { getLocalIPAddress } from "./ipFunctions";
 
 export type WiZLocalControlConfig = {
   incomingMsgCallback: (msg: WiZMessage, sourceIp: string) => void;
@@ -10,14 +11,6 @@ export type WiZLocalControlConfig = {
 };
 export default class WiZLocalControl {
   udpManager: UDPManager;
-  sendCommandImpl: (
-    msg: SetPilotMessage,
-    ip: string,
-    udpPort?: number,
-    broadcast?: boolean,
-    socket?: dgram.Socket,
-  ) => Promise<Result> = sendCommand;
-
   constructor(options: WiZLocalControlConfig) {
     const interfaceName = options.interfaceName || "eth0";
     this.udpManager = new UDPManager(
@@ -45,7 +38,7 @@ export default class WiZLocalControl {
    */
   async changeBrightness(brightness: number, lightIp: string): Promise<Result> {
     const msg = SetPilotMessage.buildDimmingControlMessage(brightness);
-    return this.sendCommandImpl(msg, lightIp);
+    return this.udpManager.sendUDPCommand(msg, lightIp);
   }
 
   /**
@@ -60,7 +53,7 @@ export default class WiZLocalControl {
     switch (lightMode.type) {
       case "scene": {
         const msg = SetPilotMessage.buildSceneControlMessage(lightMode);
-        return this.sendCommandImpl(msg, lightIp);
+        return this.udpManager.sendUDPCommand(msg, lightIp);
       }
       case "color": {
         const msg = SetPilotMessage.buildColorControlMessage(
@@ -69,13 +62,13 @@ export default class WiZLocalControl {
           lightMode.b,
           lightMode.ww,
         );
-        return this.sendCommandImpl(msg, lightIp);
+        return this.udpManager.sendUDPCommand(msg, lightIp);
       }
       case "temperature": {
         const msg = SetPilotMessage.buildColorTemperatureControlMessage(
           lightMode.colorTemperature,
         );
-        return this.sendCommandImpl(msg, lightIp);
+        return this.udpManager.sendUDPCommand(msg, lightIp);
       }
     }
   }
@@ -87,7 +80,7 @@ export default class WiZLocalControl {
    */
   async changeSpeed(speed: number, lightIp: string): Promise<Result> {
     const msg = SetPilotMessage.buildSpeedControlMessage(speed);
-    return this.sendCommandImpl(msg, lightIp);
+    return this.udpManager.sendUDPCommand(msg, lightIp);
   }
 
   /**
@@ -97,6 +90,6 @@ export default class WiZLocalControl {
    */
   async changeStatus(status: boolean, lightIp: string): Promise<Result> {
     const msg = SetPilotMessage.buildStatusControlMessage(status);
-    return this.sendCommandImpl(msg, lightIp);
+    return this.udpManager.sendUDPCommand(msg, lightIp);
   }
 }

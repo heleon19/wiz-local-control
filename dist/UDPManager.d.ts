@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { WiZMessage, SyncPilotMessage } from "./constants/types";
+import { WiZMessage, SyncPilotMessage, SetPilotMessage, Result } from "./constants/types";
 import RegistrationManager from "./registrationManager";
 import { Socket } from "dgram";
 /**
@@ -25,6 +25,7 @@ declare class UDPManager {
      * Stops listening
      */
     stopListening(): Promise<void>;
+    sendUDPCommand(msg: SetPilotMessage, ip: string): Promise<Result>;
     /**
      * Processes incoming message from WiZ device
      * and either
@@ -41,6 +42,6 @@ declare class UDPManager {
      * @param sourceMsg Source message we need to send acknowledgement for
      * @param sourceIp WiZ device IP
      */
-    sendSyncPilotAcknowledgement(sourceMsg: SyncPilotMessage, sourceIp: string): void;
+    sendSyncPilotAcknowledgement(sourceMsg: SyncPilotMessage, sourceIp: string): Promise<void>;
 }
 export default UDPManager;

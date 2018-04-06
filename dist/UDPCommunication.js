@@ -9,11 +9,11 @@ const logger = pino();
  * @param msg WiZ Control message to be sent to the lamp
  * @param ip WiZ device IP address
  */
-async function sendCommand(msg, ip, udpPort = networkConstants.LIGHT_UDP_CONTROL_PORT, broadcast = false, socket = dgram.createSocket("udp4")) {
+async function sendCommand(msg, ip, localIp, udpPort = networkConstants.LIGHT_UDP_CONTROL_PORT, broadcast = false, socket = dgram.createSocket("udp4")) {
     return new Promise(async (resolve) => {
         logger.info(`sending ${JSON.stringify(msg)} to ip ${ip}`);
         try {
-            await socket.bind();
+            await socket.bind({ address: localIp, port: udpPort });
         }
         catch (e) {
             resolve({

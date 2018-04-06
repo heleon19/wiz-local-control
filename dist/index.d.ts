@@ -1,15 +1,11 @@
-/// <reference types="node" />
 import { WiZMessage, Result, LightMode } from "./constants/types";
 import UDPManager from "./UDPManager";
-import { SetPilotMessage } from "./constants/types";
-import * as dgram from "dgram";
 export declare type WiZLocalControlConfig = {
     incomingMsgCallback: (msg: WiZMessage, sourceIp: string) => void;
     interfaceName?: string;
 };
 export default class WiZLocalControl {
     udpManager: UDPManager;
-    sendCommandImpl: (msg: SetPilotMessage, ip: string, udpPort?: number, broadcast?: boolean, socket?: dgram.Socket) => Promise<Result>;
     constructor(options: WiZLocalControlConfig);
     /**
      * Starts listening to status updates of WiZ lights

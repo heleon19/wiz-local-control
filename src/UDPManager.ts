@@ -6,9 +6,11 @@ import {
   WiZMessage,
   SyncPilotMessage,
   SyncPilotAckMessage,
+  SetPilotMessage,
+  Result,
 } from "./constants/types";
 import RegistrationManager from "./registrationManager";
-import { getLocalMac } from "./ipFunctions";
+import { getLocalMac, getLocalIPAddress } from "./ipFunctions";
 import sendCommand from "./UDPCommunication";
 import { Socket } from "dgram";
 
@@ -77,12 +79,16 @@ class UDPManager {
     if (this.socket != undefined) {
       try {
         await this.socket.close();
-      } catch (e) { }
+      } catch (e) {}
       this.createSocket();
     }
     return;
   }
 
+  async sendUDPCommand(msg: SetPilotMessage, ip: string): Promise<Result> {
+    const localIp = await getLocalIPAddress(this.interfaceName);
+    return await sendCommand(msg, ip, localIp);
+  }
   /**
    * Processes incoming message from WiZ device
    * and either
@@ -121,7 +127,10 @@ class UDPManager {
    * @param sourceMsg Source message we need to send acknowledgement for
    * @param sourceIp WiZ device IP
    */
-  sendSyncPilotAcknowledgement(sourceMsg: SyncPilotMessage, sourceIp: string) {
+  async sendSyncPilotAcknowledgement(
+    sourceMsg: SyncPilotMessage,
+    sourceIp: string,
+  ) {
     const msg: SyncPilotAckMessage = {
       method: networkConstants.syncPilotMethod,
       id: sourceMsg.id,
@@ -130,9 +139,14 @@ class UDPManager {
         mac: getLocalMac(),
       },
     };
-    sendCommand(msg, sourceIp, this.controlUDPPort)
-      .then(() => { })
-      .catch(() => { });
+    sendCommand(
+      msg,
+      sourceIp,
+      await getLocalIPAddress(this.interfaceName),
+      this.controlUDPPort,
+    )
+      .then(() => {})
+      .catch(() => {});
   }
 }
 

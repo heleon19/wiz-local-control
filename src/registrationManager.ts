@@ -1,7 +1,6 @@
 import * as dgram from "dgram";
 import { RegistrationMessage } from "./constants/types";
 import { getLocalIPAddress, getLocalMac } from "./ipFunctions";
-import * as networkConstants from "./constants/communication";
 import sendCommand from "./UDPCommunication";
 
 export default class RegistrationManager {
@@ -21,7 +20,7 @@ export default class RegistrationManager {
     const msg = new RegistrationMessage(ip, getLocalMac());
     const socket = dgram.createSocket("udp4");
 
-    return await sendCommand(msg, lightIp, udpPort, broadcast, socket);
+    return await sendCommand(msg, lightIp, ip, udpPort, broadcast, socket);
   }
 
   /**

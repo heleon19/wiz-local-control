@@ -15,7 +15,7 @@ class RegistrationManager {
         const ip = await ipFunctions_1.getLocalIPAddress(interfaceName);
         const msg = new types_1.RegistrationMessage(ip, ipFunctions_1.getLocalMac());
         const socket = dgram.createSocket("udp4");
-        return await UDPCommunication_1.default(msg, lightIp, udpPort, broadcast, socket);
+        return await UDPCommunication_1.default(msg, lightIp, ip, udpPort, broadcast, socket);
     }
     /**
      * Sends broadcast registration packet immediately 3 times and once every 15 secs.

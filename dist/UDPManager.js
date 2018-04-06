@@ -57,6 +57,10 @@ class UDPManager {
         }
         return;
     }
+    async sendUDPCommand(msg, ip) {
+        const localIp = await ipFunctions_1.getLocalIPAddress(this.interfaceName);
+        return await UDPCommunication_1.default(msg, ip, localIp);
+    }
     /**
      * Processes incoming message from WiZ device
      * and either
@@ -90,7 +94,7 @@ class UDPManager {
      * @param sourceMsg Source message we need to send acknowledgement for
      * @param sourceIp WiZ device IP
      */
-    sendSyncPilotAcknowledgement(sourceMsg, sourceIp) {
+    async sendSyncPilotAcknowledgement(sourceMsg, sourceIp) {
         const msg = {
             method: networkConstants.syncPilotMethod,
             id: sourceMsg.id,
@@ -99,7 +103,7 @@ class UDPManager {
                 mac: ipFunctions_1.getLocalMac(),
             },
         };
-        UDPCommunication_1.default(msg, sourceIp, this.controlUDPPort)
+        UDPCommunication_1.default(msg, sourceIp, await ipFunctions_1.getLocalIPAddress(this.interfaceName), this.controlUDPPort)
             .then(() => { })
             .catch(() => { });
     }
