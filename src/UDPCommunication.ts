@@ -9,6 +9,7 @@ const logger = pino();
  * Sends message to the WiZ device
  * @param msg WiZ Control message to be sent to the lamp
  * @param ip WiZ device IP address
+ * @param localIp Current device local IP address
  */
 export default async function sendCommand(
   msg: WiZControlMessage,
