@@ -2,7 +2,7 @@
 
 ### Prerequisites
 
-1.  MacOS/Linux OS
+1.  MacOS/Linux
 2.  NodeJS >8.11.1
 
 ### Usage
