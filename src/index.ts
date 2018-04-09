@@ -39,10 +39,7 @@ export default class WiZLocalControl {
    */
   async changeBrightness(brightness: number, lightIp: string): Promise<Result> {
     const msg = SetPilotMessage.buildDimmingControlMessage(brightness);
-    const validationErrors = await validate(msg);
-    if (validationErrors.length > 0) {
-      throw validationErrors;
-    }
+    await this.validateMsg(msg);
     return this.udpManager.sendUDPCommand(msg, lightIp);
   }
 
@@ -58,6 +55,7 @@ export default class WiZLocalControl {
     switch (lightMode.type) {
       case "scene": {
         const msg = SetPilotMessage.buildSceneControlMessage(lightMode);
+        await this.validateMsg(msg);
         return this.udpManager.sendUDPCommand(msg, lightIp);
       }
       case "color": {
@@ -67,12 +65,14 @@ export default class WiZLocalControl {
           lightMode.b,
           lightMode.ww,
         );
+        await this.validateMsg(msg);
         return this.udpManager.sendUDPCommand(msg, lightIp);
       }
       case "temperature": {
         const msg = SetPilotMessage.buildColorTemperatureControlMessage(
           lightMode.colorTemperature,
         );
+        await this.validateMsg(msg);
         return this.udpManager.sendUDPCommand(msg, lightIp);
       }
     }
@@ -85,6 +85,7 @@ export default class WiZLocalControl {
    */
   async changeSpeed(speed: number, lightIp: string): Promise<Result> {
     const msg = SetPilotMessage.buildSpeedControlMessage(speed);
+    await this.validateMsg(msg);
     return this.udpManager.sendUDPCommand(msg, lightIp);
   }
 
@@ -95,6 +96,16 @@ export default class WiZLocalControl {
    */
   async changeStatus(status: boolean, lightIp: string): Promise<Result> {
     const msg = SetPilotMessage.buildStatusControlMessage(status);
+    await this.validateMsg(msg);
     return this.udpManager.sendUDPCommand(msg, lightIp);
+  }
+
+  async validateMsg(msg: SetPilotMessage): Promise<void> {
+    const validationErrors = await validate(msg, {
+      skipMissingProperties: true,
+    });
+    if (validationErrors.length > 0) {
+      throw Error(JSON.stringify(validationErrors));
+    }
   }
 }

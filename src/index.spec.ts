@@ -56,6 +56,13 @@ describe("Sending commands", () => {
     this.sendCommandSpy = spy;
   });
 
+  it("msg was validated before sending", async () => {
+    const spy: sinon.SinonSpy = sinon.spy(this.control, "validateMsg");
+    const targetIp = "127.0.0.1";
+    await this.control.changeBrightness(15, targetIp);
+    expect(spy.called).to.be.true;
+  });
+
   it("should form and send brightness command", async () => {
     const spy: sinon.SinonSpy = this.sendCommandSpy;
     const targetIp = "127.0.0.1";
@@ -67,10 +74,10 @@ describe("Sending commands", () => {
     expect(ip).to.be.equal(targetIp);
   });
 
-  it("should form and send scene command", () => {
+  it("should form and send scene command", async () => {
     const spy: sinon.SinonSpy = this.sendCommandSpy;
     const targetIp = "127.0.0.1";
-    this.control.changeLightMode(
+    await this.control.changeLightMode(
       { type: "scene", sceneId: 5, name: "tmp" },
       targetIp,
     );
@@ -81,10 +88,10 @@ describe("Sending commands", () => {
     expect(ip).to.be.equal(targetIp);
   });
 
-  it("should form and send color command", () => {
+  it("should form and send color command", async () => {
     const spy: sinon.SinonSpy = this.sendCommandSpy;
     const targetIp = "127.0.0.1";
-    this.control.changeLightMode(
+    await this.control.changeLightMode(
       { type: "color", r: 255, g: 255, b: 0, cw: 0, ww: 0 },
       targetIp,
     );
@@ -95,10 +102,10 @@ describe("Sending commands", () => {
     expect(ip).to.be.equal(targetIp);
   });
 
-  it("should form and send color temperature command", () => {
+  it("should form and send color temperature command", async () => {
     const spy: sinon.SinonSpy = this.sendCommandSpy;
     const targetIp = "127.0.0.1";
-    this.control.changeLightMode(
+    await this.control.changeLightMode(
       { type: "temperature", colorTemperature: 2500 },
       targetIp,
     );
@@ -109,10 +116,10 @@ describe("Sending commands", () => {
     expect(ip).to.be.equal(targetIp);
   });
 
-  it("should form and send speed change command", () => {
+  it("should form and send speed change command", async () => {
     const spy: sinon.SinonSpy = this.sendCommandSpy;
     const targetIp = "127.0.0.1";
-    this.control.changeSpeed(100, targetIp);
+    await this.control.changeSpeed(100, targetIp);
     const msg = spy.getCall(0).args[0];
     const ip = spy.getCall(0).args[1];
 
@@ -120,10 +127,10 @@ describe("Sending commands", () => {
     expect(ip).to.be.equal(targetIp);
   });
 
-  it("should form and send status change command", () => {
+  it("should form and send status change command", async () => {
     const spy: sinon.SinonSpy = this.sendCommandSpy;
     const targetIp = "127.0.0.1";
-    this.control.changeStatus(100, targetIp);
+    await this.control.changeStatus(100, targetIp);
     const msg = spy.getCall(0).args[0];
     const ip = spy.getCall(0).args[1];
 
