@@ -4,6 +4,7 @@ import { SetPilotMessage } from "./constants/types";
 import sendCommand from "./UDPCommunication";
 import * as dgram from "dgram";
 import { getLocalIPAddress } from "./ipFunctions";
+import { validate } from "class-validator";
 
 export type WiZLocalControlConfig = {
   incomingMsgCallback: (msg: WiZMessage, sourceIp: string) => void;
@@ -38,6 +39,10 @@ export default class WiZLocalControl {
    */
   async changeBrightness(brightness: number, lightIp: string): Promise<Result> {
     const msg = SetPilotMessage.buildDimmingControlMessage(brightness);
+    const validationErrors = await validate(msg);
+    if (validationErrors.length > 0) {
+      throw validationErrors;
+    }
     return this.udpManager.sendUDPCommand(msg, lightIp);
   }
 

@@ -49,7 +49,7 @@ describe("Creating instance", () => {
 describe("Sending commands", () => {
   beforeEach(() => {
     const manager = new UDPManager(() => {}, "eth0");
-    const spy = sinon.spy(manager, "sendUDPCommand");
+    const spy = sinon.stub(manager, "sendUDPCommand");
 
     this.control = new WiZLocalControl({ incomingMsgCallback: () => {} });
     this.control.udpManager = manager;
@@ -59,7 +59,7 @@ describe("Sending commands", () => {
   it("should form and send brightness command", async () => {
     const spy: sinon.SinonSpy = this.sendCommandSpy;
     const targetIp = "127.0.0.1";
-    this.control.changeBrightness(5, targetIp);
+    await this.control.changeBrightness(50, targetIp);
     const msg = spy.getCall(0).args[0];
     const ip = spy.getCall(0).args[1];
 
