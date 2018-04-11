@@ -1,3 +1,6 @@
+# NB! it's a prelease version, provided AS IS
+
+
 ## NodeJS library for controlling WiZ Lights via UDP
 
 ### Prerequisites
