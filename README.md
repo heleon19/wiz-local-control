@@ -14,7 +14,7 @@
 
 Create instance of WiZLocalControl class
 
-```
+```javascript
 const wizLocalControl = new WiZLocalControl({
   incomingMsgCallback: (msg: WiZMessage, ip) => {
     console.log(`Received the message from WiZ Light ${JSON.stringify(msg)}`)
@@ -25,7 +25,7 @@ const wizLocalControl = new WiZLocalControl({
 
 Start listening for the incoming messages
 
-```
+```javascript
 wizLocalControl.startListening();
 ```
 
@@ -39,7 +39,7 @@ wizLocalControl.startListening();
 
   Sample request
 
-  ```
+  ```javascript
   wizLocalControl.changeBrightness(10, "192.168.1.21"));
   ```
 
@@ -50,7 +50,7 @@ wizLocalControl.startListening();
 
   Sample request
 
-  ```
+  ```javascript
   wizLocalControl.changeStatus(true, "192.168.1.21"));
   ```
 
@@ -64,7 +64,7 @@ wizLocalControl.startListening();
 
   Sample requests
 
-  ```
+  ```javascript
   // Change scene to Ocean
   wizLocalControl.changeLightMode({
     type: "scene",
@@ -72,7 +72,7 @@ wizLocalControl.startListening();
   }, "192.168.1.21");
   ```
 
-  ```
+  ```javascript
   // Change color to yellow
   wizLocalControl.changeLightMode({
       type: "color",
@@ -83,7 +83,7 @@ wizLocalControl.startListening();
     "192.168.1.21");
   ```
 
-  ```
+  ```javascript
   // Change color temperature to approx. 4000K
   wizLocalControl.changeLightMode({
     type: "temperature",
@@ -98,6 +98,6 @@ wizLocalControl.startListening();
 
   Sample request
 
-  ```
+  ```javascript
   wizLocalControl.changeSpeed(140, "192.168.1.21"));
   ```
