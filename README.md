@@ -12,7 +12,7 @@
 
 #### Looking for the devices and listening for the status updates
 
-1.  Create instance of WiZLocalControl class
+Create instance of WiZLocalControl class
 
 ```
 const wizLocalControl = new WiZLocalControl({
@@ -23,7 +23,7 @@ const wizLocalControl = new WiZLocalControl({
 });
 ```
 
-2.  Start listening for the incoming messages
+Start listening for the incoming messages
 
 ```
 wizLocalControl.startListening();
@@ -31,7 +31,7 @@ wizLocalControl.startListening();
 
 #### Controlling WiZ lights
 
-* Change brightness
+###### Change brightness
 
   `changeBrightness(brightness: number, lightIp: string)`
 
@@ -43,7 +43,7 @@ wizLocalControl.startListening();
   wizLocalControl.changeBrightness(10, "192.168.1.21"));
   ```
 
-* Change status (ON or OFF)
+###### Change status (ON or OFF)
   `changeStatus(status: boolean, lightIp: string)`
 
   * `status` – `true` will turn light ON, `false` - OFF
@@ -54,7 +54,7 @@ wizLocalControl.startListening();
   wizLocalControl.changeStatus(true, "192.168.1.21"));
   ```
 
-* Change light mode - change currently played scene, or color temperature or RGB color
+###### Change light mode - change currently played scene, or color temperature or RGB color
   `changeLightMode(lightMode: LightMode, lightIp:string)`
 
   * `lightMode` could be either
@@ -91,7 +91,7 @@ wizLocalControl.startListening();
   }, "192.168.1.21"))
   ```
 
-* Change speed - change speed of the currently played dynamic scene (Ocean, Romance, Party, etc).
+###### Change speed - change speed of the currently played dynamic scene (Ocean, Romance, Party, etc).
   `changeSpeed(speed: number, lightIp: string)`
 
   * `speed` – Integer from range 20..200
