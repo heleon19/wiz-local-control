@@ -1,3 +1,6 @@
+# NB! it's a prelease version, provided AS IS
+
+
 ## NodeJS library for controlling WiZ Lights via UDP
 
 ### Prerequisites
@@ -9,9 +12,9 @@
 
 #### Looking for the devices and listening for the status updates
 
-1.  Create instance of WiZLocalControl class
+Create instance of WiZLocalControl class
 
-```
+```javascript
 const wizLocalControl = new WiZLocalControl({
   incomingMsgCallback: (msg: WiZMessage, ip) => {
     console.log(`Received the message from WiZ Light ${JSON.stringify(msg)}`)
@@ -20,15 +23,15 @@ const wizLocalControl = new WiZLocalControl({
 });
 ```
 
-2.  Start listening for the incoming messages
+Start listening for the incoming messages
 
-```
+```javascript
 wizLocalControl.startListening();
 ```
 
 #### Controlling WiZ lights
 
-* Change brightness
+###### Change brightness
 
   `changeBrightness(brightness: number, lightIp: string)`
 
@@ -36,22 +39,22 @@ wizLocalControl.startListening();
 
   Sample request
 
-  ```
+  ```javascript
   wizLocalControl.changeBrightness(10, "192.168.1.21"));
   ```
 
-* Change status (ON or OFF)
+###### Change status (ON or OFF)
   `changeStatus(status: boolean, lightIp: string)`
 
   * `status` – `true` will turn light ON, `false` - OFF
 
   Sample request
 
-  ```
+  ```javascript
   wizLocalControl.changeStatus(true, "192.168.1.21"));
   ```
 
-* Change light mode - change currently played scene, or color temperature or RGB color
+###### Change light mode - change currently played scene, or color temperature or RGB color
   `changeLightMode(lightMode: LightMode, lightIp:string)`
 
   * `lightMode` could be either
@@ -61,7 +64,7 @@ wizLocalControl.startListening();
 
   Sample requests
 
-  ```
+  ```javascript
   // Change scene to Ocean
   wizLocalControl.changeLightMode({
     type: "scene",
@@ -69,7 +72,7 @@ wizLocalControl.startListening();
   }, "192.168.1.21");
   ```
 
-  ```
+  ```javascript
   // Change color to yellow
   wizLocalControl.changeLightMode({
       type: "color",
@@ -80,7 +83,7 @@ wizLocalControl.startListening();
     "192.168.1.21");
   ```
 
-  ```
+  ```javascript
   // Change color temperature to approx. 4000K
   wizLocalControl.changeLightMode({
     type: "temperature",
@@ -88,13 +91,13 @@ wizLocalControl.startListening();
   }, "192.168.1.21"))
   ```
 
-* Change speed - change speed of the currently played dynamic scene (Ocean, Romance, Party, etc).
+###### Change speed - change speed of the currently played dynamic scene (Ocean, Romance, Party, etc).
   `changeSpeed(speed: number, lightIp: string)`
 
   * `speed` – Integer from range 20..200
 
   Sample request
 
-  ```
+  ```javascript
   wizLocalControl.changeSpeed(140, "192.168.1.21"));
   ```
