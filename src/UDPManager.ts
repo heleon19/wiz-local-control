@@ -104,7 +104,6 @@ class UDPManager {
           this.sendSyncPilotAcknowledgement(msg, sourceIp);
           msg.timestamp = new Date();
           msg.ip = sourceIp;
-          // if lamp is first noticed – need to query API about manufacturing data
           this.receivedMsgCallback(msg, sourceIp);
           break;
         case networkConstants.firstBeatMethod:
