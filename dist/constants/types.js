@@ -199,6 +199,17 @@ class RegistrationMessage {
     }
 }
 exports.RegistrationMessage = RegistrationMessage;
+/**
+ * Message sent to the lamp requesting its system configuration (fwVersion for example)
+ */
+class GetSystemConfigMessage {
+    constructor(ip) {
+        this.method = networkConstants.getSystemConfigMethod;
+        this.id = Math.floor(Math.random() * 10000 + 1);
+        this.version = 1;
+    }
+}
+exports.GetSystemConfigMessage = GetSystemConfigMessage;
 exports.staticScenes = [
     {
         type: "scene",

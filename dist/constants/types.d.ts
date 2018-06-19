@@ -189,7 +189,16 @@ export declare class RegistrationMessage {
     };
     constructor(ip: string, mac: string);
 }
-export declare type WiZControlMessage = SetPilotMessage | SyncPilotAckMessage | RegistrationMessage;
+/**
+ * Message sent to the lamp requesting its system configuration (fwVersion for example)
+ */
+export declare class GetSystemConfigMessage {
+    method: "getSystemConfig";
+    version: number;
+    id: number;
+    constructor(ip: string);
+}
+export declare type WiZControlMessage = SetPilotMessage | SyncPilotAckMessage | RegistrationMessage | GetSystemConfigMessage;
 export declare type WiZMessage = GetPilotMessage | SetPilotMessage | SyncPilotMessage | FirstBeatMessage | RegistrationMessage;
 export declare type Result = {
     type: "success";

@@ -40,5 +40,11 @@ export default class WiZLocalControl {
      * @param lightIp
      */
     changeStatus(status: boolean, lightIp: string): Promise<Result>;
+    /**
+     * Changes status of WiZ Light
+     * @param status Desired status, true - ON, false - OFF
+     * @param lightIp
+     */
+    getSystemConfig(lightIp: string): Promise<Result>;
     validateMsg(msg: SetPilotMessage): Promise<void>;
 }
