@@ -104,7 +104,6 @@ class UDPManager {
           this.sendSyncPilotAcknowledgement(msg, sourceIp);
           msg.timestamp = new Date();
           msg.ip = sourceIp;
-          this.receivedMsgCallback(msg, sourceIp);
           break;
         case networkConstants.firstBeatMethod:
           this.registrationManager.registerDevice(
@@ -116,6 +115,7 @@ class UDPManager {
         default:
           break;
       }
+      this.receivedMsgCallback(msg, sourceIp);
     }
   }
 
