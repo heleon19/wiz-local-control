@@ -68,7 +68,7 @@ export default async function sendCommand<T extends WiZMessageResponse>(
       logger.info(`result of sending ${str}`);
       try {
         const msgObj = JSON.parse(str);
-        if (msgObj.result && msgObj.result.success === true) {
+        if (msgObj.result && msgObj.result) {
           resolve({
             type: "success",
             method: msg.method,
