@@ -313,6 +313,20 @@ export class RegistrationMessage {
 }
 
 /**
+ * WiZ Light system configuration (fwVersion for example)
+ */
+export type GetSystemConfigResponse = {
+  method: "getSystemConfig";
+  result: {
+    homeId: number;
+    lock: boolean;
+    groupId: number;
+    typeId: number;
+    fwOtaStatus: number;
+    fwVersion: string;
+  };
+};
+/**
  * Message sent to the lamp requesting its system configuration (fwVersion for example)
  */
 export class GetSystemConfigMessage {
@@ -339,10 +353,13 @@ export type WiZMessage =
   | FirstBeatMessage
   | RegistrationMessage;
 
-export type Result =
+export type WiZMessageResponse = GetSystemConfigResponse;
+
+export type Result<T extends WiZMessageResponse> =
   | {
       type: "success";
-      params: object;
+      method: string;
+      params: T;
     }
   | {
       type: "error";

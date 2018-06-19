@@ -8,6 +8,7 @@ import {
   SyncPilotAckMessage,
   WiZControlMessage,
   Result,
+  WiZMessageResponse,
 } from "./constants/types";
 import RegistrationManager from "./registrationManager";
 import { getLocalMac, getLocalIPAddress } from "./ipFunctions";
@@ -85,9 +86,12 @@ class UDPManager {
     return;
   }
 
-  async sendUDPCommand(msg: WiZControlMessage, ip: string): Promise<Result> {
+  async sendUDPCommand<T extends WiZMessageResponse>(
+    msg: WiZControlMessage,
+    ip: string,
+  ): Promise<Result<T>> {
     const localIp = await getLocalIPAddress(this.interfaceName);
-    return await sendCommand(msg, ip, localIp);
+    return await sendCommand<T>(msg, ip, localIp);
   }
   /**
    * Processes incoming message from WiZ device

@@ -3,6 +3,7 @@ import {
   Result,
   LightMode,
   GetSystemConfigMessage,
+  GetSystemConfigResponse,
 } from "./constants/types";
 import UDPManager from "./UDPManager";
 import { SetPilotMessage } from "./constants/types";
@@ -42,7 +43,10 @@ export default class WiZLocalControl {
    * @param brightness Brightness level, 10-100
    * @param lightIp Light IP address
    */
-  async changeBrightness(brightness: number, lightIp: string): Promise<Result> {
+  async changeBrightness(
+    brightness: number,
+    lightIp: string,
+  ): Promise<Result<any>> {
     const msg = SetPilotMessage.buildDimmingControlMessage(brightness);
     await this.validateMsg(msg);
     return this.udpManager.sendUDPCommand(msg, lightIp);
@@ -56,7 +60,7 @@ export default class WiZLocalControl {
   async changeLightMode(
     lightMode: LightMode,
     lightIp: string,
-  ): Promise<Result> {
+  ): Promise<Result<any>> {
     switch (lightMode.type) {
       case "scene": {
         const msg = SetPilotMessage.buildSceneControlMessage(lightMode);
@@ -88,7 +92,7 @@ export default class WiZLocalControl {
    * @param speed Playing speed, 20-200
    * @param lightIp
    */
-  async changeSpeed(speed: number, lightIp: string): Promise<Result> {
+  async changeSpeed(speed: number, lightIp: string): Promise<Result<any>> {
     const msg = SetPilotMessage.buildSpeedControlMessage(speed);
     await this.validateMsg(msg);
     return this.udpManager.sendUDPCommand(msg, lightIp);
@@ -99,7 +103,7 @@ export default class WiZLocalControl {
    * @param status Desired status, true - ON, false - OFF
    * @param lightIp
    */
-  async changeStatus(status: boolean, lightIp: string): Promise<Result> {
+  async changeStatus(status: boolean, lightIp: string): Promise<Result<any>> {
     const msg = SetPilotMessage.buildStatusControlMessage(status);
     await this.validateMsg(msg);
     return this.udpManager.sendUDPCommand(msg, lightIp);
@@ -109,7 +113,9 @@ export default class WiZLocalControl {
    * Retrieves system configuration for WiZ Device (like FW version)
    * @param lightIp
    */
-  async getSystemConfig(lightIp: string): Promise<Result> {
+  async getSystemConfig(
+    lightIp: string,
+  ): Promise<Result<GetSystemConfigResponse>> {
     const msg = new GetSystemConfigMessage(lightIp);
     return this.udpManager.sendUDPCommand(msg, lightIp);
   }

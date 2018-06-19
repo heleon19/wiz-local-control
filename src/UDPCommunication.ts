@@ -1,7 +1,11 @@
 import * as pino from "pino";
 import * as dgram from "dgram";
 import * as networkConstants from "./constants/communication";
-import { WiZControlMessage, Result } from "./constants/types";
+import {
+  WiZControlMessage,
+  Result,
+  WiZMessageResponse,
+} from "./constants/types";
 
 const logger = pino();
 
@@ -11,15 +15,15 @@ const logger = pino();
  * @param ip WiZ device IP address
  * @param localIp Current device local IP address
  */
-export default async function sendCommand(
+export default async function sendCommand<T extends WiZMessageResponse>(
   msg: WiZControlMessage,
   ip: string,
   localIp: string,
   udpPort: number = networkConstants.LIGHT_UDP_CONTROL_PORT,
   broadcast: boolean = false,
   socket: dgram.Socket = dgram.createSocket("udp4"),
-): Promise<Result> {
-  return new Promise(async (resolve: (value: Result) => void) => {
+): Promise<Result<T>> {
+  return new Promise(async (resolve: (value: Result<T>) => void) => {
     logger.info(`sending ${JSON.stringify(msg)} to ip ${ip}`);
     try {
       await socket.bind(undefined, localIp);
@@ -67,7 +71,8 @@ export default async function sendCommand(
         if (msgObj.result && msgObj.result.success === true) {
           resolve({
             type: "success",
-            params: msgObj.result,
+            method: msg.method,
+            params: msgObj,
           });
         } else if (msgObj.error) {
           resolve({

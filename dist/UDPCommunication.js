@@ -56,7 +56,8 @@ async function sendCommand(msg, ip, localIp, udpPort = networkConstants.LIGHT_UD
                 if (msgObj.result && msgObj.result.success === true) {
                     resolve({
                         type: "success",
-                        params: msgObj.result,
+                        method: msg.method,
+                        params: msgObj,
                     });
                 }
                 else if (msgObj.error) {

@@ -7,11 +7,22 @@ export default class RegistrationManager {
      * @param lightIp IP address of the WiZ Bulb
      */
     registerDevice(lightIp: string, interfaceName: string, udpPort: number, broadcast?: boolean): Promise<{
-        type: "success";
-        params: object;
-    } | {
         type: "error";
         message: string;
+    } | {
+        type: "success";
+        method: string;
+        params: {
+            method: "getSystemConfig";
+            result: {
+                homeId: number;
+                lock: boolean;
+                groupId: number;
+                typeId: number;
+                fwOtaStatus: number;
+                fwVersion: string;
+            };
+        };
     }>;
     /**
      * Sends broadcast registration packet immediately 3 times and once every 15 secs.

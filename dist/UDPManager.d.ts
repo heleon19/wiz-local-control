@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { WiZMessage, SyncPilotMessage, WiZControlMessage, Result } from "./constants/types";
+import { WiZMessage, SyncPilotMessage, WiZControlMessage, Result, WiZMessageResponse } from "./constants/types";
 import RegistrationManager from "./registrationManager";
 import { Socket } from "dgram";
 /**
@@ -25,7 +25,7 @@ declare class UDPManager {
      * Stops listening
      */
     stopListening(): Promise<void>;
-    sendUDPCommand(msg: WiZControlMessage, ip: string): Promise<Result>;
+    sendUDPCommand<T extends WiZMessageResponse>(msg: WiZControlMessage, ip: string): Promise<Result<T>>;
     /**
      * Processes incoming message from WiZ device
      * and either

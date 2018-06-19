@@ -190,6 +190,20 @@ export declare class RegistrationMessage {
     constructor(ip: string, mac: string);
 }
 /**
+ * WiZ Light system configuration (fwVersion for example)
+ */
+export declare type GetSystemConfigResponse = {
+    method: "getSystemConfig";
+    result: {
+        homeId: number;
+        lock: boolean;
+        groupId: number;
+        typeId: number;
+        fwOtaStatus: number;
+        fwVersion: string;
+    };
+};
+/**
  * Message sent to the lamp requesting its system configuration (fwVersion for example)
  */
 export declare class GetSystemConfigMessage {
@@ -200,9 +214,11 @@ export declare class GetSystemConfigMessage {
 }
 export declare type WiZControlMessage = SetPilotMessage | SyncPilotAckMessage | RegistrationMessage | GetSystemConfigMessage;
 export declare type WiZMessage = GetPilotMessage | SetPilotMessage | SyncPilotMessage | FirstBeatMessage | RegistrationMessage;
-export declare type Result = {
+export declare type WiZMessageResponse = GetSystemConfigResponse;
+export declare type Result<T extends WiZMessageResponse> = {
     type: "success";
-    params: object;
+    method: string;
+    params: T;
 } | {
     type: "error";
     message: string;
