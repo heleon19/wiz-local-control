@@ -67,6 +67,7 @@ export default async function sendCommand(
         if (msgObj.result && msgObj.result.success === true) {
           resolve({
             type: "success",
+            params: msgObj.result,
           });
         } else if (msgObj.error) {
           resolve({

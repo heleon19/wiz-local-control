@@ -202,6 +202,7 @@ export declare type WiZControlMessage = SetPilotMessage | SyncPilotAckMessage | 
 export declare type WiZMessage = GetPilotMessage | SetPilotMessage | SyncPilotMessage | FirstBeatMessage | RegistrationMessage;
 export declare type Result = {
     type: "success";
+    params: object;
 } | {
     type: "error";
     message: string;

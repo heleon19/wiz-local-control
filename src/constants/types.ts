@@ -342,6 +342,7 @@ export type WiZMessage =
 export type Result =
   | {
       type: "success";
+      params: object;
     }
   | {
       type: "error";

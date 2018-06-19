@@ -76,13 +76,11 @@ class WiZLocalControl {
         return this.udpManager.sendUDPCommand(msg, lightIp);
     }
     /**
-     * Changes status of WiZ Light
-     * @param status Desired status, true - ON, false - OFF
+     * Retrieves system configuration for WiZ Device (like FW version)
      * @param lightIp
      */
     async getSystemConfig(lightIp) {
         const msg = new types_1.GetSystemConfigMessage(lightIp);
-        await this.validateMsg(msg);
         return this.udpManager.sendUDPCommand(msg, lightIp);
     }
     async validateMsg(msg) {

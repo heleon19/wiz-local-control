@@ -41,8 +41,7 @@ export default class WiZLocalControl {
      */
     changeStatus(status: boolean, lightIp: string): Promise<Result>;
     /**
-     * Changes status of WiZ Light
-     * @param status Desired status, true - ON, false - OFF
+     * Retrieves system configuration for WiZ Device (like FW version)
      * @param lightIp
      */
     getSystemConfig(lightIp: string): Promise<Result>;

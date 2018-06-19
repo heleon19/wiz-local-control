@@ -8,6 +8,7 @@ export default class RegistrationManager {
      */
     registerDevice(lightIp: string, interfaceName: string, udpPort: number, broadcast?: boolean): Promise<{
         type: "success";
+        params: object;
     } | {
         type: "error";
         message: string;
