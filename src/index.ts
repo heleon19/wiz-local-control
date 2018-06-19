@@ -1,4 +1,9 @@
-import { WiZMessage, Result, LightMode } from "./constants/types";
+import {
+  WiZMessage,
+  Result,
+  LightMode,
+  GetSystemConfigMessage,
+} from "./constants/types";
 import UDPManager from "./UDPManager";
 import { SetPilotMessage } from "./constants/types";
 import sendCommand from "./UDPCommunication";
@@ -96,6 +101,17 @@ export default class WiZLocalControl {
    */
   async changeStatus(status: boolean, lightIp: string): Promise<Result> {
     const msg = SetPilotMessage.buildStatusControlMessage(status);
+    await this.validateMsg(msg);
+    return this.udpManager.sendUDPCommand(msg, lightIp);
+  }
+
+  /**
+   * Changes status of WiZ Light
+   * @param status Desired status, true - ON, false - OFF
+   * @param lightIp
+   */
+  async getSystemConfig(lightIp: string): Promise<Result> {
+    const msg = new GetSystemConfigMessage(lightIp);
     await this.validateMsg(msg);
     return this.udpManager.sendUDPCommand(msg, lightIp);
   }

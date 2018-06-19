@@ -312,10 +312,25 @@ export class RegistrationMessage {
   }
 }
 
+/**
+ * Message sent to the lamp requesting its system configuration (fwVersion for example)
+ */
+export class GetSystemConfigMessage {
+  method: "getSystemConfig";
+  version: number;
+  id: number;
+  constructor(ip: string) {
+    this.method = networkConstants.getSystemConfigMethod;
+    this.id = Math.floor(Math.random() * 10000 + 1);
+    this.version = 1;
+  }
+}
+
 export type WiZControlMessage =
   | SetPilotMessage
   | SyncPilotAckMessage
-  | RegistrationMessage;
+  | RegistrationMessage
+  | GetSystemConfigMessage;
 
 export type WiZMessage =
   | GetPilotMessage
