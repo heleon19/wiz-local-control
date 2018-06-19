@@ -1,5 +1,6 @@
 import { WiZMessage, Result, LightMode } from "./constants/types";
 import UDPManager from "./UDPManager";
+import { SetPilotMessage } from "./constants/types";
 export declare type WiZLocalControlConfig = {
     incomingMsgCallback: (msg: WiZMessage, sourceIp: string) => void;
     interfaceName?: string;
@@ -39,4 +40,5 @@ export default class WiZLocalControl {
      * @param lightIp
      */
     changeStatus(status: boolean, lightIp: string): Promise<Result>;
+    validateMsg(msg: SetPilotMessage): Promise<void>;
 }

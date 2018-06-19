@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const UDPManager_1 = require("./UDPManager");
 const types_1 = require("./constants/types");
+const class_validator_1 = require("class-validator");
 class WiZLocalControl {
     constructor(options) {
         const interfaceName = options.interfaceName || "eth0";
@@ -26,6 +27,7 @@ class WiZLocalControl {
      */
     async changeBrightness(brightness, lightIp) {
         const msg = types_1.SetPilotMessage.buildDimmingControlMessage(brightness);
+        await this.validateMsg(msg);
         return this.udpManager.sendUDPCommand(msg, lightIp);
     }
     /**
@@ -37,14 +39,17 @@ class WiZLocalControl {
         switch (lightMode.type) {
             case "scene": {
                 const msg = types_1.SetPilotMessage.buildSceneControlMessage(lightMode);
+                await this.validateMsg(msg);
                 return this.udpManager.sendUDPCommand(msg, lightIp);
             }
             case "color": {
                 const msg = types_1.SetPilotMessage.buildColorControlMessage(lightMode.r, lightMode.g, lightMode.b, lightMode.ww);
+                await this.validateMsg(msg);
                 return this.udpManager.sendUDPCommand(msg, lightIp);
             }
             case "temperature": {
                 const msg = types_1.SetPilotMessage.buildColorTemperatureControlMessage(lightMode.colorTemperature);
+                await this.validateMsg(msg);
                 return this.udpManager.sendUDPCommand(msg, lightIp);
             }
         }
@@ -56,6 +61,7 @@ class WiZLocalControl {
      */
     async changeSpeed(speed, lightIp) {
         const msg = types_1.SetPilotMessage.buildSpeedControlMessage(speed);
+        await this.validateMsg(msg);
         return this.udpManager.sendUDPCommand(msg, lightIp);
     }
     /**
@@ -65,7 +71,16 @@ class WiZLocalControl {
      */
     async changeStatus(status, lightIp) {
         const msg = types_1.SetPilotMessage.buildStatusControlMessage(status);
+        await this.validateMsg(msg);
         return this.udpManager.sendUDPCommand(msg, lightIp);
+    }
+    async validateMsg(msg) {
+        const validationErrors = await class_validator_1.validate(msg, {
+            skipMissingProperties: true,
+        });
+        if (validationErrors.length > 0) {
+            throw Error(JSON.stringify(validationErrors));
+        }
     }
 }
 exports.default = WiZLocalControl;
