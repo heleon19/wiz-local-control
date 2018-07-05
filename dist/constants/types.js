@@ -17,6 +17,7 @@ class SetPilotParametersColor {
         this.g = g;
         this.b = b;
         this.w = whiteLevel;
+        this.c = 0;
     }
 }
 __decorate([
