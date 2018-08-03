@@ -56,6 +56,7 @@ export type SyncPilotMessage = {
     dimming?: number;
     rssi: number;
     mac: string;
+    mqttCd?: number;
   };
 };
 
