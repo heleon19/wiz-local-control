@@ -9,6 +9,25 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const networkConstants = require("../constants/communication");
 const class_validator_1 = require("class-validator");
 /**
+ * MQTT connection status,
+ * lamp will report it under some certain testing conditions
+ */
+var MQTTConnectionStatus;
+(function (MQTTConnectionStatus) {
+    MQTTConnectionStatus[MQTTConnectionStatus["Success"] = 0] = "Success";
+    MQTTConnectionStatus[MQTTConnectionStatus["LibraryError"] = -1] = "LibraryError";
+    MQTTConnectionStatus[MQTTConnectionStatus["NetworkConnectionError"] = -2] = "NetworkConnectionError";
+    MQTTConnectionStatus[MQTTConnectionStatus["MQTTServerCertMissing"] = -3] = "MQTTServerCertMissing";
+    MQTTConnectionStatus[MQTTConnectionStatus["MQTTServerCertMalformed"] = -4] = "MQTTServerCertMalformed";
+    MQTTConnectionStatus[MQTTConnectionStatus["HandshakeError"] = -5] = "HandshakeError";
+    MQTTConnectionStatus[MQTTConnectionStatus["MQTTServerCertMismatch"] = -6] = "MQTTServerCertMismatch";
+    MQTTConnectionStatus[MQTTConnectionStatus["MQTTLibraryError"] = 1] = "MQTTLibraryError";
+    MQTTConnectionStatus[MQTTConnectionStatus["NoCredentials"] = 2] = "NoCredentials";
+    MQTTConnectionStatus[MQTTConnectionStatus["MQTTClientInitFailure"] = 3] = "MQTTClientInitFailure";
+    MQTTConnectionStatus[MQTTConnectionStatus["ErrorLoadingPasswordFromFlash"] = 4] = "ErrorLoadingPasswordFromFlash";
+    MQTTConnectionStatus[MQTTConnectionStatus["PasswordError"] = 5] = "PasswordError";
+})(MQTTConnectionStatus = exports.MQTTConnectionStatus || (exports.MQTTConnectionStatus = {}));
+/**
  * Set Pilot messages parameters for changing color
  */
 class SetPilotParametersColor {

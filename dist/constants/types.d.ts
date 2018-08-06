@@ -28,6 +28,24 @@ export declare type LightMode = Scene | {
     colorTemperature: number;
 };
 /**
+ * MQTT connection status,
+ * lamp will report it under some certain testing conditions
+ */
+export declare enum MQTTConnectionStatus {
+    Success = 0,
+    LibraryError = -1,
+    NetworkConnectionError = -2,
+    MQTTServerCertMissing = -3,
+    MQTTServerCertMalformed = -4,
+    HandshakeError = -5,
+    MQTTServerCertMismatch = -6,
+    MQTTLibraryError = 1,
+    NoCredentials = 2,
+    MQTTClientInitFailure = 3,
+    ErrorLoadingPasswordFromFlash = 4,
+    PasswordError = 5,
+}
+/**
  * Incoming message that lamp sends to report its status
  */
 export declare type SyncPilotMessage = {
@@ -48,6 +66,8 @@ export declare type SyncPilotMessage = {
         dimming?: number;
         rssi: number;
         mac: string;
+        mqttCd?: number;
+        src: string;
     };
 };
 /**

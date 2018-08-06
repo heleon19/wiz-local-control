@@ -35,6 +35,10 @@ export type LightMode =
       colorTemperature: number;
     };
 
+/**
+ * MQTT connection status,
+ * lamp will report it under some certain testing conditions
+ */
 export enum MQTTConnectionStatus {
   Success = 0,
   LibraryError = -1,
@@ -71,6 +75,7 @@ export type SyncPilotMessage = {
     rssi: number;
     mac: string;
     mqttCd?: number;
+    src: string;
   };
 };
 
