@@ -116,6 +116,7 @@ export declare class SetPilotParametersColorTemperature {
     temp?: number;
     constructor(temperature: number);
 }
+export declare type UDPCommandMessage = SetPilotMessage | UpdateFirmwareMessage;
 export declare type SetPilotParams = SetPilotParametersColor | SetPilotParametersColorTemperature | SetPilotParametersDimming | SetPilotParametersScene | SetPilotParametersSpeed | SetPilotParametersStatus;
 export declare class SetPilotMessage {
     method: "setPilot";
@@ -161,6 +162,24 @@ export declare class SetPilotMessage {
     static buildSpeedControlMessage(speed: number): SetPilotMessage;
 }
 /**
+ * Update firmware messages parameters for request
+ */
+export declare class UpdateFirmwareParameters {
+    fw: string;
+    force: number;
+    constructor();
+}
+export declare class UpdateFirmwareMessage {
+    method: "updateOta";
+    id: number;
+    params: UpdateFirmwareParameters;
+    constructor();
+    /**
+     * Constructs firmware update message
+     */
+    static buildUpdateFirmwareMessage(): UpdateFirmwareMessage;
+}
+/**
  * Message broadcasted by the light after booting,
  * way to inform nearby devices about its presence
  */
@@ -189,8 +208,8 @@ export declare class RegistrationMessage {
     };
     constructor(ip: string, mac: string);
 }
-export declare type WiZControlMessage = SetPilotMessage | SyncPilotAckMessage | RegistrationMessage;
-export declare type WiZMessage = GetPilotMessage | SetPilotMessage | SyncPilotMessage | FirstBeatMessage | RegistrationMessage;
+export declare type WiZControlMessage = SetPilotMessage | SyncPilotAckMessage | RegistrationMessage | UpdateFirmwareMessage;
+export declare type WiZMessage = GetPilotMessage | SetPilotMessage | SyncPilotMessage | FirstBeatMessage | RegistrationMessage | UpdateFirmwareMessage;
 export declare type Result = {
     type: "success";
 } | {

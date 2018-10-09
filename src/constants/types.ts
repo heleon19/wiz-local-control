@@ -1,5 +1,5 @@
 import * as networkConstants from "../constants/communication";
-import { validate, IsInt, Min, Max, ValidateNested } from "class-validator";
+import { validate, IsInt, Min, Max, ValidateNested, IsString } from "class-validator";
 
 /**
  * Scene type – built in the bulb scenes. Could be one of the scenes listed
@@ -181,6 +181,10 @@ export class SetPilotParametersColorTemperature {
   }
 }
 
+export type UDPCommandMessage =
+  | SetPilotMessage
+  | UpdateFirmwareMessage;
+
 export type SetPilotParams =
   | SetPilotParametersColor
   | SetPilotParametersColorTemperature
@@ -273,6 +277,42 @@ export class SetPilotMessage {
 }
 
 /**
+ * Update firmware messages parameters for request
+ */
+export class UpdateFirmwareParameters {
+  @IsString()
+  fw: string;
+  @IsInt()
+  @Min(0)
+  @Max(1)
+  force: number;
+
+  constructor() {
+    this.fw = 'default';
+    this.force = 1;
+  }
+}
+
+export class UpdateFirmwareMessage {
+  method: "updateOta";
+  id: number;
+  @ValidateNested() params: UpdateFirmwareParameters;
+
+  constructor() {
+    this.method = networkConstants.updateOtaMethod;
+    this.id = Math.floor(Math.random() * 10000 + 1);
+  }
+  /**
+   * Constructs firmware update message
+   */
+  static buildUpdateFirmwareMessage(): UpdateFirmwareMessage {
+    const msg = new UpdateFirmwareMessage();
+    msg.params = new UpdateFirmwareParameters();
+    return msg;
+  }
+}
+
+/**
  * Message broadcasted by the light after booting,
  * way to inform nearby devices about its presence
  */
@@ -315,14 +355,16 @@ export class RegistrationMessage {
 export type WiZControlMessage =
   | SetPilotMessage
   | SyncPilotAckMessage
-  | RegistrationMessage;
+  | RegistrationMessage
+  | UpdateFirmwareMessage;
 
 export type WiZMessage =
   | GetPilotMessage
   | SetPilotMessage
   | SyncPilotMessage
   | FirstBeatMessage
-  | RegistrationMessage;
+  | RegistrationMessage
+  | UpdateFirmwareMessage;
 
 export type Result =
   | {

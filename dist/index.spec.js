@@ -42,7 +42,7 @@ describe("Creating instance", () => {
 describe("Sending commands", () => {
     beforeEach(() => {
         const manager = new UDPManager_1.default(() => { }, "eth0");
-        const spy = sinon.spy(manager, "sendUDPCommand");
+        const spy = sinon.stub(manager, "sendUDPCommand");
         this.control = new index_1.default({ incomingMsgCallback: () => { } });
         this.control.udpManager = manager;
         this.sendCommandSpy = spy;
@@ -50,7 +50,7 @@ describe("Sending commands", () => {
     it("should form and send brightness command", async () => {
         const spy = this.sendCommandSpy;
         const targetIp = "127.0.0.1";
-        this.control.changeBrightness(5, targetIp);
+        await this.control.changeBrightness(50, targetIp);
         const msg = spy.getCall(0).args[0];
         const ip = spy.getCall(0).args[1];
         chai_1.expect(msg).to.be.instanceof(types_1.SetPilotMessage);
@@ -99,6 +99,15 @@ describe("Sending commands", () => {
         const msg = spy.getCall(0).args[0];
         const ip = spy.getCall(0).args[1];
         chai_1.expect(msg).to.be.instanceof(types_1.SetPilotMessage);
+        chai_1.expect(ip).to.be.equal(targetIp);
+    });
+    it("should form and send update firmware command", async () => {
+        const spy = this.sendCommandSpy;
+        const targetIp = "127.0.0.1";
+        await this.control.updateFirmware(targetIp);
+        const msg = spy.getCall(0).args[0];
+        const ip = spy.getCall(0).args[1];
+        chai_1.expect(msg).to.be.instanceof(types_1.UpdateFirmwareMessage);
         chai_1.expect(ip).to.be.equal(targetIp);
     });
 });

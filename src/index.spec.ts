@@ -3,7 +3,7 @@ import { expect } from "chai";
 import * as sinon from "sinon";
 import WiZLocalControl from "./index";
 import UDPManager from "./UDPManager";
-import { SetPilotMessage, SetPilotParametersDimming } from "./constants/types";
+import { SetPilotMessage, SetPilotParametersDimming, UpdateFirmwareMessage } from "./constants/types";
 
 describe("Creating instance", () => {
   it("should create UDP manager when creating new instance", () => {
@@ -128,6 +128,17 @@ describe("Sending commands", () => {
     const ip = spy.getCall(0).args[1];
 
     expect(msg).to.be.instanceof(SetPilotMessage);
+    expect(ip).to.be.equal(targetIp);
+  });
+
+  it("should form and send update firmware command", async () => {
+    const spy: sinon.SinonSpy = this.sendCommandSpy;
+    const targetIp = "127.0.0.1";
+    await this.control.updateFirmware(targetIp);
+    const msg = spy.getCall(0).args[0];
+    const ip = spy.getCall(0).args[1];
+
+    expect(msg).to.be.instanceof(UpdateFirmwareMessage);
     expect(ip).to.be.equal(targetIp);
   });
 });

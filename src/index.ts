@@ -1,6 +1,6 @@
 import { WiZMessage, Result, LightMode } from "./constants/types";
 import UDPManager from "./UDPManager";
-import { SetPilotMessage } from "./constants/types";
+import { SetPilotMessage, UpdateFirmwareMessage } from "./constants/types";
 import sendCommand from "./UDPCommunication";
 import * as dgram from "dgram";
 import { getLocalIPAddress } from "./ipFunctions";
@@ -39,6 +39,19 @@ export default class WiZLocalControl {
    */
   async changeBrightness(brightness: number, lightIp: string): Promise<Result> {
     const msg = SetPilotMessage.buildDimmingControlMessage(brightness);
+    const validationErrors = await validate(msg);
+    if (validationErrors.length > 0) {
+      throw validationErrors;
+    }
+    return this.udpManager.sendUDPCommand(msg, lightIp);
+  }
+
+  /**
+   * Requests firmware update of WiZ Light
+   * @param lightIp Light IP address
+   */
+  async updateFirmware(lightIp: string): Promise<Result> {
+    const msg = UpdateFirmwareMessage.buildUpdateFirmwareMessage();
     const validationErrors = await validate(msg);
     if (validationErrors.length > 0) {
       throw validationErrors;

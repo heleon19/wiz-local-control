@@ -8,6 +8,7 @@ const logger = pino();
  * Sends message to the WiZ device
  * @param msg WiZ Control message to be sent to the lamp
  * @param ip WiZ device IP address
+ * @param localIp Current device local IP address
  */
 async function sendCommand(msg, ip, localIp, udpPort = networkConstants.LIGHT_UDP_CONTROL_PORT, broadcast = false, socket = dgram.createSocket("udp4")) {
     return new Promise(async (resolve) => {

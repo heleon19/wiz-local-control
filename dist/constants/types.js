@@ -182,6 +182,42 @@ __decorate([
 ], SetPilotMessage.prototype, "params", void 0);
 exports.SetPilotMessage = SetPilotMessage;
 /**
+ * Update firmware messages parameters for request
+ */
+class UpdateFirmwareParameters {
+    constructor() {
+        this.fw = 'default';
+        this.force = 1;
+    }
+}
+__decorate([
+    class_validator_1.IsString()
+], UpdateFirmwareParameters.prototype, "fw", void 0);
+__decorate([
+    class_validator_1.IsInt(),
+    class_validator_1.Min(0),
+    class_validator_1.Max(1)
+], UpdateFirmwareParameters.prototype, "force", void 0);
+exports.UpdateFirmwareParameters = UpdateFirmwareParameters;
+class UpdateFirmwareMessage {
+    constructor() {
+        this.method = networkConstants.updateOtaMethod;
+        this.id = Math.floor(Math.random() * 10000 + 1);
+    }
+    /**
+     * Constructs firmware update message
+     */
+    static buildUpdateFirmwareMessage() {
+        const msg = new UpdateFirmwareMessage();
+        msg.params = new UpdateFirmwareParameters();
+        return msg;
+    }
+}
+__decorate([
+    class_validator_1.ValidateNested()
+], UpdateFirmwareMessage.prototype, "params", void 0);
+exports.UpdateFirmwareMessage = UpdateFirmwareMessage;
+/**
  * Message sent by device to the lamp (via broadcast or unicast)
  * Lamp will add specified IP to the list devices that it notifies on status change using
  * SyncPilot messages

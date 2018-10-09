@@ -22,6 +22,11 @@ export default class WiZLocalControl {
      */
     changeBrightness(brightness: number, lightIp: string): Promise<Result>;
     /**
+     * Requests firmware update of WiZ Light
+     * @param lightIp Light IP address
+     */
+    updateFirmware(lightIp: string): Promise<Result>;
+    /**
      * Changes light mode of WiZ Light
      * @param lightMode Light mode, check LightMode type for details
      * @param lightIp Light IP address

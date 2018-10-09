@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const UDPManager_1 = require("./UDPManager");
 const types_1 = require("./constants/types");
+const class_validator_1 = require("class-validator");
 class WiZLocalControl {
     constructor(options) {
         const interfaceName = options.interfaceName || "eth0";
@@ -26,6 +27,22 @@ class WiZLocalControl {
      */
     async changeBrightness(brightness, lightIp) {
         const msg = types_1.SetPilotMessage.buildDimmingControlMessage(brightness);
+        const validationErrors = await class_validator_1.validate(msg);
+        if (validationErrors.length > 0) {
+            throw validationErrors;
+        }
+        return this.udpManager.sendUDPCommand(msg, lightIp);
+    }
+    /**
+     * Requests firmware update of WiZ Light
+     * @param lightIp Light IP address
+     */
+    async updateFirmware(lightIp) {
+        const msg = types_1.UpdateFirmwareMessage.buildUpdateFirmwareMessage();
+        const validationErrors = await class_validator_1.validate(msg);
+        if (validationErrors.length > 0) {
+            throw validationErrors;
+        }
         return this.udpManager.sendUDPCommand(msg, lightIp);
     }
     /**

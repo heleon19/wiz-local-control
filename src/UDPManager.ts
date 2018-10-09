@@ -7,6 +7,7 @@ import {
   SyncPilotMessage,
   SyncPilotAckMessage,
   SetPilotMessage,
+  UDPCommandMessage,
   Result,
 } from "./constants/types";
 import RegistrationManager from "./registrationManager";
@@ -85,7 +86,7 @@ class UDPManager {
     return;
   }
 
-  async sendUDPCommand(msg: SetPilotMessage, ip: string): Promise<Result> {
+  async sendUDPCommand(msg: UDPCommandMessage, ip: string): Promise<Result> {
     const localIp = await getLocalIPAddress(this.interfaceName);
     return await sendCommand(msg, ip, localIp);
   }

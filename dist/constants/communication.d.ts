@@ -4,4 +4,5 @@ export declare const syncPilotMethod = "syncPilot";
 export declare const firstBeatMethod = "firstBeat";
 export declare const registrationMethod = "registration";
 export declare const setPilotMethod = "setPilot";
+export declare const updateOtaMethod = "updateOta";
 export declare const setUserConfigMethod = "setUserConfig";

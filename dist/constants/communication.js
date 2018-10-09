@@ -6,5 +6,6 @@ exports.syncPilotMethod = "syncPilot";
 exports.firstBeatMethod = "firstBeat";
 exports.registrationMethod = "registration";
 exports.setPilotMethod = "setPilot";
+exports.updateOtaMethod = "updateOta";
 exports.setUserConfigMethod = "setUserConfig";
 //# sourceMappingURL=communication.js.map
