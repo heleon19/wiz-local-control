@@ -28,6 +28,24 @@ export declare type LightMode = Scene | {
     colorTemperature: number;
 };
 /**
+ * MQTT connection status,
+ * lamp will report it under some certain testing conditions
+ */
+export declare enum MQTTConnectionStatus {
+    Success = 0,
+    LibraryError = -1,
+    NetworkConnectionError = -2,
+    MQTTServerCertMissing = -3,
+    MQTTServerCertMalformed = -4,
+    HandshakeError = -5,
+    MQTTServerCertMismatch = -6,
+    MQTTLibraryError = 1,
+    NoCredentials = 2,
+    MQTTClientInitFailure = 3,
+    ErrorLoadingPasswordFromFlash = 4,
+    PasswordError = 5
+}
+/**
  * Incoming message that lamp sends to report its status
  */
 export declare type SyncPilotMessage = {
@@ -48,6 +66,8 @@ export declare type SyncPilotMessage = {
         dimming?: number;
         rssi: number;
         mac: string;
+        mqttCd?: number;
+        src: string;
     };
 };
 /**
@@ -116,7 +136,6 @@ export declare class SetPilotParametersColorTemperature {
     temp?: number;
     constructor(temperature: number);
 }
-export declare type UDPCommandMessage = SetPilotMessage | UpdateFirmwareMessage;
 export declare type SetPilotParams = SetPilotParametersColor | SetPilotParametersColorTemperature | SetPilotParametersDimming | SetPilotParametersScene | SetPilotParametersSpeed | SetPilotParametersStatus;
 export declare class SetPilotMessage {
     method: "setPilot";
@@ -208,10 +227,36 @@ export declare class RegistrationMessage {
     };
     constructor(ip: string, mac: string);
 }
-export declare type WiZControlMessage = SetPilotMessage | SyncPilotAckMessage | RegistrationMessage | UpdateFirmwareMessage;
+/**
+ * WiZ Light system configuration (fwVersion for example)
+ */
+export declare type GetSystemConfigResponse = {
+    method: "getSystemConfig";
+    result: {
+        homeId: number;
+        lock: boolean;
+        groupId: number;
+        typeId: number;
+        fwOtaStatus: number;
+        fwVersion: string;
+    };
+};
+/**
+ * Message sent to the lamp requesting its system configuration (fwVersion for example)
+ */
+export declare class GetSystemConfigMessage {
+    method: "getSystemConfig";
+    version: number;
+    id: number;
+    constructor(ip: string);
+}
+export declare type WiZControlMessage = SetPilotMessage | SyncPilotAckMessage | RegistrationMessage | UpdateFirmwareMessage | GetSystemConfigMessage;
 export declare type WiZMessage = GetPilotMessage | SetPilotMessage | SyncPilotMessage | FirstBeatMessage | RegistrationMessage | UpdateFirmwareMessage;
-export declare type Result = {
+export declare type WiZMessageResponse = GetSystemConfigResponse;
+export declare type Result<T extends WiZMessageResponse> = {
     type: "success";
+    method: string;
+    params: T;
 } | {
     type: "error";
     message: string;

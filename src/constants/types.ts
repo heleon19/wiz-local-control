@@ -36,6 +36,24 @@ export type LightMode =
     };
 
 /**
+ * MQTT connection status,
+ * lamp will report it under some certain testing conditions
+ */
+export enum MQTTConnectionStatus {
+  Success = 0,
+  LibraryError = -1,
+  NetworkConnectionError = -2,
+  MQTTServerCertMissing = -3,
+  MQTTServerCertMalformed = -4,
+  HandshakeError = -5,
+  MQTTServerCertMismatch = -6,
+  MQTTLibraryError = 1,
+  NoCredentials = 2,
+  MQTTClientInitFailure = 3,
+  ErrorLoadingPasswordFromFlash = 4,
+  PasswordError = 5,
+}
+/**
  * Incoming message that lamp sends to report its status
  */
 export type SyncPilotMessage = {
@@ -56,6 +74,8 @@ export type SyncPilotMessage = {
     dimming?: number;
     rssi: number;
     mac: string;
+    mqttCd?: number;
+    src: string;
   };
 };
 
@@ -111,6 +131,7 @@ export class SetPilotParametersColor {
     this.g = g;
     this.b = b;
     this.w = whiteLevel;
+    this.c = 0;
   }
 }
 
@@ -180,10 +201,6 @@ export class SetPilotParametersColorTemperature {
     this.temp = temperature;
   }
 }
-
-export type UDPCommandMessage =
-  | SetPilotMessage
-  | UpdateFirmwareMessage;
 
 export type SetPilotParams =
   | SetPilotParametersColor
@@ -352,11 +369,40 @@ export class RegistrationMessage {
   }
 }
 
+/**
+ * WiZ Light system configuration (fwVersion for example)
+ */
+export type GetSystemConfigResponse = {
+  method: "getSystemConfig";
+  result: {
+    homeId: number;
+    lock: boolean;
+    groupId: number;
+    typeId: number;
+    fwOtaStatus: number;
+    fwVersion: string;
+  };
+};
+/**
+ * Message sent to the lamp requesting its system configuration (fwVersion for example)
+ */
+export class GetSystemConfigMessage {
+  method: "getSystemConfig";
+  version: number;
+  id: number;
+  constructor(ip: string) {
+    this.method = networkConstants.getSystemConfigMethod;
+    this.id = Math.floor(Math.random() * 10000 + 1);
+    this.version = 1;
+  }
+}
+
 export type WiZControlMessage =
   | SetPilotMessage
   | SyncPilotAckMessage
   | RegistrationMessage
-  | UpdateFirmwareMessage;
+  | UpdateFirmwareMessage
+  | GetSystemConfigMessage;
 
 export type WiZMessage =
   | GetPilotMessage
@@ -366,9 +412,13 @@ export type WiZMessage =
   | RegistrationMessage
   | UpdateFirmwareMessage;
 
-export type Result =
+export type WiZMessageResponse = GetSystemConfigResponse;
+
+export type Result<T extends WiZMessageResponse> =
   | {
       type: "success";
+      method: string;
+      params: T;
     }
   | {
       type: "error";

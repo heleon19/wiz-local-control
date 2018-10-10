@@ -6,9 +6,9 @@ import {
   WiZMessage,
   SyncPilotMessage,
   SyncPilotAckMessage,
-  SetPilotMessage,
-  UDPCommandMessage,
+  WiZControlMessage,
   Result,
+  WiZMessageResponse,
 } from "./constants/types";
 import RegistrationManager from "./registrationManager";
 import { getLocalMac, getLocalIPAddress } from "./ipFunctions";
@@ -86,9 +86,12 @@ class UDPManager {
     return;
   }
 
-  async sendUDPCommand(msg: UDPCommandMessage, ip: string): Promise<Result> {
+  async sendUDPCommand<T extends WiZMessageResponse>(
+    msg: WiZControlMessage,
+    ip: string,
+  ): Promise<Result<T>> {
     const localIp = await getLocalIPAddress(this.interfaceName);
-    return await sendCommand(msg, ip, localIp);
+    return await sendCommand<T>(msg, ip, localIp);
   }
   /**
    * Processes incoming message from WiZ device
@@ -105,8 +108,6 @@ class UDPManager {
           this.sendSyncPilotAcknowledgement(msg, sourceIp);
           msg.timestamp = new Date();
           msg.ip = sourceIp;
-          // if lamp is first noticed – need to query API about manufacturing data
-          this.receivedMsgCallback(msg, sourceIp);
           break;
         case networkConstants.firstBeatMethod:
           this.registrationManager.registerDevice(
@@ -118,6 +119,7 @@ class UDPManager {
         default:
           break;
       }
+      this.receivedMsgCallback(msg, sourceIp);
     }
   }
 

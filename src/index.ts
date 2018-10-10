@@ -1,4 +1,10 @@
-import { WiZMessage, Result, LightMode } from "./constants/types";
+import {
+  WiZMessage,
+  Result,
+  LightMode,
+  GetSystemConfigMessage,
+  GetSystemConfigResponse,
+} from "./constants/types";
 import UDPManager from "./UDPManager";
 import { SetPilotMessage, UpdateFirmwareMessage } from "./constants/types";
 import sendCommand from "./UDPCommunication";
@@ -37,12 +43,12 @@ export default class WiZLocalControl {
    * @param brightness Brightness level, 10-100
    * @param lightIp Light IP address
    */
-  async changeBrightness(brightness: number, lightIp: string): Promise<Result> {
+  async changeBrightness(
+    brightness: number,
+    lightIp: string,
+  ): Promise<Result<any>> {
     const msg = SetPilotMessage.buildDimmingControlMessage(brightness);
-    const validationErrors = await validate(msg);
-    if (validationErrors.length > 0) {
-      throw validationErrors;
-    }
+    await this.validateMsg(msg);
     return this.udpManager.sendUDPCommand(msg, lightIp);
   }
 
@@ -50,11 +56,13 @@ export default class WiZLocalControl {
    * Requests firmware update of WiZ Light
    * @param lightIp Light IP address
    */
-  async updateFirmware(lightIp: string): Promise<Result> {
+  async updateFirmware(
+    lightIp: string
+  ): Promise<Result<any>> {
     const msg = UpdateFirmwareMessage.buildUpdateFirmwareMessage();
     const validationErrors = await validate(msg);
     if (validationErrors.length > 0) {
-      throw validationErrors;
+      throw Error(JSON.stringify(validationErrors));
     }
     return this.udpManager.sendUDPCommand(msg, lightIp);
   }
@@ -67,10 +75,11 @@ export default class WiZLocalControl {
   async changeLightMode(
     lightMode: LightMode,
     lightIp: string,
-  ): Promise<Result> {
+  ): Promise<Result<any>> {
     switch (lightMode.type) {
       case "scene": {
         const msg = SetPilotMessage.buildSceneControlMessage(lightMode);
+        await this.validateMsg(msg);
         return this.udpManager.sendUDPCommand(msg, lightIp);
       }
       case "color": {
@@ -80,12 +89,14 @@ export default class WiZLocalControl {
           lightMode.b,
           lightMode.ww,
         );
+        await this.validateMsg(msg);
         return this.udpManager.sendUDPCommand(msg, lightIp);
       }
       case "temperature": {
         const msg = SetPilotMessage.buildColorTemperatureControlMessage(
           lightMode.colorTemperature,
         );
+        await this.validateMsg(msg);
         return this.udpManager.sendUDPCommand(msg, lightIp);
       }
     }
@@ -96,8 +107,9 @@ export default class WiZLocalControl {
    * @param speed Playing speed, 20-200
    * @param lightIp
    */
-  async changeSpeed(speed: number, lightIp: string): Promise<Result> {
+  async changeSpeed(speed: number, lightIp: string): Promise<Result<any>> {
     const msg = SetPilotMessage.buildSpeedControlMessage(speed);
+    await this.validateMsg(msg);
     return this.udpManager.sendUDPCommand(msg, lightIp);
   }
 
@@ -106,8 +118,29 @@ export default class WiZLocalControl {
    * @param status Desired status, true - ON, false - OFF
    * @param lightIp
    */
-  async changeStatus(status: boolean, lightIp: string): Promise<Result> {
+  async changeStatus(status: boolean, lightIp: string): Promise<Result<any>> {
     const msg = SetPilotMessage.buildStatusControlMessage(status);
+    await this.validateMsg(msg);
     return this.udpManager.sendUDPCommand(msg, lightIp);
+  }
+
+  /**
+   * Retrieves system configuration for WiZ Device (like FW version)
+   * @param lightIp
+   */
+  async getSystemConfig(
+    lightIp: string,
+  ): Promise<Result<GetSystemConfigResponse>> {
+    const msg = new GetSystemConfigMessage(lightIp);
+    return this.udpManager.sendUDPCommand(msg, lightIp);
+  }
+
+  async validateMsg(msg: SetPilotMessage): Promise<void> {
+    const validationErrors = await validate(msg, {
+      skipMissingProperties: true,
+    });
+    if (validationErrors.length > 0) {
+      throw Error(JSON.stringify(validationErrors));
+    }
   }
 }

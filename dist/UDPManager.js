@@ -76,8 +76,6 @@ class UDPManager {
                     this.sendSyncPilotAcknowledgement(msg, sourceIp);
                     msg.timestamp = new Date();
                     msg.ip = sourceIp;
-                    // if lamp is first noticed – need to query API about manufacturing data
-                    this.receivedMsgCallback(msg, sourceIp);
                     break;
                 case networkConstants.firstBeatMethod:
                     this.registrationManager.registerDevice(sourceIp, this.interfaceName, this.controlUDPPort);
@@ -85,6 +83,7 @@ class UDPManager {
                 default:
                     break;
             }
+            this.receivedMsgCallback(msg, sourceIp);
         }
     }
     /**

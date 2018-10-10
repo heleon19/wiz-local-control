@@ -1,5 +1,6 @@
-import { WiZMessage, Result, LightMode } from "./constants/types";
+import { WiZMessage, Result, LightMode, GetSystemConfigResponse } from "./constants/types";
 import UDPManager from "./UDPManager";
+import { SetPilotMessage } from "./constants/types";
 export declare type WiZLocalControlConfig = {
     incomingMsgCallback: (msg: WiZMessage, sourceIp: string) => void;
     interfaceName?: string;
@@ -20,28 +21,34 @@ export default class WiZLocalControl {
      * @param brightness Brightness level, 10-100
      * @param lightIp Light IP address
      */
-    changeBrightness(brightness: number, lightIp: string): Promise<Result>;
+    changeBrightness(brightness: number, lightIp: string): Promise<Result<any>>;
     /**
      * Requests firmware update of WiZ Light
      * @param lightIp Light IP address
      */
-    updateFirmware(lightIp: string): Promise<Result>;
+    updateFirmware(lightIp: string): Promise<Result<any>>;
     /**
      * Changes light mode of WiZ Light
      * @param lightMode Light mode, check LightMode type for details
      * @param lightIp Light IP address
      */
-    changeLightMode(lightMode: LightMode, lightIp: string): Promise<Result>;
+    changeLightMode(lightMode: LightMode, lightIp: string): Promise<Result<any>>;
     /**
      * Changes playing speed of Dynamic Scene of WiZ Light
      * @param speed Playing speed, 20-200
      * @param lightIp
      */
-    changeSpeed(speed: number, lightIp: string): Promise<Result>;
+    changeSpeed(speed: number, lightIp: string): Promise<Result<any>>;
     /**
      * Changes status of WiZ Light
      * @param status Desired status, true - ON, false - OFF
      * @param lightIp
      */
-    changeStatus(status: boolean, lightIp: string): Promise<Result>;
+    changeStatus(status: boolean, lightIp: string): Promise<Result<any>>;
+    /**
+     * Retrieves system configuration for WiZ Device (like FW version)
+     * @param lightIp
+     */
+    getSystemConfig(lightIp: string): Promise<Result<GetSystemConfigResponse>>;
+    validateMsg(msg: SetPilotMessage): Promise<void>;
 }
