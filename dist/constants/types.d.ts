@@ -190,6 +190,7 @@ export declare class UpdateFirmwareParameters {
 }
 export declare class UpdateFirmwareMessage {
     method: "updateOta";
+    version: number;
     id: number;
     params: UpdateFirmwareParameters;
     constructor();

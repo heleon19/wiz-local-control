@@ -222,6 +222,7 @@ exports.UpdateFirmwareParameters = UpdateFirmwareParameters;
 class UpdateFirmwareMessage {
     constructor() {
         this.method = networkConstants.updateOtaMethod;
+        this.version = 1;
         this.id = Math.floor(Math.random() * 10000 + 1);
     }
     /**

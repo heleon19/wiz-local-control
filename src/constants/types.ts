@@ -312,11 +312,13 @@ export class UpdateFirmwareParameters {
 
 export class UpdateFirmwareMessage {
   method: "updateOta";
+  version: number;
   id: number;
   @ValidateNested() params: UpdateFirmwareParameters;
 
   constructor() {
     this.method = networkConstants.updateOtaMethod;
+    this.version = 1;
     this.id = Math.floor(Math.random() * 10000 + 1);
   }
   /**
