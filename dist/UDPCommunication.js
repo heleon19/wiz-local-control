@@ -54,6 +54,9 @@ async function sendCommand(msg, ip, localIp, udpPort = networkConstants.LIGHT_UD
             try {
                 const msgObj = JSON.parse(str);
                 if (msgObj.result && msgObj.result) {
+                    console.log("Success response on");
+                    console.log(msg.method);
+                    console.log(msgObj);
                     resolve({
                         type: "success",
                         method: msg.method,
