@@ -42,7 +42,7 @@ export default async function sendCommand<T extends WiZMessageResponse>(
           message: "Timeout",
         });
       } catch (e) {}
-    }, 1000);
+    }, 100000);
     socket.once("listening", () => {
       const buf = Buffer.from(JSON.stringify(msg), "utf8");
       socket.setBroadcast(broadcast);
