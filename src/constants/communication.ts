@@ -7,4 +7,5 @@ export const registrationMethod = "registration";
 export const getSystemConfigMethod = "getSystemConfig";
 export const setPilotMethod = "setPilot";
 export const updateOtaMethod = "updateOta";
+export const setSystemConfigMethod = "setSystemConfig";
 export const setUserConfigMethod = "setUserConfig";

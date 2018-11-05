@@ -6,4 +6,5 @@ export declare const registrationMethod = "registration";
 export declare const getSystemConfigMethod = "getSystemConfig";
 export declare const setPilotMethod = "setPilot";
 export declare const updateOtaMethod = "updateOta";
+export declare const setSystemConfigMethod = "setSystemConfig";
 export declare const setUserConfigMethod = "setUserConfig";

@@ -181,6 +181,25 @@ export declare class SetPilotMessage {
     static buildSpeedControlMessage(speed: number): SetPilotMessage;
 }
 /**
+ * Set system config messages parameters for request
+ */
+export declare class SetSystemConfigParameters {
+    env: string;
+    systemConfigTs: number;
+    constructor(environment: string);
+}
+export declare class SetSystemConfigMessage {
+    method: "setSystemConfig";
+    version: number;
+    id: number;
+    params: SetSystemConfigParameters;
+    constructor();
+    /**
+     * Constructs firmware update message
+     */
+    static buildSetEnvironmentMessage(environment: string): SetSystemConfigMessage;
+}
+/**
  * Update firmware messages parameters for request
  */
 export declare class UpdateFirmwareParameters {
@@ -251,8 +270,8 @@ export declare class GetSystemConfigMessage {
     id: number;
     constructor(ip: string);
 }
-export declare type WiZControlMessage = SetPilotMessage | SyncPilotAckMessage | RegistrationMessage | UpdateFirmwareMessage | GetSystemConfigMessage;
-export declare type WiZMessage = GetPilotMessage | SetPilotMessage | SyncPilotMessage | FirstBeatMessage | RegistrationMessage | UpdateFirmwareMessage;
+export declare type WiZControlMessage = SetPilotMessage | SyncPilotAckMessage | RegistrationMessage | UpdateFirmwareMessage | GetSystemConfigMessage | SetSystemConfigMessage;
+export declare type WiZMessage = GetPilotMessage | SetPilotMessage | SyncPilotMessage | FirstBeatMessage | RegistrationMessage | UpdateFirmwareMessage | SetSystemConfigMessage;
 export declare type WiZMessageResponse = GetSystemConfigResponse;
 export declare type Result<T extends WiZMessageResponse> = {
     type: "success";

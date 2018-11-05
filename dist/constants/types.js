@@ -202,11 +202,46 @@ __decorate([
 ], SetPilotMessage.prototype, "params", void 0);
 exports.SetPilotMessage = SetPilotMessage;
 /**
+ * Set system config messages parameters for request
+ */
+class SetSystemConfigParameters {
+    constructor(environment) {
+        this.env = environment;
+        this.systemConfigTs = 0;
+    }
+}
+__decorate([
+    class_validator_1.IsString()
+], SetSystemConfigParameters.prototype, "env", void 0);
+__decorate([
+    class_validator_1.IsInt()
+], SetSystemConfigParameters.prototype, "systemConfigTs", void 0);
+exports.SetSystemConfigParameters = SetSystemConfigParameters;
+class SetSystemConfigMessage {
+    constructor() {
+        this.method = networkConstants.setSystemConfigMethod;
+        this.version = 1;
+        this.id = Math.floor(Math.random() * 10000 + 1);
+    }
+    /**
+     * Constructs firmware update message
+     */
+    static buildSetEnvironmentMessage(environment) {
+        const msg = new SetSystemConfigMessage();
+        msg.params = new SetSystemConfigParameters(environment);
+        return msg;
+    }
+}
+__decorate([
+    class_validator_1.ValidateNested()
+], SetSystemConfigMessage.prototype, "params", void 0);
+exports.SetSystemConfigMessage = SetSystemConfigMessage;
+/**
  * Update firmware messages parameters for request
  */
 class UpdateFirmwareParameters {
     constructor() {
-        this.fw = 'default';
+        this.fw = "default";
         this.force = 1;
     }
 }

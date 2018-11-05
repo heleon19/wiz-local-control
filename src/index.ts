@@ -4,6 +4,7 @@ import {
   LightMode,
   GetSystemConfigMessage,
   GetSystemConfigResponse,
+  SetSystemConfigMessage,
 } from "./constants/types";
 import UDPManager from "./UDPManager";
 import { SetPilotMessage, UpdateFirmwareMessage } from "./constants/types";
@@ -60,6 +61,23 @@ export default class WiZLocalControl {
     lightIp: string
   ): Promise<Result<any>> {
     const msg = UpdateFirmwareMessage.buildUpdateFirmwareMessage();
+    const validationErrors = await validate(msg);
+    if (validationErrors.length > 0) {
+      throw Error(JSON.stringify(validationErrors));
+    }
+    return this.udpManager.sendUDPCommand(msg, lightIp);
+  }
+
+  /**
+   * Sets environment of WiZ Light
+   * @param environment system environment
+   * @param lightIp Light IP address
+   */
+  async setEnvironment(
+    environment: string,
+    lightIp: string
+  ): Promise<Result<any>> {
+    const msg = SetSystemConfigMessage.buildSetEnvironmentMessage(environment);
     const validationErrors = await validate(msg);
     if (validationErrors.length > 0) {
       throw Error(JSON.stringify(validationErrors));

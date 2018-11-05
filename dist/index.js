@@ -44,6 +44,19 @@ class WiZLocalControl {
         return this.udpManager.sendUDPCommand(msg, lightIp);
     }
     /**
+     * Sets environment of WiZ Light
+     * @param environment system environment
+     * @param lightIp Light IP address
+     */
+    async setEnvironment(environment, lightIp) {
+        const msg = types_1.SetSystemConfigMessage.buildSetEnvironmentMessage(environment);
+        const validationErrors = await class_validator_1.validate(msg);
+        if (validationErrors.length > 0) {
+            throw Error(JSON.stringify(validationErrors));
+        }
+        return this.udpManager.sendUDPCommand(msg, lightIp);
+    }
+    /**
      * Changes light mode of WiZ Light
      * @param lightMode Light mode, check LightMode type for details
      * @param lightIp Light IP address

@@ -294,6 +294,42 @@ export class SetPilotMessage {
 }
 
 /**
+ * Set system config messages parameters for request
+ */
+export class SetSystemConfigParameters {
+  @IsString()
+  env: string;
+  @IsInt()
+  systemConfigTs: number;
+
+  constructor(environment: string) {
+    this.env = environment;
+    this.systemConfigTs = 0;
+  }
+}
+
+export class SetSystemConfigMessage {
+  method: "setSystemConfig";
+  version: number;
+  id: number;
+  @ValidateNested() params: SetSystemConfigParameters;
+
+  constructor() {
+    this.method = networkConstants.setSystemConfigMethod;
+    this.version = 1;
+    this.id = Math.floor(Math.random() * 10000 + 1);
+  }
+  /**
+   * Constructs firmware update message
+   */
+  static buildSetEnvironmentMessage(environment: string): SetSystemConfigMessage {
+    const msg = new SetSystemConfigMessage();
+    msg.params = new SetSystemConfigParameters(environment);
+    return msg;
+  }
+}
+
+/**
  * Update firmware messages parameters for request
  */
 export class UpdateFirmwareParameters {
@@ -305,7 +341,7 @@ export class UpdateFirmwareParameters {
   force: number;
 
   constructor() {
-    this.fw = 'default';
+    this.fw = "default";
     this.force = 1;
   }
 }
@@ -404,7 +440,8 @@ export type WiZControlMessage =
   | SyncPilotAckMessage
   | RegistrationMessage
   | UpdateFirmwareMessage
-  | GetSystemConfigMessage;
+  | GetSystemConfigMessage
+  | SetSystemConfigMessage;
 
 export type WiZMessage =
   | GetPilotMessage
@@ -412,7 +449,8 @@ export type WiZMessage =
   | SyncPilotMessage
   | FirstBeatMessage
   | RegistrationMessage
-  | UpdateFirmwareMessage;
+  | UpdateFirmwareMessage
+  | SetSystemConfigMessage;
 
 export type WiZMessageResponse = GetSystemConfigResponse;
 
