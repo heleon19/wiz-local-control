@@ -7,7 +7,7 @@ import {
   SetSystemConfigMessage,
 } from "./constants/types";
 import UDPManager from "./UDPManager";
-import { SetPilotMessage, UpdateFirmwareMessage } from "./constants/types";
+import { SetPilotMessage, UpdateFirmwareMessage, ResetMessage, } from "./constants/types";
 import sendCommand from "./UDPCommunication";
 import * as dgram from "dgram";
 import { getLocalIPAddress } from "./ipFunctions";
@@ -61,6 +61,21 @@ export default class WiZLocalControl {
     lightIp: string
   ): Promise<Result<any>> {
     const msg = UpdateFirmwareMessage.buildUpdateFirmwareMessage();
+    const validationErrors = await validate(msg);
+    if (validationErrors.length > 0) {
+      throw Error(JSON.stringify(validationErrors));
+    }
+    return this.udpManager.sendUDPCommand(msg, lightIp);
+  }
+
+  /**
+   * Reset WiZ Light
+   * @param lightIp Light IP address
+   */
+  async reset(
+    lightIp: string
+  ): Promise<Result<any>> {
+    const msg = ResetMessage.buildResetMessage();
     const validationErrors = await validate(msg);
     if (validationErrors.length > 0) {
       throw Error(JSON.stringify(validationErrors));

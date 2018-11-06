@@ -44,6 +44,18 @@ class WiZLocalControl {
         return this.udpManager.sendUDPCommand(msg, lightIp);
     }
     /**
+     * Reset WiZ Light
+     * @param lightIp Light IP address
+     */
+    async reset(lightIp) {
+        const msg = types_2.ResetMessage.buildResetMessage();
+        const validationErrors = await class_validator_1.validate(msg);
+        if (validationErrors.length > 0) {
+            throw Error(JSON.stringify(validationErrors));
+        }
+        return this.udpManager.sendUDPCommand(msg, lightIp);
+    }
+    /**
      * Sets environment of WiZ Light
      * @param environment system environment
      * @param lightIp Light IP address

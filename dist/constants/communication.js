@@ -8,6 +8,7 @@ exports.registrationMethod = "registration";
 exports.getSystemConfigMethod = "getSystemConfig";
 exports.setPilotMethod = "setPilot";
 exports.updateOtaMethod = "updateOta";
+exports.resetMethod = "reset";
 exports.setSystemConfigMethod = "setSystemConfig";
 exports.setUserConfigMethod = "setUserConfig";
 //# sourceMappingURL=communication.js.map

@@ -273,6 +273,21 @@ __decorate([
     class_validator_1.ValidateNested()
 ], UpdateFirmwareMessage.prototype, "params", void 0);
 exports.UpdateFirmwareMessage = UpdateFirmwareMessage;
+class ResetMessage {
+    constructor() {
+        this.method = networkConstants.resetMethod;
+        this.version = 1;
+        this.id = Math.floor(Math.random() * 10000 + 1);
+    }
+    /**
+     * Constructs reset message
+     */
+    static buildResetMessage() {
+        const msg = new ResetMessage();
+        return msg;
+    }
+}
+exports.ResetMessage = ResetMessage;
 /**
  * Message sent by device to the lamp (via broadcast or unicast)
  * Lamp will add specified IP to the list devices that it notifies on status change using

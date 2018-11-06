@@ -218,6 +218,16 @@ export declare class UpdateFirmwareMessage {
      */
     static buildUpdateFirmwareMessage(): UpdateFirmwareMessage;
 }
+export declare class ResetMessage {
+    method: "reset";
+    version: number;
+    id: number;
+    constructor();
+    /**
+     * Constructs reset message
+     */
+    static buildResetMessage(): ResetMessage;
+}
 /**
  * Message broadcasted by the light after booting,
  * way to inform nearby devices about its presence
@@ -270,8 +280,8 @@ export declare class GetSystemConfigMessage {
     id: number;
     constructor(ip: string);
 }
-export declare type WiZControlMessage = SetPilotMessage | SyncPilotAckMessage | RegistrationMessage | UpdateFirmwareMessage | GetSystemConfigMessage | SetSystemConfigMessage;
-export declare type WiZMessage = GetPilotMessage | SetPilotMessage | SyncPilotMessage | FirstBeatMessage | RegistrationMessage | UpdateFirmwareMessage | SetSystemConfigMessage;
+export declare type WiZControlMessage = SetPilotMessage | SyncPilotAckMessage | RegistrationMessage | UpdateFirmwareMessage | GetSystemConfigMessage | SetSystemConfigMessage | ResetMessage;
+export declare type WiZMessage = GetPilotMessage | SetPilotMessage | SyncPilotMessage | FirstBeatMessage | RegistrationMessage | UpdateFirmwareMessage | SetSystemConfigMessage | ResetMessage;
 export declare type WiZMessageResponse = GetSystemConfigResponse;
 export declare type Result<T extends WiZMessageResponse> = {
     type: "success";

@@ -28,6 +28,11 @@ export default class WiZLocalControl {
      */
     updateFirmware(lightIp: string): Promise<Result<any>>;
     /**
+     * Reset WiZ Light
+     * @param lightIp Light IP address
+     */
+    reset(lightIp: string): Promise<Result<any>>;
+    /**
      * Sets environment of WiZ Light
      * @param environment system environment
      * @param lightIp Light IP address

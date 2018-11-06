@@ -367,6 +367,25 @@ export class UpdateFirmwareMessage {
   }
 }
 
+export class ResetMessage {
+  method: "reset";
+  version: number;
+  id: number;
+
+  constructor() {
+    this.method = networkConstants.resetMethod;
+    this.version = 1;
+    this.id = Math.floor(Math.random() * 10000 + 1);
+  }
+  /**
+   * Constructs reset message
+   */
+  static buildResetMessage(): ResetMessage {
+    const msg = new ResetMessage();
+    return msg;
+  }
+}
+
 /**
  * Message broadcasted by the light after booting,
  * way to inform nearby devices about its presence
@@ -441,7 +460,8 @@ export type WiZControlMessage =
   | RegistrationMessage
   | UpdateFirmwareMessage
   | GetSystemConfigMessage
-  | SetSystemConfigMessage;
+  | SetSystemConfigMessage
+  | ResetMessage;
 
 export type WiZMessage =
   | GetPilotMessage
@@ -450,7 +470,8 @@ export type WiZMessage =
   | FirstBeatMessage
   | RegistrationMessage
   | UpdateFirmwareMessage
-  | SetSystemConfigMessage;
+  | SetSystemConfigMessage
+  | ResetMessage;
 
 export type WiZMessageResponse = GetSystemConfigResponse;
 
