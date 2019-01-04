@@ -136,6 +136,45 @@ export default class WiZLocalControl {
   }
 
   /**
+   * Changes light mode of WiZ Light
+   * @param lightMode Light mode, check LightMode type for details
+   * @param brightness Brightness level, 10-100
+   * @param lightIp Light IP address
+   */
+  async changeLightModeAndBrightness(
+    lightMode: LightMode,
+    brightness: number,
+    lightIp: string,
+  ): Promise<Result<any>> {
+    switch (lightMode.type) {
+      case "scene": {
+        const msg = SetPilotMessage.buildSceneAndBrightnessControlMessage(lightMode, brightness);
+        await this.validateMsg(msg);
+        return this.udpManager.sendUDPCommand(msg, lightIp);
+      }
+      case "color": {
+        const msg = SetPilotMessage.buildColorAndBrightnessControlMessage(
+          lightMode.r,
+          lightMode.g,
+          lightMode.b,
+          lightMode.ww,
+          brightness,
+        );
+        await this.validateMsg(msg);
+        return this.udpManager.sendUDPCommand(msg, lightIp);
+      }
+      case "temperature": {
+        const msg = SetPilotMessage.buildColorTemperatureAndBrightnessControlMessage(
+          lightMode.colorTemperature,
+          brightness,
+        );
+        await this.validateMsg(msg);
+        return this.udpManager.sendUDPCommand(msg, lightIp);
+      }
+    }
+  }
+
+  /**
    * Changes playing speed of Dynamic Scene of WiZ Light
    * @param speed Playing speed, 20-200
    * @param lightIp

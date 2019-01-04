@@ -45,6 +45,13 @@ export default class WiZLocalControl {
      */
     changeLightMode(lightMode: LightMode, lightIp: string): Promise<Result<any>>;
     /**
+     * Changes light mode of WiZ Light
+     * @param lightMode Light mode, check LightMode type for details
+     * @param brightness Brightness level, 10-100
+     * @param lightIp Light IP address
+     */
+    changeLightModeAndBrightness(lightMode: LightMode, brightness: number, lightIp: string): Promise<Result<any>>;
+    /**
      * Changes playing speed of Dynamic Scene of WiZ Light
      * @param speed Playing speed, 20-200
      * @param lightIp
