@@ -43,7 +43,7 @@ export declare enum MQTTConnectionStatus {
     NoCredentials = 2,
     MQTTClientInitFailure = 3,
     ErrorLoadingPasswordFromFlash = 4,
-    PasswordError = 5,
+    PasswordError = 5
 }
 /**
  * Incoming message that lamp sends to report its status
@@ -102,11 +102,31 @@ export declare class SetPilotParametersColor {
     constructor(r: number, g: number, b: number, whiteLevel: number);
 }
 /**
+ * Set Pilot messages parameters for changing color and brightness
+ */
+export declare class SetPilotParametersColorAndBrightness {
+    r?: number;
+    g?: number;
+    b?: number;
+    w?: number;
+    c?: number;
+    dimming?: number;
+    constructor(r: number, g: number, b: number, whiteLevel: number, brightness: number);
+}
+/**
  * Set Pilot messages parameters for scene
  */
 export declare class SetPilotParametersScene {
     sceneId?: number;
     constructor(sceneId: number);
+}
+/**
+ * Set Pilot messages parameters for scene and brightness
+ */
+export declare class SetPilotParametersSceneAndBrightness {
+    sceneId?: number;
+    dimming?: number;
+    constructor(sceneId: number, brightness: number);
 }
 /**
  * Set Pilot messages parameters for status
@@ -130,13 +150,21 @@ export declare class SetPilotParametersSpeed {
     constructor(speed: number);
 }
 /**
- * Set Pilot messages parameters for changing color temperature
+ * Set Pilot messages parameters for changing color temperature and brightness
+ */
+export declare class SetPilotParametersColorTemperatureAndBrightness {
+    temp?: number;
+    dimming?: number;
+    constructor(temperature: number, brightness: number);
+}
+/**
+ * Set Pilot messages parameters for changing color temperature and brightness
  */
 export declare class SetPilotParametersColorTemperature {
     temp?: number;
     constructor(temperature: number);
 }
-export declare type SetPilotParams = SetPilotParametersColor | SetPilotParametersColorTemperature | SetPilotParametersDimming | SetPilotParametersScene | SetPilotParametersSpeed | SetPilotParametersStatus;
+export declare type SetPilotParams = SetPilotParametersColor | SetPilotParametersColorAndBrightness | SetPilotParametersColorTemperature | SetPilotParametersColorTemperatureAndBrightness | SetPilotParametersDimming | SetPilotParametersScene | SetPilotParametersSceneAndBrightness | SetPilotParametersSpeed | SetPilotParametersStatus;
 export declare class SetPilotMessage {
     method: "setPilot";
     version: number;
@@ -159,6 +187,12 @@ export declare class SetPilotMessage {
      */
     static buildSceneControlMessage(scene: Scene): SetPilotMessage;
     /**
+     * Constructs scene control message
+     * @param scene - Scene object, from the list of static scenes
+     * @param dimming - Integer, valid range is 10-100
+     */
+    static buildSceneAndBrightnessControlMessage(scene: Scene, dimming: number): SetPilotMessage;
+    /**
      * Constructs color control message.
      * Valid combinations: R+G+B, R+G+W, G+B+W. R+B+W.
      * R+G+B+W could not be played due to limitations in the light engine
@@ -169,16 +203,81 @@ export declare class SetPilotMessage {
      */
     static buildColorControlMessage(red: number, green: number, blue: number, whiteLevel: number): SetPilotMessage;
     /**
+     * Constructs color control message.
+     * Valid combinations: R+G+B, R+G+W, G+B+W. R+B+W.
+     * R+G+B+W could not be played due to limitations in the light engine
+     * @param red - Integer, valid range 0-255
+     * @param green - Integer, valid range 0-255
+     * @param blue - Integer, valid range 0-255
+     * @param whiteLevel - Integer, valid range 0-255
+     * @param dimming - Integer, valid range is 10-100
+     */
+    static buildColorAndBrightnessControlMessage(red: number, green: number, blue: number, whiteLevel: number, dimming: number): SetPilotMessage;
+    /**
      * Constructs color temperature control message.
      * @param colorTemperature - Integer, valid range 2200-6500
      */
     static buildColorTemperatureControlMessage(colorTemperature: number): SetPilotMessage;
+    /**
+     * Constructs color temperature control message.
+     * @param colorTemperature - Integer, valid range 2200-6500
+     * @param dimming - Integer, valid range is 10-100
+     */
+    static buildColorTemperatureAndBrightnessControlMessage(colorTemperature: number, dimming: number): SetPilotMessage;
     /**
      * Constructs playing speed control message.
      * Valid only for dynamic scenes
      * @param speed Playing speed, valid range 20-200
      */
     static buildSpeedControlMessage(speed: number): SetPilotMessage;
+}
+/**
+ * Set system config messages parameters for request
+ */
+export declare class SetSystemConfigParameters {
+    env: string;
+    systemConfigTs: number;
+    constructor(environment: string);
+}
+export declare class SetSystemConfigMessage {
+    method: "setSystemConfig";
+    version: number;
+    id: number;
+    params: SetSystemConfigParameters;
+    constructor();
+    /**
+     * Constructs firmware update message
+     */
+    static buildSetEnvironmentMessage(environment: string): SetSystemConfigMessage;
+}
+/**
+ * Update firmware messages parameters for request
+ */
+export declare class UpdateFirmwareParameters {
+    fw: string;
+    force: number;
+    constructor();
+}
+export declare class UpdateFirmwareMessage {
+    method: "updateOta";
+    version: number;
+    id: number;
+    params: UpdateFirmwareParameters;
+    constructor();
+    /**
+     * Constructs firmware update message
+     */
+    static buildUpdateFirmwareMessage(): UpdateFirmwareMessage;
+}
+export declare class ResetMessage {
+    method: "reset";
+    version: number;
+    id: number;
+    constructor();
+    /**
+     * Constructs reset message
+     */
+    static buildResetMessage(): ResetMessage;
 }
 /**
  * Message broadcasted by the light after booting,
@@ -232,8 +331,8 @@ export declare class GetSystemConfigMessage {
     id: number;
     constructor(ip: string);
 }
-export declare type WiZControlMessage = SetPilotMessage | SyncPilotAckMessage | RegistrationMessage | GetSystemConfigMessage;
-export declare type WiZMessage = GetPilotMessage | SetPilotMessage | SyncPilotMessage | FirstBeatMessage | RegistrationMessage;
+export declare type WiZControlMessage = SetPilotMessage | SyncPilotAckMessage | RegistrationMessage | UpdateFirmwareMessage | GetSystemConfigMessage | SetSystemConfigMessage | ResetMessage;
+export declare type WiZMessage = GetPilotMessage | SetPilotMessage | SyncPilotMessage | FirstBeatMessage | RegistrationMessage | UpdateFirmwareMessage | SetSystemConfigMessage | ResetMessage;
 export declare type WiZMessageResponse = GetSystemConfigResponse;
 export declare type Result<T extends WiZMessageResponse> = {
     type: "success";

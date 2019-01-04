@@ -23,11 +23,34 @@ export default class WiZLocalControl {
      */
     changeBrightness(brightness: number, lightIp: string): Promise<Result<any>>;
     /**
+     * Requests firmware update of WiZ Light
+     * @param lightIp Light IP address
+     */
+    updateFirmware(lightIp: string): Promise<Result<any>>;
+    /**
+     * Reset WiZ Light
+     * @param lightIp Light IP address
+     */
+    reset(lightIp: string): Promise<Result<any>>;
+    /**
+     * Sets environment of WiZ Light
+     * @param environment system environment
+     * @param lightIp Light IP address
+     */
+    setEnvironment(environment: string, lightIp: string): Promise<Result<any>>;
+    /**
      * Changes light mode of WiZ Light
      * @param lightMode Light mode, check LightMode type for details
      * @param lightIp Light IP address
      */
     changeLightMode(lightMode: LightMode, lightIp: string): Promise<Result<any>>;
+    /**
+     * Changes light mode of WiZ Light
+     * @param lightMode Light mode, check LightMode type for details
+     * @param brightness Brightness level, 10-100
+     * @param lightIp Light IP address
+     */
+    changeLightModeAndBrightness(lightMode: LightMode, brightness: number, lightIp: string): Promise<Result<any>>;
     /**
      * Changes playing speed of Dynamic Scene of WiZ Light
      * @param speed Playing speed, 20-200

@@ -66,6 +66,50 @@ __decorate([
 ], SetPilotParametersColor.prototype, "c", void 0);
 exports.SetPilotParametersColor = SetPilotParametersColor;
 /**
+ * Set Pilot messages parameters for changing color and brightness
+ */
+class SetPilotParametersColorAndBrightness {
+    constructor(r, g, b, whiteLevel, brightness) {
+        this.r = r;
+        this.g = g;
+        this.b = b;
+        this.w = whiteLevel;
+        this.c = 0;
+        this.dimming = brightness;
+    }
+}
+__decorate([
+    class_validator_1.IsInt(),
+    class_validator_1.Min(0),
+    class_validator_1.Max(255)
+], SetPilotParametersColorAndBrightness.prototype, "r", void 0);
+__decorate([
+    class_validator_1.IsInt(),
+    class_validator_1.Min(0),
+    class_validator_1.Max(255)
+], SetPilotParametersColorAndBrightness.prototype, "g", void 0);
+__decorate([
+    class_validator_1.IsInt(),
+    class_validator_1.Min(0),
+    class_validator_1.Max(255)
+], SetPilotParametersColorAndBrightness.prototype, "b", void 0);
+__decorate([
+    class_validator_1.IsInt(),
+    class_validator_1.Min(0),
+    class_validator_1.Max(255)
+], SetPilotParametersColorAndBrightness.prototype, "w", void 0);
+__decorate([
+    class_validator_1.IsInt(),
+    class_validator_1.Min(0),
+    class_validator_1.Max(255)
+], SetPilotParametersColorAndBrightness.prototype, "c", void 0);
+__decorate([
+    class_validator_1.IsInt(),
+    class_validator_1.Min(10),
+    class_validator_1.Max(100)
+], SetPilotParametersColorAndBrightness.prototype, "dimming", void 0);
+exports.SetPilotParametersColorAndBrightness = SetPilotParametersColorAndBrightness;
+/**
  * Set Pilot messages parameters for scene
  */
 class SetPilotParametersScene {
@@ -79,6 +123,26 @@ __decorate([
     class_validator_1.Max(28)
 ], SetPilotParametersScene.prototype, "sceneId", void 0);
 exports.SetPilotParametersScene = SetPilotParametersScene;
+/**
+ * Set Pilot messages parameters for scene and brightness
+ */
+class SetPilotParametersSceneAndBrightness {
+    constructor(sceneId, brightness) {
+        this.sceneId = sceneId;
+        this.dimming = brightness;
+    }
+}
+__decorate([
+    class_validator_1.IsInt(),
+    class_validator_1.Min(1),
+    class_validator_1.Max(28)
+], SetPilotParametersSceneAndBrightness.prototype, "sceneId", void 0);
+__decorate([
+    class_validator_1.IsInt(),
+    class_validator_1.Min(10),
+    class_validator_1.Max(100)
+], SetPilotParametersSceneAndBrightness.prototype, "dimming", void 0);
+exports.SetPilotParametersSceneAndBrightness = SetPilotParametersSceneAndBrightness;
 /**
  * Set Pilot messages parameters for status
  */
@@ -117,7 +181,27 @@ __decorate([
 ], SetPilotParametersSpeed.prototype, "speed", void 0);
 exports.SetPilotParametersSpeed = SetPilotParametersSpeed;
 /**
- * Set Pilot messages parameters for changing color temperature
+ * Set Pilot messages parameters for changing color temperature and brightness
+ */
+class SetPilotParametersColorTemperatureAndBrightness {
+    constructor(temperature, brightness) {
+        this.temp = temperature;
+        this.dimming = brightness;
+    }
+}
+__decorate([
+    class_validator_1.IsInt(),
+    class_validator_1.Min(2200),
+    class_validator_1.Max(6500)
+], SetPilotParametersColorTemperatureAndBrightness.prototype, "temp", void 0);
+__decorate([
+    class_validator_1.IsInt(),
+    class_validator_1.Min(10),
+    class_validator_1.Max(100)
+], SetPilotParametersColorTemperatureAndBrightness.prototype, "dimming", void 0);
+exports.SetPilotParametersColorTemperatureAndBrightness = SetPilotParametersColorTemperatureAndBrightness;
+/**
+ * Set Pilot messages parameters for changing color temperature and brightness
  */
 class SetPilotParametersColorTemperature {
     constructor(temperature) {
@@ -164,6 +248,16 @@ class SetPilotMessage {
         return msg;
     }
     /**
+     * Constructs scene control message
+     * @param scene - Scene object, from the list of static scenes
+     * @param dimming - Integer, valid range is 10-100
+     */
+    static buildSceneAndBrightnessControlMessage(scene, dimming) {
+        const msg = new SetPilotMessage();
+        msg.params = new SetPilotParametersSceneAndBrightness(scene.sceneId, dimming);
+        return msg;
+    }
+    /**
      * Constructs color control message.
      * Valid combinations: R+G+B, R+G+W, G+B+W. R+B+W.
      * R+G+B+W could not be played due to limitations in the light engine
@@ -178,12 +272,37 @@ class SetPilotMessage {
         return msg;
     }
     /**
+     * Constructs color control message.
+     * Valid combinations: R+G+B, R+G+W, G+B+W. R+B+W.
+     * R+G+B+W could not be played due to limitations in the light engine
+     * @param red - Integer, valid range 0-255
+     * @param green - Integer, valid range 0-255
+     * @param blue - Integer, valid range 0-255
+     * @param whiteLevel - Integer, valid range 0-255
+     * @param dimming - Integer, valid range is 10-100
+     */
+    static buildColorAndBrightnessControlMessage(red, green, blue, whiteLevel, dimming) {
+        const msg = new SetPilotMessage();
+        msg.params = new SetPilotParametersColorAndBrightness(red, green, blue, whiteLevel, dimming);
+        return msg;
+    }
+    /**
      * Constructs color temperature control message.
      * @param colorTemperature - Integer, valid range 2200-6500
      */
     static buildColorTemperatureControlMessage(colorTemperature) {
         const msg = new SetPilotMessage();
         msg.params = new SetPilotParametersColorTemperature(colorTemperature);
+        return msg;
+    }
+    /**
+     * Constructs color temperature control message.
+     * @param colorTemperature - Integer, valid range 2200-6500
+     * @param dimming - Integer, valid range is 10-100
+     */
+    static buildColorTemperatureAndBrightnessControlMessage(colorTemperature, dimming) {
+        const msg = new SetPilotMessage();
+        msg.params = new SetPilotParametersColorTemperatureAndBrightness(colorTemperature, dimming);
         return msg;
     }
     /**
@@ -201,6 +320,93 @@ __decorate([
     class_validator_1.ValidateNested()
 ], SetPilotMessage.prototype, "params", void 0);
 exports.SetPilotMessage = SetPilotMessage;
+/**
+ * Set system config messages parameters for request
+ */
+class SetSystemConfigParameters {
+    constructor(environment) {
+        this.env = environment;
+        this.systemConfigTs = 0;
+    }
+}
+__decorate([
+    class_validator_1.IsString()
+], SetSystemConfigParameters.prototype, "env", void 0);
+__decorate([
+    class_validator_1.IsInt()
+], SetSystemConfigParameters.prototype, "systemConfigTs", void 0);
+exports.SetSystemConfigParameters = SetSystemConfigParameters;
+class SetSystemConfigMessage {
+    constructor() {
+        this.method = networkConstants.setSystemConfigMethod;
+        this.version = 1;
+        this.id = Math.floor(Math.random() * 10000 + 1);
+    }
+    /**
+     * Constructs firmware update message
+     */
+    static buildSetEnvironmentMessage(environment) {
+        const msg = new SetSystemConfigMessage();
+        msg.params = new SetSystemConfigParameters(environment);
+        return msg;
+    }
+}
+__decorate([
+    class_validator_1.ValidateNested()
+], SetSystemConfigMessage.prototype, "params", void 0);
+exports.SetSystemConfigMessage = SetSystemConfigMessage;
+/**
+ * Update firmware messages parameters for request
+ */
+class UpdateFirmwareParameters {
+    constructor() {
+        this.fw = "default";
+        this.force = 1;
+    }
+}
+__decorate([
+    class_validator_1.IsString()
+], UpdateFirmwareParameters.prototype, "fw", void 0);
+__decorate([
+    class_validator_1.IsInt(),
+    class_validator_1.Min(0),
+    class_validator_1.Max(1)
+], UpdateFirmwareParameters.prototype, "force", void 0);
+exports.UpdateFirmwareParameters = UpdateFirmwareParameters;
+class UpdateFirmwareMessage {
+    constructor() {
+        this.method = networkConstants.updateOtaMethod;
+        this.version = 1;
+        this.id = Math.floor(Math.random() * 10000 + 1);
+    }
+    /**
+     * Constructs firmware update message
+     */
+    static buildUpdateFirmwareMessage() {
+        const msg = new UpdateFirmwareMessage();
+        msg.params = new UpdateFirmwareParameters();
+        return msg;
+    }
+}
+__decorate([
+    class_validator_1.ValidateNested()
+], UpdateFirmwareMessage.prototype, "params", void 0);
+exports.UpdateFirmwareMessage = UpdateFirmwareMessage;
+class ResetMessage {
+    constructor() {
+        this.method = networkConstants.resetMethod;
+        this.version = 1;
+        this.id = Math.floor(Math.random() * 10000 + 1);
+    }
+    /**
+     * Constructs reset message
+     */
+    static buildResetMessage() {
+        const msg = new ResetMessage();
+        return msg;
+    }
+}
+exports.ResetMessage = ResetMessage;
 /**
  * Message sent by device to the lamp (via broadcast or unicast)
  * Lamp will add specified IP to the list devices that it notifies on status change using

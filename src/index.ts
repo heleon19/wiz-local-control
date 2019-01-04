@@ -4,9 +4,10 @@ import {
   LightMode,
   GetSystemConfigMessage,
   GetSystemConfigResponse,
+  SetSystemConfigMessage,
 } from "./constants/types";
 import UDPManager from "./UDPManager";
-import { SetPilotMessage } from "./constants/types";
+import { SetPilotMessage, UpdateFirmwareMessage, ResetMessage, } from "./constants/types";
 import sendCommand from "./UDPCommunication";
 import * as dgram from "dgram";
 import { getLocalIPAddress } from "./ipFunctions";
@@ -53,6 +54,53 @@ export default class WiZLocalControl {
   }
 
   /**
+   * Requests firmware update of WiZ Light
+   * @param lightIp Light IP address
+   */
+  async updateFirmware(
+    lightIp: string
+  ): Promise<Result<any>> {
+    const msg = UpdateFirmwareMessage.buildUpdateFirmwareMessage();
+    const validationErrors = await validate(msg);
+    if (validationErrors.length > 0) {
+      throw Error(JSON.stringify(validationErrors));
+    }
+    return this.udpManager.sendUDPCommand(msg, lightIp);
+  }
+
+  /**
+   * Reset WiZ Light
+   * @param lightIp Light IP address
+   */
+  async reset(
+    lightIp: string
+  ): Promise<Result<any>> {
+    const msg = ResetMessage.buildResetMessage();
+    const validationErrors = await validate(msg);
+    if (validationErrors.length > 0) {
+      throw Error(JSON.stringify(validationErrors));
+    }
+    return this.udpManager.sendUDPCommand(msg, lightIp);
+  }
+
+  /**
+   * Sets environment of WiZ Light
+   * @param environment system environment
+   * @param lightIp Light IP address
+   */
+  async setEnvironment(
+    environment: string,
+    lightIp: string
+  ): Promise<Result<any>> {
+    const msg = SetSystemConfigMessage.buildSetEnvironmentMessage(environment);
+    const validationErrors = await validate(msg);
+    if (validationErrors.length > 0) {
+      throw Error(JSON.stringify(validationErrors));
+    }
+    return this.udpManager.sendUDPCommand(msg, lightIp);
+  }
+
+  /**
    * Changes light mode of WiZ Light
    * @param lightMode Light mode, check LightMode type for details
    * @param lightIp Light IP address
@@ -80,6 +128,45 @@ export default class WiZLocalControl {
       case "temperature": {
         const msg = SetPilotMessage.buildColorTemperatureControlMessage(
           lightMode.colorTemperature,
+        );
+        await this.validateMsg(msg);
+        return this.udpManager.sendUDPCommand(msg, lightIp);
+      }
+    }
+  }
+
+  /**
+   * Changes light mode of WiZ Light
+   * @param lightMode Light mode, check LightMode type for details
+   * @param brightness Brightness level, 10-100
+   * @param lightIp Light IP address
+   */
+  async changeLightModeAndBrightness(
+    lightMode: LightMode,
+    brightness: number,
+    lightIp: string,
+  ): Promise<Result<any>> {
+    switch (lightMode.type) {
+      case "scene": {
+        const msg = SetPilotMessage.buildSceneAndBrightnessControlMessage(lightMode, brightness);
+        await this.validateMsg(msg);
+        return this.udpManager.sendUDPCommand(msg, lightIp);
+      }
+      case "color": {
+        const msg = SetPilotMessage.buildColorAndBrightnessControlMessage(
+          lightMode.r,
+          lightMode.g,
+          lightMode.b,
+          lightMode.ww,
+          brightness,
+        );
+        await this.validateMsg(msg);
+        return this.udpManager.sendUDPCommand(msg, lightIp);
+      }
+      case "temperature": {
+        const msg = SetPilotMessage.buildColorTemperatureAndBrightnessControlMessage(
+          lightMode.colorTemperature,
+          brightness,
         );
         await this.validateMsg(msg);
         return this.udpManager.sendUDPCommand(msg, lightIp);

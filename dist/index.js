@@ -32,6 +32,43 @@ class WiZLocalControl {
         return this.udpManager.sendUDPCommand(msg, lightIp);
     }
     /**
+     * Requests firmware update of WiZ Light
+     * @param lightIp Light IP address
+     */
+    async updateFirmware(lightIp) {
+        const msg = types_2.UpdateFirmwareMessage.buildUpdateFirmwareMessage();
+        const validationErrors = await class_validator_1.validate(msg);
+        if (validationErrors.length > 0) {
+            throw Error(JSON.stringify(validationErrors));
+        }
+        return this.udpManager.sendUDPCommand(msg, lightIp);
+    }
+    /**
+     * Reset WiZ Light
+     * @param lightIp Light IP address
+     */
+    async reset(lightIp) {
+        const msg = types_2.ResetMessage.buildResetMessage();
+        const validationErrors = await class_validator_1.validate(msg);
+        if (validationErrors.length > 0) {
+            throw Error(JSON.stringify(validationErrors));
+        }
+        return this.udpManager.sendUDPCommand(msg, lightIp);
+    }
+    /**
+     * Sets environment of WiZ Light
+     * @param environment system environment
+     * @param lightIp Light IP address
+     */
+    async setEnvironment(environment, lightIp) {
+        const msg = types_1.SetSystemConfigMessage.buildSetEnvironmentMessage(environment);
+        const validationErrors = await class_validator_1.validate(msg);
+        if (validationErrors.length > 0) {
+            throw Error(JSON.stringify(validationErrors));
+        }
+        return this.udpManager.sendUDPCommand(msg, lightIp);
+    }
+    /**
      * Changes light mode of WiZ Light
      * @param lightMode Light mode, check LightMode type for details
      * @param lightIp Light IP address
@@ -50,6 +87,31 @@ class WiZLocalControl {
             }
             case "temperature": {
                 const msg = types_2.SetPilotMessage.buildColorTemperatureControlMessage(lightMode.colorTemperature);
+                await this.validateMsg(msg);
+                return this.udpManager.sendUDPCommand(msg, lightIp);
+            }
+        }
+    }
+    /**
+     * Changes light mode of WiZ Light
+     * @param lightMode Light mode, check LightMode type for details
+     * @param brightness Brightness level, 10-100
+     * @param lightIp Light IP address
+     */
+    async changeLightModeAndBrightness(lightMode, brightness, lightIp) {
+        switch (lightMode.type) {
+            case "scene": {
+                const msg = types_2.SetPilotMessage.buildSceneAndBrightnessControlMessage(lightMode, brightness);
+                await this.validateMsg(msg);
+                return this.udpManager.sendUDPCommand(msg, lightIp);
+            }
+            case "color": {
+                const msg = types_2.SetPilotMessage.buildColorAndBrightnessControlMessage(lightMode.r, lightMode.g, lightMode.b, lightMode.ww, brightness);
+                await this.validateMsg(msg);
+                return this.udpManager.sendUDPCommand(msg, lightIp);
+            }
+            case "temperature": {
+                const msg = types_2.SetPilotMessage.buildColorTemperatureAndBrightnessControlMessage(lightMode.colorTemperature, brightness);
                 await this.validateMsg(msg);
                 return this.udpManager.sendUDPCommand(msg, lightIp);
             }

@@ -107,6 +107,15 @@ describe("Sending commands", () => {
         chai_1.expect(msg).to.be.instanceof(types_1.SetPilotMessage);
         chai_1.expect(ip).to.be.equal(targetIp);
     });
+    it("should form and send update firmware command", async () => {
+        const spy = this.sendCommandSpy;
+        const targetIp = "127.0.0.1";
+        await this.control.updateFirmware(targetIp);
+        const msg = spy.getCall(0).args[0];
+        const ip = spy.getCall(0).args[1];
+        chai_1.expect(msg).to.be.instanceof(types_1.UpdateFirmwareMessage);
+        chai_1.expect(ip).to.be.equal(targetIp);
+    });
     it("should form and send get system config command", async () => {
         const spy = this.sendCommandSpy;
         const targetIp = "127.0.0.1";

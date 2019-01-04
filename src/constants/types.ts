@@ -1,5 +1,5 @@
 import * as networkConstants from "../constants/communication";
-import { validate, IsInt, Min, Max, ValidateNested } from "class-validator";
+import { validate, IsInt, Min, Max, ValidateNested, IsString } from "class-validator";
 
 /**
  * Scene type – built in the bulb scenes. Could be one of the scenes listed
@@ -136,6 +136,45 @@ export class SetPilotParametersColor {
 }
 
 /**
+ * Set Pilot messages parameters for changing color and brightness
+ */
+export class SetPilotParametersColorAndBrightness {
+  @IsInt()
+  @Min(0)
+  @Max(255)
+  r?: number;
+  @IsInt()
+  @Min(0)
+  @Max(255)
+  g?: number;
+  @IsInt()
+  @Min(0)
+  @Max(255)
+  b?: number;
+  @IsInt()
+  @Min(0)
+  @Max(255)
+  w?: number;
+  @IsInt()
+  @Min(0)
+  @Max(255)
+  c?: number;
+  @IsInt()
+  @Min(10)
+  @Max(100)
+  dimming?: number;
+
+  constructor(r: number, g: number, b: number, whiteLevel: number, brightness: number) {
+    this.r = r;
+    this.g = g;
+    this.b = b;
+    this.w = whiteLevel;
+    this.c = 0;
+    this.dimming = brightness;
+  }
+}
+
+/**
  * Set Pilot messages parameters for scene
  */
 export class SetPilotParametersScene {
@@ -146,6 +185,25 @@ export class SetPilotParametersScene {
 
   constructor(sceneId: number) {
     this.sceneId = sceneId;
+  }
+}
+
+/**
+ * Set Pilot messages parameters for scene and brightness
+ */
+export class SetPilotParametersSceneAndBrightness {
+  @IsInt()
+  @Min(1)
+  @Max(28)
+  sceneId?: number;
+  @IsInt()
+  @Min(10)
+  @Max(100)
+  dimming?: number;
+
+  constructor(sceneId: number, brightness: number) {
+    this.sceneId = sceneId;
+    this.dimming = brightness;
   }
 }
 
@@ -189,7 +247,26 @@ export class SetPilotParametersSpeed {
 }
 
 /**
- * Set Pilot messages parameters for changing color temperature
+ * Set Pilot messages parameters for changing color temperature and brightness
+ */
+export class SetPilotParametersColorTemperatureAndBrightness {
+  @IsInt()
+  @Min(2200)
+  @Max(6500)
+  temp?: number;
+  @IsInt()
+  @Min(10)
+  @Max(100)
+  dimming?: number;
+
+  constructor(temperature: number, brightness: number) {
+    this.temp = temperature;
+    this.dimming = brightness;
+  }
+}
+
+/**
+ * Set Pilot messages parameters for changing color temperature and brightness
  */
 export class SetPilotParametersColorTemperature {
   @IsInt()
@@ -204,9 +281,12 @@ export class SetPilotParametersColorTemperature {
 
 export type SetPilotParams =
   | SetPilotParametersColor
+  | SetPilotParametersColorAndBrightness
   | SetPilotParametersColorTemperature
+  | SetPilotParametersColorTemperatureAndBrightness
   | SetPilotParametersDimming
   | SetPilotParametersScene
+  | SetPilotParametersSceneAndBrightness
   | SetPilotParametersSpeed
   | SetPilotParametersStatus;
 
@@ -252,6 +332,17 @@ export class SetPilotMessage {
   }
 
   /**
+   * Constructs scene control message
+   * @param scene - Scene object, from the list of static scenes
+   * @param dimming - Integer, valid range is 10-100
+   */
+  static buildSceneAndBrightnessControlMessage(scene: Scene, dimming: number): SetPilotMessage {
+    const msg = new SetPilotMessage();
+    msg.params = new SetPilotParametersSceneAndBrightness(scene.sceneId, dimming);
+    return msg;
+  }
+
+  /**
    * Constructs color control message.
    * Valid combinations: R+G+B, R+G+W, G+B+W. R+B+W.
    * R+G+B+W could not be played due to limitations in the light engine
@@ -272,12 +363,45 @@ export class SetPilotMessage {
   }
 
   /**
+   * Constructs color control message.
+   * Valid combinations: R+G+B, R+G+W, G+B+W. R+B+W.
+   * R+G+B+W could not be played due to limitations in the light engine
+   * @param red - Integer, valid range 0-255
+   * @param green - Integer, valid range 0-255
+   * @param blue - Integer, valid range 0-255
+   * @param whiteLevel - Integer, valid range 0-255
+   * @param dimming - Integer, valid range is 10-100
+   */
+  static buildColorAndBrightnessControlMessage(
+    red: number,
+    green: number,
+    blue: number,
+    whiteLevel: number,
+    dimming: number,
+  ) {
+    const msg = new SetPilotMessage();
+    msg.params = new SetPilotParametersColorAndBrightness(red, green, blue, whiteLevel, dimming);
+    return msg;
+  }
+
+  /**
    * Constructs color temperature control message.
    * @param colorTemperature - Integer, valid range 2200-6500
    */
   static buildColorTemperatureControlMessage(colorTemperature: number) {
     const msg = new SetPilotMessage();
     msg.params = new SetPilotParametersColorTemperature(colorTemperature);
+    return msg;
+  }
+
+  /**
+   * Constructs color temperature control message.
+   * @param colorTemperature - Integer, valid range 2200-6500
+   * @param dimming - Integer, valid range is 10-100
+   */
+  static buildColorTemperatureAndBrightnessControlMessage(colorTemperature: number, dimming: number) {
+    const msg = new SetPilotMessage();
+    msg.params = new SetPilotParametersColorTemperatureAndBrightness(colorTemperature, dimming);
     return msg;
   }
 
@@ -289,6 +413,99 @@ export class SetPilotMessage {
   static buildSpeedControlMessage(speed: number) {
     const msg = new SetPilotMessage();
     msg.params = new SetPilotParametersSpeed(speed);
+    return msg;
+  }
+}
+
+/**
+ * Set system config messages parameters for request
+ */
+export class SetSystemConfigParameters {
+  @IsString()
+  env: string;
+  @IsInt()
+  systemConfigTs: number;
+
+  constructor(environment: string) {
+    this.env = environment;
+    this.systemConfigTs = 0;
+  }
+}
+
+export class SetSystemConfigMessage {
+  method: "setSystemConfig";
+  version: number;
+  id: number;
+  @ValidateNested() params: SetSystemConfigParameters;
+
+  constructor() {
+    this.method = networkConstants.setSystemConfigMethod;
+    this.version = 1;
+    this.id = Math.floor(Math.random() * 10000 + 1);
+  }
+  /**
+   * Constructs firmware update message
+   */
+  static buildSetEnvironmentMessage(environment: string): SetSystemConfigMessage {
+    const msg = new SetSystemConfigMessage();
+    msg.params = new SetSystemConfigParameters(environment);
+    return msg;
+  }
+}
+
+/**
+ * Update firmware messages parameters for request
+ */
+export class UpdateFirmwareParameters {
+  @IsString()
+  fw: string;
+  @IsInt()
+  @Min(0)
+  @Max(1)
+  force: number;
+
+  constructor() {
+    this.fw = "default";
+    this.force = 1;
+  }
+}
+
+export class UpdateFirmwareMessage {
+  method: "updateOta";
+  version: number;
+  id: number;
+  @ValidateNested() params: UpdateFirmwareParameters;
+
+  constructor() {
+    this.method = networkConstants.updateOtaMethod;
+    this.version = 1;
+    this.id = Math.floor(Math.random() * 10000 + 1);
+  }
+  /**
+   * Constructs firmware update message
+   */
+  static buildUpdateFirmwareMessage(): UpdateFirmwareMessage {
+    const msg = new UpdateFirmwareMessage();
+    msg.params = new UpdateFirmwareParameters();
+    return msg;
+  }
+}
+
+export class ResetMessage {
+  method: "reset";
+  version: number;
+  id: number;
+
+  constructor() {
+    this.method = networkConstants.resetMethod;
+    this.version = 1;
+    this.id = Math.floor(Math.random() * 10000 + 1);
+  }
+  /**
+   * Constructs reset message
+   */
+  static buildResetMessage(): ResetMessage {
+    const msg = new ResetMessage();
     return msg;
   }
 }
@@ -365,14 +582,20 @@ export type WiZControlMessage =
   | SetPilotMessage
   | SyncPilotAckMessage
   | RegistrationMessage
-  | GetSystemConfigMessage;
+  | UpdateFirmwareMessage
+  | GetSystemConfigMessage
+  | SetSystemConfigMessage
+  | ResetMessage;
 
 export type WiZMessage =
   | GetPilotMessage
   | SetPilotMessage
   | SyncPilotMessage
   | FirstBeatMessage
-  | RegistrationMessage;
+  | RegistrationMessage
+  | UpdateFirmwareMessage
+  | SetSystemConfigMessage
+  | ResetMessage;
 
 export type WiZMessageResponse = GetSystemConfigResponse;
 
