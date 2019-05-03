@@ -1,5 +1,12 @@
 import * as networkConstants from "../constants/communication";
-import { validate, IsInt, Min, Max, ValidateNested, IsString } from "class-validator";
+import {
+  validate,
+  IsInt,
+  Min,
+  Max,
+  ValidateNested,
+  IsString,
+} from "class-validator";
 
 /**
  * Scene type – built in the bulb scenes. Could be one of the scenes listed
@@ -126,12 +133,18 @@ export class SetPilotParametersColor {
   @Max(255)
   c?: number;
 
-  constructor(r: number, g: number, b: number, whiteLevel: number) {
+  constructor(
+    r: number,
+    g: number,
+    b: number,
+    coolWhiteLevel: number,
+    warmWhiteLevel: number,
+  ) {
     this.r = r;
     this.g = g;
     this.b = b;
-    this.w = whiteLevel;
-    this.c = 0;
+    this.w = warmWhiteLevel;
+    this.c = coolWhiteLevel;
   }
 }
 
@@ -164,12 +177,19 @@ export class SetPilotParametersColorAndBrightness {
   @Max(100)
   dimming?: number;
 
-  constructor(r: number, g: number, b: number, whiteLevel: number, brightness: number) {
+  constructor(
+    r: number,
+    g: number,
+    b: number,
+    coolWhiteLevel: number,
+    warmWhiteLevel: number,
+    brightness: number,
+  ) {
     this.r = r;
     this.g = g;
     this.b = b;
-    this.w = whiteLevel;
-    this.c = 0;
+    this.w = warmWhiteLevel;
+    this.c = coolWhiteLevel;
     this.dimming = brightness;
   }
 }
@@ -336,51 +356,74 @@ export class SetPilotMessage {
    * @param scene - Scene object, from the list of static scenes
    * @param dimming - Integer, valid range is 10-100
    */
-  static buildSceneAndBrightnessControlMessage(scene: Scene, dimming: number): SetPilotMessage {
+  static buildSceneAndBrightnessControlMessage(
+    scene: Scene,
+    dimming: number,
+  ): SetPilotMessage {
     const msg = new SetPilotMessage();
-    msg.params = new SetPilotParametersSceneAndBrightness(scene.sceneId, dimming);
+    msg.params = new SetPilotParametersSceneAndBrightness(
+      scene.sceneId,
+      dimming,
+    );
     return msg;
   }
 
   /**
    * Constructs color control message.
-   * Valid combinations: R+G+B, R+G+W, G+B+W. R+B+W.
-   * R+G+B+W could not be played due to limitations in the light engine
+   * Valid combinations: R+G+B, R+G+(W|C), G+B+(W|C), R+B+(W|C), W+C.
+   * R+G+B+(W|C), W+C+(R|G|B) could not be played due to limitations in the light engine
    * @param red - Integer, valid range 0-255
    * @param green - Integer, valid range 0-255
    * @param blue - Integer, valid range 0-255
-   * @param whiteLevel - Integer, valid range 0-255
+   * @param coolWhiteLevel - Integer, valid range 0-255
+   * @param warmWhiteLevel - Integer, valid range 0-255
    */
   static buildColorControlMessage(
     red: number,
     green: number,
     blue: number,
-    whiteLevel: number,
+    coolWhiteLevel: number,
+    warmWhiteLevel: number,
   ) {
     const msg = new SetPilotMessage();
-    msg.params = new SetPilotParametersColor(red, green, blue, whiteLevel);
+    msg.params = new SetPilotParametersColor(
+      red,
+      green,
+      blue,
+      coolWhiteLevel,
+      warmWhiteLevel,
+    );
     return msg;
   }
 
   /**
-   * Constructs color control message.
-   * Valid combinations: R+G+B, R+G+W, G+B+W. R+B+W.
-   * R+G+B+W could not be played due to limitations in the light engine
+   * Constructs color + dimming control message.
+   * Valid combinations: R+G+B, R+G+(W|C), G+B+(W|C), R+B+(W|C), W+C.
+   * R+G+B+(W|C), W+C+(R|G|B) could not be played due to limitations in the light engine
    * @param red - Integer, valid range 0-255
    * @param green - Integer, valid range 0-255
    * @param blue - Integer, valid range 0-255
-   * @param whiteLevel - Integer, valid range 0-255
+   * @param coolWhiteLevel - Integer, valid range 0-255
+   * @param warmWhiteLevel - Integer, valid range 0-255
    * @param dimming - Integer, valid range is 10-100
    */
   static buildColorAndBrightnessControlMessage(
     red: number,
     green: number,
     blue: number,
-    whiteLevel: number,
+    coolWhiteLevel: number,
+    warmWhiteLevel: number,
     dimming: number,
   ) {
     const msg = new SetPilotMessage();
-    msg.params = new SetPilotParametersColorAndBrightness(red, green, blue, whiteLevel, dimming);
+    msg.params = new SetPilotParametersColorAndBrightness(
+      red,
+      green,
+      blue,
+      coolWhiteLevel,
+      warmWhiteLevel,
+      dimming,
+    );
     return msg;
   }
 
@@ -399,9 +442,15 @@ export class SetPilotMessage {
    * @param colorTemperature - Integer, valid range 2200-6500
    * @param dimming - Integer, valid range is 10-100
    */
-  static buildColorTemperatureAndBrightnessControlMessage(colorTemperature: number, dimming: number) {
+  static buildColorTemperatureAndBrightnessControlMessage(
+    colorTemperature: number,
+    dimming: number,
+  ) {
     const msg = new SetPilotMessage();
-    msg.params = new SetPilotParametersColorTemperatureAndBrightness(colorTemperature, dimming);
+    msg.params = new SetPilotParametersColorTemperatureAndBrightness(
+      colorTemperature,
+      dimming,
+    );
     return msg;
   }
 
@@ -446,7 +495,9 @@ export class SetSystemConfigMessage {
   /**
    * Constructs firmware update message
    */
-  static buildSetEnvironmentMessage(environment: string): SetSystemConfigMessage {
+  static buildSetEnvironmentMessage(
+    environment: string,
+  ): SetSystemConfigMessage {
     const msg = new SetSystemConfigMessage();
     msg.params = new SetSystemConfigParameters(environment);
     return msg;

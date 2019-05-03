@@ -7,7 +7,11 @@ import {
   SetSystemConfigMessage,
 } from "./constants/types";
 import UDPManager from "./UDPManager";
-import { SetPilotMessage, UpdateFirmwareMessage, ResetMessage, } from "./constants/types";
+import {
+  SetPilotMessage,
+  UpdateFirmwareMessage,
+  ResetMessage,
+} from "./constants/types";
 import sendCommand from "./UDPCommunication";
 import * as dgram from "dgram";
 import { getLocalIPAddress } from "./ipFunctions";
@@ -57,9 +61,7 @@ export default class WiZLocalControl {
    * Requests firmware update of WiZ Light
    * @param lightIp Light IP address
    */
-  async updateFirmware(
-    lightIp: string
-  ): Promise<Result<any>> {
+  async updateFirmware(lightIp: string): Promise<Result<any>> {
     const msg = UpdateFirmwareMessage.buildUpdateFirmwareMessage();
     const validationErrors = await validate(msg);
     if (validationErrors.length > 0) {
@@ -72,9 +74,7 @@ export default class WiZLocalControl {
    * Reset WiZ Light
    * @param lightIp Light IP address
    */
-  async reset(
-    lightIp: string
-  ): Promise<Result<any>> {
+  async reset(lightIp: string): Promise<Result<any>> {
     const msg = ResetMessage.buildResetMessage();
     const validationErrors = await validate(msg);
     if (validationErrors.length > 0) {
@@ -90,7 +90,7 @@ export default class WiZLocalControl {
    */
   async setEnvironment(
     environment: string,
-    lightIp: string
+    lightIp: string,
   ): Promise<Result<any>> {
     const msg = SetSystemConfigMessage.buildSetEnvironmentMessage(environment);
     const validationErrors = await validate(msg);
@@ -120,6 +120,7 @@ export default class WiZLocalControl {
           lightMode.r,
           lightMode.g,
           lightMode.b,
+          lightMode.cw,
           lightMode.ww,
         );
         await this.validateMsg(msg);
@@ -148,7 +149,10 @@ export default class WiZLocalControl {
   ): Promise<Result<any>> {
     switch (lightMode.type) {
       case "scene": {
-        const msg = SetPilotMessage.buildSceneAndBrightnessControlMessage(lightMode, brightness);
+        const msg = SetPilotMessage.buildSceneAndBrightnessControlMessage(
+          lightMode,
+          brightness,
+        );
         await this.validateMsg(msg);
         return this.udpManager.sendUDPCommand(msg, lightIp);
       }
@@ -157,6 +161,7 @@ export default class WiZLocalControl {
           lightMode.r,
           lightMode.g,
           lightMode.b,
+          lightMode.cw,
           lightMode.ww,
           brightness,
         );
