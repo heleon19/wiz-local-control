@@ -81,7 +81,7 @@ class WiZLocalControl {
                 return this.udpManager.sendUDPCommand(msg, lightIp);
             }
             case "color": {
-                const msg = types_2.SetPilotMessage.buildColorControlMessage(lightMode.r, lightMode.g, lightMode.b, lightMode.ww);
+                const msg = types_2.SetPilotMessage.buildColorControlMessage(lightMode.r, lightMode.g, lightMode.b, lightMode.cw, lightMode.ww);
                 await this.validateMsg(msg);
                 return this.udpManager.sendUDPCommand(msg, lightIp);
             }
@@ -106,7 +106,7 @@ class WiZLocalControl {
                 return this.udpManager.sendUDPCommand(msg, lightIp);
             }
             case "color": {
-                const msg = types_2.SetPilotMessage.buildColorAndBrightnessControlMessage(lightMode.r, lightMode.g, lightMode.b, lightMode.ww, brightness);
+                const msg = types_2.SetPilotMessage.buildColorAndBrightnessControlMessage(lightMode.r, lightMode.g, lightMode.b, lightMode.cw, lightMode.ww, brightness);
                 await this.validateMsg(msg);
                 return this.udpManager.sendUDPCommand(msg, lightIp);
             }

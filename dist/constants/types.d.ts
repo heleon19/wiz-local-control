@@ -43,7 +43,7 @@ export declare enum MQTTConnectionStatus {
     NoCredentials = 2,
     MQTTClientInitFailure = 3,
     ErrorLoadingPasswordFromFlash = 4,
-    PasswordError = 5
+    PasswordError = 5,
 }
 /**
  * Incoming message that lamp sends to report its status
@@ -99,7 +99,7 @@ export declare class SetPilotParametersColor {
     b?: number;
     w?: number;
     c?: number;
-    constructor(r: number, g: number, b: number, whiteLevel: number);
+    constructor(r: number, g: number, b: number, coolWhiteLevel: number, warmWhiteLevel: number);
 }
 /**
  * Set Pilot messages parameters for changing color and brightness
@@ -111,7 +111,7 @@ export declare class SetPilotParametersColorAndBrightness {
     w?: number;
     c?: number;
     dimming?: number;
-    constructor(r: number, g: number, b: number, whiteLevel: number, brightness: number);
+    constructor(r: number, g: number, b: number, coolWhiteLevel: number, warmWhiteLevel: number, brightness: number);
 }
 /**
  * Set Pilot messages parameters for scene
@@ -194,25 +194,27 @@ export declare class SetPilotMessage {
     static buildSceneAndBrightnessControlMessage(scene: Scene, dimming: number): SetPilotMessage;
     /**
      * Constructs color control message.
-     * Valid combinations: R+G+B, R+G+W, G+B+W. R+B+W.
-     * R+G+B+W could not be played due to limitations in the light engine
+     * Valid combinations: R+G+B, R+G+(W|C), G+B+(W|C), R+B+(W|C), W+C.
+     * R+G+B+(W|C), W+C+(R|G|B) could not be played due to limitations in the light engine
      * @param red - Integer, valid range 0-255
      * @param green - Integer, valid range 0-255
      * @param blue - Integer, valid range 0-255
-     * @param whiteLevel - Integer, valid range 0-255
+     * @param coolWhiteLevel - Integer, valid range 0-255
+     * @param warmWhiteLevel - Integer, valid range 0-255
      */
-    static buildColorControlMessage(red: number, green: number, blue: number, whiteLevel: number): SetPilotMessage;
+    static buildColorControlMessage(red: number, green: number, blue: number, coolWhiteLevel: number, warmWhiteLevel: number): SetPilotMessage;
     /**
-     * Constructs color control message.
-     * Valid combinations: R+G+B, R+G+W, G+B+W. R+B+W.
-     * R+G+B+W could not be played due to limitations in the light engine
+     * Constructs color + dimming control message.
+     * Valid combinations: R+G+B, R+G+(W|C), G+B+(W|C), R+B+(W|C), W+C.
+     * R+G+B+(W|C), W+C+(R|G|B) could not be played due to limitations in the light engine
      * @param red - Integer, valid range 0-255
      * @param green - Integer, valid range 0-255
      * @param blue - Integer, valid range 0-255
-     * @param whiteLevel - Integer, valid range 0-255
+     * @param coolWhiteLevel - Integer, valid range 0-255
+     * @param warmWhiteLevel - Integer, valid range 0-255
      * @param dimming - Integer, valid range is 10-100
      */
-    static buildColorAndBrightnessControlMessage(red: number, green: number, blue: number, whiteLevel: number, dimming: number): SetPilotMessage;
+    static buildColorAndBrightnessControlMessage(red: number, green: number, blue: number, coolWhiteLevel: number, warmWhiteLevel: number, dimming: number): SetPilotMessage;
     /**
      * Constructs color temperature control message.
      * @param colorTemperature - Integer, valid range 2200-6500
