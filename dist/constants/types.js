@@ -31,12 +31,12 @@ var MQTTConnectionStatus;
  * Set Pilot messages parameters for changing color
  */
 class SetPilotParametersColor {
-    constructor(r, g, b, whiteLevel) {
+    constructor(r, g, b, coolWhiteLevel, warmWhiteLevel) {
         this.r = r;
         this.g = g;
         this.b = b;
-        this.w = whiteLevel;
-        this.c = 0;
+        this.w = warmWhiteLevel;
+        this.c = coolWhiteLevel;
     }
 }
 __decorate([
@@ -69,12 +69,12 @@ exports.SetPilotParametersColor = SetPilotParametersColor;
  * Set Pilot messages parameters for changing color and brightness
  */
 class SetPilotParametersColorAndBrightness {
-    constructor(r, g, b, whiteLevel, brightness) {
+    constructor(r, g, b, coolWhiteLevel, warmWhiteLevel, brightness) {
         this.r = r;
         this.g = g;
         this.b = b;
-        this.w = whiteLevel;
-        this.c = 0;
+        this.w = warmWhiteLevel;
+        this.c = coolWhiteLevel;
         this.dimming = brightness;
     }
 }
@@ -259,31 +259,33 @@ class SetPilotMessage {
     }
     /**
      * Constructs color control message.
-     * Valid combinations: R+G+B, R+G+W, G+B+W. R+B+W.
-     * R+G+B+W could not be played due to limitations in the light engine
+     * Valid combinations: R+G+B, R+G+(W|C), G+B+(W|C), R+B+(W|C), W+C.
+     * R+G+B+(W|C), W+C+(R|G|B) could not be played due to limitations in the light engine
      * @param red - Integer, valid range 0-255
      * @param green - Integer, valid range 0-255
      * @param blue - Integer, valid range 0-255
-     * @param whiteLevel - Integer, valid range 0-255
+     * @param coolWhiteLevel - Integer, valid range 0-255
+     * @param warmWhiteLevel - Integer, valid range 0-255
      */
-    static buildColorControlMessage(red, green, blue, whiteLevel) {
+    static buildColorControlMessage(red, green, blue, coolWhiteLevel, warmWhiteLevel) {
         const msg = new SetPilotMessage();
-        msg.params = new SetPilotParametersColor(red, green, blue, whiteLevel);
+        msg.params = new SetPilotParametersColor(red, green, blue, coolWhiteLevel, warmWhiteLevel);
         return msg;
     }
     /**
-     * Constructs color control message.
-     * Valid combinations: R+G+B, R+G+W, G+B+W. R+B+W.
-     * R+G+B+W could not be played due to limitations in the light engine
+     * Constructs color + dimming control message.
+     * Valid combinations: R+G+B, R+G+(W|C), G+B+(W|C), R+B+(W|C), W+C.
+     * R+G+B+(W|C), W+C+(R|G|B) could not be played due to limitations in the light engine
      * @param red - Integer, valid range 0-255
      * @param green - Integer, valid range 0-255
      * @param blue - Integer, valid range 0-255
-     * @param whiteLevel - Integer, valid range 0-255
+     * @param coolWhiteLevel - Integer, valid range 0-255
+     * @param warmWhiteLevel - Integer, valid range 0-255
      * @param dimming - Integer, valid range is 10-100
      */
-    static buildColorAndBrightnessControlMessage(red, green, blue, whiteLevel, dimming) {
+    static buildColorAndBrightnessControlMessage(red, green, blue, coolWhiteLevel, warmWhiteLevel, dimming) {
         const msg = new SetPilotMessage();
-        msg.params = new SetPilotParametersColorAndBrightness(red, green, blue, whiteLevel, dimming);
+        msg.params = new SetPilotParametersColorAndBrightness(red, green, blue, coolWhiteLevel, warmWhiteLevel, dimming);
         return msg;
     }
     /**
