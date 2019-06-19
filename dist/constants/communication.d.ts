@@ -7,5 +7,6 @@ export declare const getSystemConfigMethod = "getSystemConfig";
 export declare const setPilotMethod = "setPilot";
 export declare const updateOtaMethod = "updateOta";
 export declare const resetMethod = "reset";
+export declare const rebootMethod = "reboot";
 export declare const setSystemConfigMethod = "setSystemConfig";
 export declare const setUserConfigMethod = "setUserConfig";

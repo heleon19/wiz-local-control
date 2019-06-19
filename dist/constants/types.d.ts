@@ -43,7 +43,7 @@ export declare enum MQTTConnectionStatus {
     NoCredentials = 2,
     MQTTClientInitFailure = 3,
     ErrorLoadingPasswordFromFlash = 4,
-    PasswordError = 5,
+    PasswordError = 5
 }
 /**
  * Incoming message that lamp sends to report its status
@@ -237,9 +237,10 @@ export declare class SetPilotMessage {
  * Set system config messages parameters for request
  */
 export declare class SetSystemConfigParameters {
-    env: string;
+    env?: string;
     systemConfigTs: number;
-    constructor(environment: string);
+    moduleName?: string;
+    constructor(environment: string | undefined, moduleName: string | undefined);
 }
 export declare class SetSystemConfigMessage {
     method: "setSystemConfig";
@@ -251,6 +252,10 @@ export declare class SetSystemConfigMessage {
      * Constructs firmware update message
      */
     static buildSetEnvironmentMessage(environment: string): SetSystemConfigMessage;
+    /**
+     * Constructs changing of module name message
+     */
+    static buildSetModuleNameMessage(moduleName: string): SetSystemConfigMessage;
 }
 /**
  * Update firmware messages parameters for request
@@ -280,6 +285,16 @@ export declare class ResetMessage {
      * Constructs reset message
      */
     static buildResetMessage(): ResetMessage;
+}
+export declare class RebootMessage {
+    method: "reboot";
+    version: number;
+    id: number;
+    constructor();
+    /**
+     * Constructs reboot message
+     */
+    static buildRebootMessage(): RebootMessage;
 }
 /**
  * Message broadcasted by the light after booting,
@@ -333,8 +348,8 @@ export declare class GetSystemConfigMessage {
     id: number;
     constructor(ip: string);
 }
-export declare type WiZControlMessage = SetPilotMessage | SyncPilotAckMessage | RegistrationMessage | UpdateFirmwareMessage | GetSystemConfigMessage | SetSystemConfigMessage | ResetMessage;
-export declare type WiZMessage = GetPilotMessage | SetPilotMessage | SyncPilotMessage | FirstBeatMessage | RegistrationMessage | UpdateFirmwareMessage | SetSystemConfigMessage | ResetMessage;
+export declare type WiZControlMessage = SetPilotMessage | SyncPilotAckMessage | RegistrationMessage | UpdateFirmwareMessage | GetSystemConfigMessage | SetSystemConfigMessage | ResetMessage | RebootMessage;
+export declare type WiZMessage = GetPilotMessage | SetPilotMessage | SyncPilotMessage | FirstBeatMessage | RegistrationMessage | UpdateFirmwareMessage | SetSystemConfigMessage | ResetMessage | RebootMessage;
 export declare type WiZMessageResponse = GetSystemConfigResponse;
 export declare type Result<T extends WiZMessageResponse> = {
     type: "success";

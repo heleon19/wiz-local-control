@@ -326,17 +326,27 @@ exports.SetPilotMessage = SetPilotMessage;
  * Set system config messages parameters for request
  */
 class SetSystemConfigParameters {
-    constructor(environment) {
-        this.env = environment;
+    constructor(environment, moduleName) {
+        if (environment != undefined) {
+            this.env = environment;
+        }
+        if (moduleName != undefined) {
+            this.moduleName = moduleName;
+        }
         this.systemConfigTs = 0;
     }
 }
 __decorate([
+    class_validator_1.IsOptional(),
     class_validator_1.IsString()
 ], SetSystemConfigParameters.prototype, "env", void 0);
 __decorate([
     class_validator_1.IsInt()
 ], SetSystemConfigParameters.prototype, "systemConfigTs", void 0);
+__decorate([
+    class_validator_1.IsOptional(),
+    class_validator_1.IsString()
+], SetSystemConfigParameters.prototype, "moduleName", void 0);
 exports.SetSystemConfigParameters = SetSystemConfigParameters;
 class SetSystemConfigMessage {
     constructor() {
@@ -349,7 +359,15 @@ class SetSystemConfigMessage {
      */
     static buildSetEnvironmentMessage(environment) {
         const msg = new SetSystemConfigMessage();
-        msg.params = new SetSystemConfigParameters(environment);
+        msg.params = new SetSystemConfigParameters(environment, undefined);
+        return msg;
+    }
+    /**
+     * Constructs changing of module name message
+     */
+    static buildSetModuleNameMessage(moduleName) {
+        const msg = new SetSystemConfigMessage();
+        msg.params = new SetSystemConfigParameters(undefined, moduleName);
         return msg;
     }
 }
@@ -409,6 +427,21 @@ class ResetMessage {
     }
 }
 exports.ResetMessage = ResetMessage;
+class RebootMessage {
+    constructor() {
+        this.method = networkConstants.rebootMethod;
+        this.version = 1;
+        this.id = Math.floor(Math.random() * 10000 + 1);
+    }
+    /**
+     * Constructs reboot message
+     */
+    static buildRebootMessage() {
+        const msg = new RebootMessage();
+        return msg;
+    }
+}
+exports.RebootMessage = RebootMessage;
 /**
  * Message sent by device to the lamp (via broadcast or unicast)
  * Lamp will add specified IP to the list devices that it notifies on status change using

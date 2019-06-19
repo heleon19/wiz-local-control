@@ -9,6 +9,7 @@ exports.getSystemConfigMethod = "getSystemConfig";
 exports.setPilotMethod = "setPilot";
 exports.updateOtaMethod = "updateOta";
 exports.resetMethod = "reset";
+exports.rebootMethod = "reboot";
 exports.setSystemConfigMethod = "setSystemConfig";
 exports.setUserConfigMethod = "setUserConfig";
 //# sourceMappingURL=communication.js.map

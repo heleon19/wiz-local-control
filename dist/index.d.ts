@@ -33,11 +33,22 @@ export default class WiZLocalControl {
      */
     reset(lightIp: string): Promise<Result<any>>;
     /**
+     * Reboot WiZ Light
+     * @param lightIp Light IP address
+     */
+    reboot(lightIp: string): Promise<Result<any>>;
+    /**
      * Sets environment of WiZ Light
      * @param environment system environment
      * @param lightIp Light IP address
      */
     setEnvironment(environment: string, lightIp: string): Promise<Result<any>>;
+    /**
+     * Changes module name for WiZ Light
+     * @param moduleName module name
+     * @param lightIp Light IP address
+     */
+    setModuleName(moduleName: string, lightIp: string): Promise<Result<any>>;
     /**
      * Changes light mode of WiZ Light
      * @param lightMode Light mode, check LightMode type for details
