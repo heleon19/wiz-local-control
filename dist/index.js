@@ -56,12 +56,37 @@ class WiZLocalControl {
         return this.udpManager.sendUDPCommand(msg, lightIp);
     }
     /**
+     * Reboot WiZ Light
+     * @param lightIp Light IP address
+     */
+    async reboot(lightIp) {
+        const msg = types_2.RebootMessage.buildRebootMessage();
+        const validationErrors = await class_validator_1.validate(msg);
+        if (validationErrors.length > 0) {
+            throw Error(JSON.stringify(validationErrors));
+        }
+        return this.udpManager.sendUDPCommand(msg, lightIp);
+    }
+    /**
      * Sets environment of WiZ Light
      * @param environment system environment
      * @param lightIp Light IP address
      */
     async setEnvironment(environment, lightIp) {
         const msg = types_1.SetSystemConfigMessage.buildSetEnvironmentMessage(environment);
+        const validationErrors = await class_validator_1.validate(msg);
+        if (validationErrors.length > 0) {
+            throw Error(JSON.stringify(validationErrors));
+        }
+        return this.udpManager.sendUDPCommand(msg, lightIp);
+    }
+    /**
+     * Changes module name for WiZ Light
+     * @param moduleName module name
+     * @param lightIp Light IP address
+     */
+    async setModuleName(moduleName, lightIp) {
+        const msg = types_1.SetSystemConfigMessage.buildSetModuleNameMessage(moduleName);
         const validationErrors = await class_validator_1.validate(msg);
         if (validationErrors.length > 0) {
             throw Error(JSON.stringify(validationErrors));
