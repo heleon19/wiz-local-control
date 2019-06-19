@@ -11,6 +11,7 @@ import {
   SetPilotMessage,
   UpdateFirmwareMessage,
   ResetMessage,
+  RebootMessage,
 } from "./constants/types";
 import sendCommand from "./UDPCommunication";
 import * as dgram from "dgram";
@@ -84,6 +85,19 @@ export default class WiZLocalControl {
   }
 
   /**
+   * Reboot WiZ Light
+   * @param lightIp Light IP address
+   */
+  async reboot(lightIp: string): Promise<Result<any>> {
+    const msg = RebootMessage.buildRebootMessage();
+    const validationErrors = await validate(msg);
+    if (validationErrors.length > 0) {
+      throw Error(JSON.stringify(validationErrors));
+    }
+    return this.udpManager.sendUDPCommand(msg, lightIp);
+  }
+
+  /**
    * Sets environment of WiZ Light
    * @param environment system environment
    * @param lightIp Light IP address
@@ -93,6 +107,23 @@ export default class WiZLocalControl {
     lightIp: string,
   ): Promise<Result<any>> {
     const msg = SetSystemConfigMessage.buildSetEnvironmentMessage(environment);
+    const validationErrors = await validate(msg);
+    if (validationErrors.length > 0) {
+      throw Error(JSON.stringify(validationErrors));
+    }
+    return this.udpManager.sendUDPCommand(msg, lightIp);
+  }
+
+  /**
+   * Changes module name for WiZ Light
+   * @param moduleName module name
+   * @param lightIp Light IP address
+   */
+  async setModuleName(
+    moduleName: string,
+    lightIp: string,
+  ): Promise<Result<any>> {
+    const msg = SetSystemConfigMessage.buildSetModuleNameMessage(moduleName);
     const validationErrors = await validate(msg);
     if (validationErrors.length > 0) {
       throw Error(JSON.stringify(validationErrors));

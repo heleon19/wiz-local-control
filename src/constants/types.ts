@@ -6,6 +6,7 @@ import {
   Max,
   ValidateNested,
   IsString,
+  IsOptional,
 } from "class-validator";
 
 /**
@@ -470,13 +471,25 @@ export class SetPilotMessage {
  * Set system config messages parameters for request
  */
 export class SetSystemConfigParameters {
+  @IsOptional()
   @IsString()
-  env: string;
+  env?: string;
   @IsInt()
   systemConfigTs: number;
+  @IsOptional()
+  @IsString()
+  moduleName?: string;
 
-  constructor(environment: string) {
-    this.env = environment;
+  constructor(
+    environment: string | undefined,
+    moduleName: string | undefined,
+  ) {
+    if (environment != undefined) {
+      this.env = environment;
+    }
+    if (moduleName != undefined) {
+      this.moduleName = moduleName;
+    }
     this.systemConfigTs = 0;
   }
 }
@@ -499,7 +512,17 @@ export class SetSystemConfigMessage {
     environment: string,
   ): SetSystemConfigMessage {
     const msg = new SetSystemConfigMessage();
-    msg.params = new SetSystemConfigParameters(environment);
+    msg.params = new SetSystemConfigParameters(environment, undefined);
+    return msg;
+  }
+  /**
+   * Constructs changing of module name message
+   */
+  static buildSetModuleNameMessage(
+    moduleName: string,
+  ): SetSystemConfigMessage {
+    const msg = new SetSystemConfigMessage();
+    msg.params = new SetSystemConfigParameters(undefined, moduleName);
     return msg;
   }
 }
@@ -557,6 +580,25 @@ export class ResetMessage {
    */
   static buildResetMessage(): ResetMessage {
     const msg = new ResetMessage();
+    return msg;
+  }
+}
+
+export class RebootMessage {
+  method: "reboot";
+  version: number;
+  id: number;
+
+  constructor() {
+    this.method = networkConstants.rebootMethod;
+    this.version = 1;
+    this.id = Math.floor(Math.random() * 10000 + 1);
+  }
+  /**
+   * Constructs reboot message
+   */
+  static buildRebootMessage(): RebootMessage {
+    const msg = new RebootMessage();
     return msg;
   }
 }
@@ -636,7 +678,8 @@ export type WiZControlMessage =
   | UpdateFirmwareMessage
   | GetSystemConfigMessage
   | SetSystemConfigMessage
-  | ResetMessage;
+  | ResetMessage
+  | RebootMessage;
 
 export type WiZMessage =
   | GetPilotMessage
@@ -646,7 +689,8 @@ export type WiZMessage =
   | RegistrationMessage
   | UpdateFirmwareMessage
   | SetSystemConfigMessage
-  | ResetMessage;
+  | ResetMessage
+  | RebootMessage;
 
 export type WiZMessageResponse = GetSystemConfigResponse;
 
