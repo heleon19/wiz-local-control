@@ -191,8 +191,8 @@ class SetPilotParametersColorTemperatureAndBrightness {
 }
 __decorate([
     class_validator_1.IsInt(),
-    class_validator_1.Min(2200),
-    class_validator_1.Max(6500)
+    class_validator_1.Min(2000),
+    class_validator_1.Max(9000)
 ], SetPilotParametersColorTemperatureAndBrightness.prototype, "temp", void 0);
 __decorate([
     class_validator_1.IsInt(),
@@ -210,8 +210,8 @@ class SetPilotParametersColorTemperature {
 }
 __decorate([
     class_validator_1.IsInt(),
-    class_validator_1.Min(2200),
-    class_validator_1.Max(6500)
+    class_validator_1.Min(2000),
+    class_validator_1.Max(9000)
 ], SetPilotParametersColorTemperature.prototype, "temp", void 0);
 exports.SetPilotParametersColorTemperature = SetPilotParametersColorTemperature;
 class SetPilotMessage {
@@ -290,7 +290,7 @@ class SetPilotMessage {
     }
     /**
      * Constructs color temperature control message.
-     * @param colorTemperature - Integer, valid range 2200-6500
+     * @param colorTemperature - Integer, valid range 2000-9000
      */
     static buildColorTemperatureControlMessage(colorTemperature) {
         const msg = new SetPilotMessage();
@@ -299,7 +299,7 @@ class SetPilotMessage {
     }
     /**
      * Constructs color temperature control message.
-     * @param colorTemperature - Integer, valid range 2200-6500
+     * @param colorTemperature - Integer, valid range 2000-9000
      * @param dimming - Integer, valid range is 10-100
      */
     static buildColorTemperatureAndBrightnessControlMessage(colorTemperature, dimming) {
