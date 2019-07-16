@@ -326,12 +326,15 @@ exports.SetPilotMessage = SetPilotMessage;
  * Set system config messages parameters for request
  */
 class SetSystemConfigParameters {
-    constructor(environment, moduleName) {
+    constructor(environment, moduleName, extendedWhiteFactor) {
         if (environment != undefined) {
             this.env = environment;
         }
         if (moduleName != undefined) {
             this.moduleName = moduleName;
+        }
+        if (extendedWhiteFactor != undefined) {
+            this.ewf = extendedWhiteFactor;
         }
         this.systemConfigTs = 0;
     }
@@ -347,6 +350,10 @@ __decorate([
     class_validator_1.IsOptional(),
     class_validator_1.IsString()
 ], SetSystemConfigParameters.prototype, "moduleName", void 0);
+__decorate([
+    class_validator_1.IsOptional(),
+    class_validator_1.IsString()
+], SetSystemConfigParameters.prototype, "ewf", void 0);
 exports.SetSystemConfigParameters = SetSystemConfigParameters;
 class SetSystemConfigMessage {
     constructor() {
@@ -359,7 +366,7 @@ class SetSystemConfigMessage {
      */
     static buildSetEnvironmentMessage(environment) {
         const msg = new SetSystemConfigMessage();
-        msg.params = new SetSystemConfigParameters(environment, undefined);
+        msg.params = new SetSystemConfigParameters(environment, undefined, undefined);
         return msg;
     }
     /**
@@ -367,7 +374,15 @@ class SetSystemConfigMessage {
      */
     static buildSetModuleNameMessage(moduleName) {
         const msg = new SetSystemConfigMessage();
-        msg.params = new SetSystemConfigParameters(undefined, moduleName);
+        msg.params = new SetSystemConfigParameters(undefined, moduleName, undefined);
+        return msg;
+    }
+    /**
+     * Constructs update ewf message
+     */
+    static buildSetExtendedWhiteFactorMessage(extendedWhiteFactor) {
+        const msg = new SetSystemConfigMessage();
+        msg.params = new SetSystemConfigParameters(undefined, undefined, extendedWhiteFactor);
         return msg;
     }
 }
@@ -375,6 +390,59 @@ __decorate([
     class_validator_1.ValidateNested()
 ], SetSystemConfigMessage.prototype, "params", void 0);
 exports.SetSystemConfigMessage = SetSystemConfigMessage;
+/**
+ * Set system config messages parameters for request
+ */
+class SetUserConfigParameters {
+    constructor(whiteTemperatureMin, whiteTemperatureMax, extendedTemperatureMin, extendedTemperatureMax) {
+        if (whiteTemperatureMin != undefined
+            && whiteTemperatureMax != undefined) {
+            this.whiteRange = [
+                whiteTemperatureMin,
+                whiteTemperatureMax,
+            ];
+        }
+        if (extendedTemperatureMin != undefined
+            && extendedTemperatureMax != undefined) {
+            this.extRange = [
+                extendedTemperatureMin,
+                extendedTemperatureMax,
+            ];
+        }
+        this.userConfigTs = 0;
+    }
+}
+__decorate([
+    class_validator_1.IsInt()
+], SetUserConfigParameters.prototype, "userConfigTs", void 0);
+__decorate([
+    class_validator_1.IsOptional(),
+    class_validator_1.IsArray()
+], SetUserConfigParameters.prototype, "whiteRange", void 0);
+__decorate([
+    class_validator_1.IsOptional(),
+    class_validator_1.IsArray()
+], SetUserConfigParameters.prototype, "extRange", void 0);
+exports.SetUserConfigParameters = SetUserConfigParameters;
+class SetUserConfigMessage {
+    constructor() {
+        this.method = networkConstants.setUserConfigMethod;
+        this.version = 1;
+        this.id = Math.floor(Math.random() * 10000 + 1);
+    }
+    /**
+     * Constructs firmware update message
+     */
+    static buildSetTemperatureRangeMessage(whiteTemperatureMin, whiteTemperatureMax, extendedTemperatureMin, extendedTemperatureMax) {
+        const msg = new SetUserConfigMessage();
+        msg.params = new SetUserConfigParameters(whiteTemperatureMin, whiteTemperatureMax, extendedTemperatureMin, extendedTemperatureMax);
+        return msg;
+    }
+}
+__decorate([
+    class_validator_1.ValidateNested()
+], SetUserConfigMessage.prototype, "params", void 0);
+exports.SetUserConfigMessage = SetUserConfigMessage;
 /**
  * Update firmware messages parameters for request
  */
