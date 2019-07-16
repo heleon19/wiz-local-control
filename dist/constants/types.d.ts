@@ -14,7 +14,7 @@ export declare type Scene = {
  * 2. Color - determined by Red, Green, Blue, Cool White, Warm White
  * (0-255). There is a limit on a maximum amount of channels used in the same time:
  * 3 RGB or 2 RGB + 1 White or 2 Whites
- * 3. Color temperature – form color temperature using Cool and Warm white LEDs (2200-6500)
+ * 3. Color temperature – form color temperature using Cool and Warm white LEDs (2000-9000)
  */
 export declare type LightMode = Scene | {
     type: "color";
@@ -217,12 +217,12 @@ export declare class SetPilotMessage {
     static buildColorAndBrightnessControlMessage(red: number, green: number, blue: number, coolWhiteLevel: number, warmWhiteLevel: number, dimming: number): SetPilotMessage;
     /**
      * Constructs color temperature control message.
-     * @param colorTemperature - Integer, valid range 2200-6500
+     * @param colorTemperature - Integer, valid range 2000-9000
      */
     static buildColorTemperatureControlMessage(colorTemperature: number): SetPilotMessage;
     /**
      * Constructs color temperature control message.
-     * @param colorTemperature - Integer, valid range 2200-6500
+     * @param colorTemperature - Integer, valid range 2000-9000
      * @param dimming - Integer, valid range is 10-100
      */
     static buildColorTemperatureAndBrightnessControlMessage(colorTemperature: number, dimming: number): SetPilotMessage;
@@ -240,7 +240,8 @@ export declare class SetSystemConfigParameters {
     env?: string;
     systemConfigTs: number;
     moduleName?: string;
-    constructor(environment: string | undefined, moduleName: string | undefined);
+    ewf?: string;
+    constructor(environment: string | undefined, moduleName: string | undefined, extendedWhiteFactor: string | undefined);
 }
 export declare class SetSystemConfigMessage {
     method: "setSystemConfig";
@@ -256,6 +257,30 @@ export declare class SetSystemConfigMessage {
      * Constructs changing of module name message
      */
     static buildSetModuleNameMessage(moduleName: string): SetSystemConfigMessage;
+    /**
+     * Constructs update ewf message
+     */
+    static buildSetExtendedWhiteFactorMessage(extendedWhiteFactor: string): SetSystemConfigMessage;
+}
+/**
+ * Set system config messages parameters for request
+ */
+export declare class SetUserConfigParameters {
+    userConfigTs: number;
+    whiteRange?: number[];
+    extRange?: number[];
+    constructor(whiteTemperatureMin: number | undefined, whiteTemperatureMax: number | undefined, extendedTemperatureMin: number | undefined, extendedTemperatureMax: number | undefined);
+}
+export declare class SetUserConfigMessage {
+    method: "setUserConfig";
+    version: number;
+    id: number;
+    params: SetUserConfigParameters;
+    constructor();
+    /**
+     * Constructs firmware update message
+     */
+    static buildSetTemperatureRangeMessage(whiteTemperatureMin: number, whiteTemperatureMax: number, extendedTemperatureMin: number, extendedTemperatureMax: number): SetUserConfigMessage;
 }
 /**
  * Update firmware messages parameters for request
@@ -348,8 +373,8 @@ export declare class GetSystemConfigMessage {
     id: number;
     constructor(ip: string);
 }
-export declare type WiZControlMessage = SetPilotMessage | SyncPilotAckMessage | RegistrationMessage | UpdateFirmwareMessage | GetSystemConfigMessage | SetSystemConfigMessage | ResetMessage | RebootMessage;
-export declare type WiZMessage = GetPilotMessage | SetPilotMessage | SyncPilotMessage | FirstBeatMessage | RegistrationMessage | UpdateFirmwareMessage | SetSystemConfigMessage | ResetMessage | RebootMessage;
+export declare type WiZControlMessage = SetPilotMessage | SyncPilotAckMessage | RegistrationMessage | UpdateFirmwareMessage | GetSystemConfigMessage | SetSystemConfigMessage | ResetMessage | RebootMessage | SetUserConfigMessage;
+export declare type WiZMessage = GetPilotMessage | SetPilotMessage | SyncPilotMessage | FirstBeatMessage | RegistrationMessage | UpdateFirmwareMessage | SetSystemConfigMessage | ResetMessage | RebootMessage | SetUserConfigMessage;
 export declare type WiZMessageResponse = GetSystemConfigResponse;
 export declare type Result<T extends WiZMessageResponse> = {
     type: "success";

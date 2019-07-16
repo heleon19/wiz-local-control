@@ -7,6 +7,7 @@ import {
   ValidateNested,
   IsString,
   IsOptional,
+  IsArray,
 } from "class-validator";
 
 /**
@@ -26,7 +27,7 @@ export type Scene = {
  * 2. Color - determined by Red, Green, Blue, Cool White, Warm White
  * (0-255). There is a limit on a maximum amount of channels used in the same time:
  * 3 RGB or 2 RGB + 1 White or 2 Whites
- * 3. Color temperature – form color temperature using Cool and Warm white LEDs (2200-6500)
+ * 3. Color temperature – form color temperature using Cool and Warm white LEDs (2000-9000)
  */
 export type LightMode =
   | Scene
@@ -272,8 +273,8 @@ export class SetPilotParametersSpeed {
  */
 export class SetPilotParametersColorTemperatureAndBrightness {
   @IsInt()
-  @Min(2200)
-  @Max(6500)
+  @Min(2000)
+  @Max(9000)
   temp?: number;
   @IsInt()
   @Min(10)
@@ -291,8 +292,8 @@ export class SetPilotParametersColorTemperatureAndBrightness {
  */
 export class SetPilotParametersColorTemperature {
   @IsInt()
-  @Min(2200)
-  @Max(6500)
+  @Min(2000)
+  @Max(9000)
   temp?: number;
 
   constructor(temperature: number) {
@@ -430,7 +431,7 @@ export class SetPilotMessage {
 
   /**
    * Constructs color temperature control message.
-   * @param colorTemperature - Integer, valid range 2200-6500
+   * @param colorTemperature - Integer, valid range 2000-9000
    */
   static buildColorTemperatureControlMessage(colorTemperature: number) {
     const msg = new SetPilotMessage();
@@ -440,7 +441,7 @@ export class SetPilotMessage {
 
   /**
    * Constructs color temperature control message.
-   * @param colorTemperature - Integer, valid range 2200-6500
+   * @param colorTemperature - Integer, valid range 2000-9000
    * @param dimming - Integer, valid range is 10-100
    */
   static buildColorTemperatureAndBrightnessControlMessage(
@@ -479,16 +480,23 @@ export class SetSystemConfigParameters {
   @IsOptional()
   @IsString()
   moduleName?: string;
+  @IsOptional()
+  @IsString()
+  ewf?: string;
 
   constructor(
     environment: string | undefined,
     moduleName: string | undefined,
+    extendedWhiteFactor: string | undefined,
   ) {
     if (environment != undefined) {
       this.env = environment;
     }
     if (moduleName != undefined) {
       this.moduleName = moduleName;
+    }
+    if (extendedWhiteFactor != undefined) {
+      this.ewf = extendedWhiteFactor;
     }
     this.systemConfigTs = 0;
   }
@@ -512,7 +520,7 @@ export class SetSystemConfigMessage {
     environment: string,
   ): SetSystemConfigMessage {
     const msg = new SetSystemConfigMessage();
-    msg.params = new SetSystemConfigParameters(environment, undefined);
+    msg.params = new SetSystemConfigParameters(environment, undefined, undefined);
     return msg;
   }
   /**
@@ -522,7 +530,80 @@ export class SetSystemConfigMessage {
     moduleName: string,
   ): SetSystemConfigMessage {
     const msg = new SetSystemConfigMessage();
-    msg.params = new SetSystemConfigParameters(undefined, moduleName);
+    msg.params = new SetSystemConfigParameters(undefined, moduleName, undefined);
+    return msg;
+  }
+  /**
+   * Constructs update ewf message
+   */
+  static buildSetExtendedWhiteFactorMessage(
+    extendedWhiteFactor: string,
+  ): SetSystemConfigMessage {
+    const msg = new SetSystemConfigMessage();
+    msg.params = new SetSystemConfigParameters(undefined, undefined, extendedWhiteFactor);
+    return msg;
+  }
+}
+
+/**
+ * Set system config messages parameters for request
+ */
+export class SetUserConfigParameters {
+  @IsInt()
+  userConfigTs: number;
+  @IsOptional()
+  @IsArray()
+  whiteRange?: number[];
+  @IsOptional()
+  @IsArray()
+  extRange?: number[];
+
+  constructor(
+    whiteTemperatureMin: number | undefined,
+    whiteTemperatureMax: number | undefined,
+    extendedTemperatureMin: number | undefined,
+    extendedTemperatureMax: number | undefined,
+  ) {
+    if (whiteTemperatureMin != undefined
+      && whiteTemperatureMax != undefined) {
+      this.whiteRange = [
+        whiteTemperatureMin,
+        whiteTemperatureMax,
+      ];
+    }
+    if (extendedTemperatureMin != undefined
+      && extendedTemperatureMax != undefined) {
+      this.extRange = [
+        extendedTemperatureMin,
+        extendedTemperatureMax,
+      ];
+    }
+    this.userConfigTs = 0;
+  }
+}
+
+export class SetUserConfigMessage {
+  method: "setUserConfig";
+  version: number;
+  id: number;
+  @ValidateNested() params: SetUserConfigParameters;
+
+  constructor() {
+    this.method = networkConstants.setUserConfigMethod;
+    this.version = 1;
+    this.id = Math.floor(Math.random() * 10000 + 1);
+  }
+  /**
+   * Constructs firmware update message
+   */
+  static buildSetTemperatureRangeMessage(
+    whiteTemperatureMin: number,
+    whiteTemperatureMax: number,
+    extendedTemperatureMin: number,
+    extendedTemperatureMax: number,
+  ): SetUserConfigMessage {
+    const msg = new SetUserConfigMessage();
+    msg.params = new SetUserConfigParameters(whiteTemperatureMin, whiteTemperatureMax, extendedTemperatureMin, extendedTemperatureMax);
     return msg;
   }
 }
@@ -679,7 +760,8 @@ export type WiZControlMessage =
   | GetSystemConfigMessage
   | SetSystemConfigMessage
   | ResetMessage
-  | RebootMessage;
+  | RebootMessage
+  | SetUserConfigMessage;
 
 export type WiZMessage =
   | GetPilotMessage
@@ -690,7 +772,8 @@ export type WiZMessage =
   | UpdateFirmwareMessage
   | SetSystemConfigMessage
   | ResetMessage
-  | RebootMessage;
+  | RebootMessage
+  | SetUserConfigMessage;
 
 export type WiZMessageResponse = GetSystemConfigResponse;
 

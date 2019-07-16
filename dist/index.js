@@ -94,6 +94,32 @@ class WiZLocalControl {
         return this.udpManager.sendUDPCommand(msg, lightIp);
     }
     /**
+     * Changes extended white factor for WiZ Light
+     * @param extendedWhiteFactor extended white factor
+     * @param lightIp Light IP address
+     */
+    async setExtendedWhiteFactor(extendedWhiteFactor, lightIp) {
+        const msg = types_1.SetSystemConfigMessage.buildSetExtendedWhiteFactorMessage(extendedWhiteFactor);
+        const validationErrors = await class_validator_1.validate(msg);
+        if (validationErrors.length > 0) {
+            throw Error(JSON.stringify(validationErrors));
+        }
+        return this.udpManager.sendUDPCommand(msg, lightIp);
+    }
+    /**
+     * Changes temperature ranges for WiZ Light
+     * @param extendedWhiteFactor extended white factor
+     * @param lightIp Light IP address
+     */
+    async setTemperatureRanges(whiteTemperatureMin, whiteTemperatureMax, extendedTemperatureMin, extendedTemperatureMax, lightIp) {
+        const msg = types_1.SetUserConfigMessage.buildSetTemperatureRangeMessage(whiteTemperatureMin, whiteTemperatureMax, extendedTemperatureMin, extendedTemperatureMax);
+        const validationErrors = await class_validator_1.validate(msg);
+        if (validationErrors.length > 0) {
+            throw Error(JSON.stringify(validationErrors));
+        }
+        return this.udpManager.sendUDPCommand(msg, lightIp);
+    }
+    /**
      * Changes light mode of WiZ Light
      * @param lightMode Light mode, check LightMode type for details
      * @param lightIp Light IP address

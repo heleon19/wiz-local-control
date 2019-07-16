@@ -50,6 +50,18 @@ export default class WiZLocalControl {
      */
     setModuleName(moduleName: string, lightIp: string): Promise<Result<any>>;
     /**
+     * Changes extended white factor for WiZ Light
+     * @param extendedWhiteFactor extended white factor
+     * @param lightIp Light IP address
+     */
+    setExtendedWhiteFactor(extendedWhiteFactor: string, lightIp: string): Promise<Result<any>>;
+    /**
+     * Changes temperature ranges for WiZ Light
+     * @param extendedWhiteFactor extended white factor
+     * @param lightIp Light IP address
+     */
+    setTemperatureRanges(whiteTemperatureMin: number, whiteTemperatureMax: number, extendedTemperatureMin: number, extendedTemperatureMax: number, lightIp: string): Promise<Result<any>>;
+    /**
      * Changes light mode of WiZ Light
      * @param lightMode Light mode, check LightMode type for details
      * @param lightIp Light IP address
