@@ -1,4 +1,4 @@
-import { WiZMessage, Result, LightMode, GetSystemConfigResponse } from "./constants/types";
+import { WiZMessage, Result, LightMode, GetSystemConfigResponse, SetSystemConfigMessageParameters, SetUserConfigMessageParameters } from "./constants/types";
 import UDPManager from "./UDPManager";
 import { SetPilotMessage } from "./constants/types";
 export declare type WiZLocalControlConfig = {
@@ -56,11 +56,23 @@ export default class WiZLocalControl {
      */
     setExtendedWhiteFactor(extendedWhiteFactor: string, lightIp: string): Promise<Result<any>>;
     /**
+     * Sets system config for WiZ Light
+     * @param parameters SetSystemConfig message parameters
+     * @param lightIp Light IP address
+     */
+    setSystemConfig(parameters: SetSystemConfigMessageParameters, lightIp: string): Promise<Result<any>>;
+    /**
      * Changes temperature ranges for WiZ Light
      * @param extendedWhiteFactor extended white factor
      * @param lightIp Light IP address
      */
     setTemperatureRanges(whiteTemperatureMin: number, whiteTemperatureMax: number, extendedTemperatureMin: number, extendedTemperatureMax: number, lightIp: string): Promise<Result<any>>;
+    /**
+     * Sets user config for WiZ Light
+     * @param parameters SetUserConfig message parameters
+     * @param lightIp Light IP address
+     */
+    setUserConfig(parameters: SetUserConfigMessageParameters, lightIp: string): Promise<Result<any>>;
     /**
      * Changes light mode of WiZ Light
      * @param lightMode Light mode, check LightMode type for details
