@@ -107,12 +107,38 @@ class WiZLocalControl {
         return this.udpManager.sendUDPCommand(msg, lightIp);
     }
     /**
+     * Sets system config for WiZ Light
+     * @param parameters SetSystemConfig message parameters
+     * @param lightIp Light IP address
+     */
+    async setSystemConfig(parameters, lightIp) {
+        const msg = types_1.SetSystemConfigMessage.buildSetSystemConfigMessage(parameters);
+        const validationErrors = await class_validator_1.validate(msg);
+        if (validationErrors.length > 0) {
+            throw Error(JSON.stringify(validationErrors));
+        }
+        return this.udpManager.sendUDPCommand(msg, lightIp);
+    }
+    /**
      * Changes temperature ranges for WiZ Light
      * @param extendedWhiteFactor extended white factor
      * @param lightIp Light IP address
      */
     async setTemperatureRanges(whiteTemperatureMin, whiteTemperatureMax, extendedTemperatureMin, extendedTemperatureMax, lightIp) {
         const msg = types_1.SetUserConfigMessage.buildSetTemperatureRangeMessage(whiteTemperatureMin, whiteTemperatureMax, extendedTemperatureMin, extendedTemperatureMax);
+        const validationErrors = await class_validator_1.validate(msg);
+        if (validationErrors.length > 0) {
+            throw Error(JSON.stringify(validationErrors));
+        }
+        return this.udpManager.sendUDPCommand(msg, lightIp);
+    }
+    /**
+     * Sets user config for WiZ Light
+     * @param parameters SetUserConfig message parameters
+     * @param lightIp Light IP address
+     */
+    async setUserConfig(parameters, lightIp) {
+        const msg = types_1.SetUserConfigMessage.buildSetUserConfigMessage(parameters);
         const validationErrors = await class_validator_1.validate(msg);
         if (validationErrors.length > 0) {
             throw Error(JSON.stringify(validationErrors));

@@ -233,6 +233,14 @@ export declare class SetPilotMessage {
      */
     static buildSpeedControlMessage(speed: number): SetPilotMessage;
 }
+export interface SetSystemConfigMessageParameters {
+    environment?: string;
+    moduleName?: string;
+    extendedWhiteFactor?: string;
+    pwmRefreshRate?: number;
+    whiteChannels?: number;
+    whiteToColorsRatio?: number;
+}
 /**
  * Set system config messages parameters for request
  */
@@ -241,7 +249,9 @@ export declare class SetSystemConfigParameters {
     systemConfigTs: number;
     moduleName?: string;
     ewf?: string;
-    constructor(environment: string | undefined, moduleName: string | undefined, extendedWhiteFactor: string | undefined);
+    pwmConf?: string;
+    drvConf?: number[];
+    constructor(parameters: SetSystemConfigMessageParameters);
 }
 export declare class SetSystemConfigMessage {
     method: "setSystemConfig";
@@ -261,6 +271,18 @@ export declare class SetSystemConfigMessage {
      * Constructs update ewf message
      */
     static buildSetExtendedWhiteFactorMessage(extendedWhiteFactor: string): SetSystemConfigMessage;
+    /**
+     * Constructs general message
+     */
+    static buildSetSystemConfigMessage(parameters: SetSystemConfigMessageParameters): SetSystemConfigMessage;
+}
+export interface SetUserConfigMessageParameters {
+    whiteTemperatureMin?: number;
+    whiteTemperatureMax?: number;
+    extendedTemperatureMin?: number;
+    extendedTemperatureMax?: number;
+    pwmMin?: number;
+    pwmMax?: number;
 }
 /**
  * Set system config messages parameters for request
@@ -269,7 +291,8 @@ export declare class SetUserConfigParameters {
     userConfigTs: number;
     whiteRange?: number[];
     extRange?: number[];
-    constructor(whiteTemperatureMin: number | undefined, whiteTemperatureMax: number | undefined, extendedTemperatureMin: number | undefined, extendedTemperatureMax: number | undefined);
+    pwmRange?: number[];
+    constructor(parameters: SetUserConfigMessageParameters);
 }
 export declare class SetUserConfigMessage {
     method: "setUserConfig";
@@ -278,9 +301,13 @@ export declare class SetUserConfigMessage {
     params: SetUserConfigParameters;
     constructor();
     /**
-     * Constructs firmware update message
+     * Constructs temperature range update message
      */
     static buildSetTemperatureRangeMessage(whiteTemperatureMin: number, whiteTemperatureMax: number, extendedTemperatureMin: number, extendedTemperatureMax: number): SetUserConfigMessage;
+    /**
+     * Constructs SetUserConfig message
+     */
+    static buildSetUserConfigMessage(parameters: SetUserConfigMessageParameters): SetUserConfigMessage;
 }
 /**
  * Update firmware messages parameters for request

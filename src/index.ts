@@ -6,6 +6,8 @@ import {
   GetSystemConfigResponse,
   SetSystemConfigMessage,
   SetUserConfigMessage,
+  SetSystemConfigMessageParameters,
+  SetUserConfigMessageParameters,
 } from "./constants/types";
 import UDPManager from "./UDPManager";
 import {
@@ -150,6 +152,23 @@ export default class WiZLocalControl {
   }
 
   /**
+   * Sets system config for WiZ Light
+   * @param parameters SetSystemConfig message parameters
+   * @param lightIp Light IP address
+   */
+  async setSystemConfig(
+    parameters: SetSystemConfigMessageParameters,
+    lightIp: string,
+  ): Promise<Result<any>> {
+    const msg = SetSystemConfigMessage.buildSetSystemConfigMessage(parameters);
+    const validationErrors = await validate(msg);
+    if (validationErrors.length > 0) {
+      throw Error(JSON.stringify(validationErrors));
+    }
+    return this.udpManager.sendUDPCommand(msg, lightIp);
+  }
+
+  /**
    * Changes temperature ranges for WiZ Light
    * @param extendedWhiteFactor extended white factor
    * @param lightIp Light IP address
@@ -167,6 +186,23 @@ export default class WiZLocalControl {
       extendedTemperatureMin,
       extendedTemperatureMax,
     );
+    const validationErrors = await validate(msg);
+    if (validationErrors.length > 0) {
+      throw Error(JSON.stringify(validationErrors));
+    }
+    return this.udpManager.sendUDPCommand(msg, lightIp);
+  }
+
+  /**
+   * Sets user config for WiZ Light
+   * @param parameters SetUserConfig message parameters
+   * @param lightIp Light IP address
+   */
+  async setUserConfig(
+    parameters: SetUserConfigMessageParameters,
+    lightIp: string,
+  ): Promise<Result<any>> {
+    const msg = SetUserConfigMessage.buildSetUserConfigMessage(parameters);
     const validationErrors = await validate(msg);
     if (validationErrors.length > 0) {
       throw Error(JSON.stringify(validationErrors));

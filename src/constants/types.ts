@@ -9,6 +9,7 @@ import {
   IsOptional,
   IsArray,
 } from "class-validator";
+import { convertPWMRefreshRateToPWMConf } from "../helpers";
 
 /**
  * Scene type – built in the bulb scenes. Could be one of the scenes listed
@@ -468,6 +469,15 @@ export class SetPilotMessage {
   }
 }
 
+export interface SetSystemConfigMessageParameters {
+  environment?: string;
+  moduleName?: string;
+  extendedWhiteFactor?: string;
+  pwmRefreshRate?: number;
+  whiteChannels?: number;
+  whiteToColorsRatio?: number;
+}
+
 /**
  * Set system config messages parameters for request
  */
@@ -483,20 +493,34 @@ export class SetSystemConfigParameters {
   @IsOptional()
   @IsString()
   ewf?: string;
+  @IsOptional()
+  @IsString()
+  pwmConf?: string;
+  @IsOptional()
+  @IsArray()
+  drvConf?: number[];
 
   constructor(
-    environment: string | undefined,
-    moduleName: string | undefined,
-    extendedWhiteFactor: string | undefined,
+    parameters: SetSystemConfigMessageParameters,
   ) {
-    if (environment != undefined) {
-      this.env = environment;
+    if (parameters.environment != undefined) {
+      this.env = parameters.environment;
     }
-    if (moduleName != undefined) {
-      this.moduleName = moduleName;
+    if (parameters.moduleName != undefined) {
+      this.moduleName = parameters.moduleName;
     }
-    if (extendedWhiteFactor != undefined) {
-      this.ewf = extendedWhiteFactor;
+    if (parameters.extendedWhiteFactor != undefined) {
+      this.ewf = parameters.extendedWhiteFactor;
+    }
+    if (parameters.pwmRefreshRate != undefined) {
+      this.pwmConf = convertPWMRefreshRateToPWMConf(parameters.pwmRefreshRate);
+    }
+    if (parameters.whiteChannels != undefined
+      && parameters.whiteToColorsRatio != undefined) {
+      this.drvConf = [
+        parameters.whiteToColorsRatio,
+        parameters.whiteChannels,
+      ];
     }
     this.systemConfigTs = 0;
   }
@@ -520,7 +544,9 @@ export class SetSystemConfigMessage {
     environment: string,
   ): SetSystemConfigMessage {
     const msg = new SetSystemConfigMessage();
-    msg.params = new SetSystemConfigParameters(environment, undefined, undefined);
+    msg.params = new SetSystemConfigParameters({
+      environment,
+    });
     return msg;
   }
   /**
@@ -530,7 +556,9 @@ export class SetSystemConfigMessage {
     moduleName: string,
   ): SetSystemConfigMessage {
     const msg = new SetSystemConfigMessage();
-    msg.params = new SetSystemConfigParameters(undefined, moduleName, undefined);
+    msg.params = new SetSystemConfigParameters({
+      moduleName,
+    });
     return msg;
   }
   /**
@@ -540,9 +568,30 @@ export class SetSystemConfigMessage {
     extendedWhiteFactor: string,
   ): SetSystemConfigMessage {
     const msg = new SetSystemConfigMessage();
-    msg.params = new SetSystemConfigParameters(undefined, undefined, extendedWhiteFactor);
+    msg.params = new SetSystemConfigParameters({
+      extendedWhiteFactor,
+    });
     return msg;
   }
+  /**
+   * Constructs general message
+   */
+  static buildSetSystemConfigMessage(
+    parameters: SetSystemConfigMessageParameters,
+  ): SetSystemConfigMessage {
+    const msg = new SetSystemConfigMessage();
+    msg.params = new SetSystemConfigParameters(parameters);
+    return msg;
+  }
+}
+
+export interface SetUserConfigMessageParameters {
+  whiteTemperatureMin?: number;
+  whiteTemperatureMax?: number;
+  extendedTemperatureMin?: number;
+  extendedTemperatureMax?: number;
+  pwmMin?: number;
+  pwmMax?: number;
 }
 
 /**
@@ -557,25 +606,32 @@ export class SetUserConfigParameters {
   @IsOptional()
   @IsArray()
   extRange?: number[];
+  @IsOptional()
+  @IsArray()
+  pwmRange?: number[];
 
   constructor(
-    whiteTemperatureMin: number | undefined,
-    whiteTemperatureMax: number | undefined,
-    extendedTemperatureMin: number | undefined,
-    extendedTemperatureMax: number | undefined,
+    parameters: SetUserConfigMessageParameters,
   ) {
-    if (whiteTemperatureMin != undefined
-      && whiteTemperatureMax != undefined) {
+    if (parameters.whiteTemperatureMin != undefined
+      && parameters.whiteTemperatureMax != undefined) {
       this.whiteRange = [
-        whiteTemperatureMin,
-        whiteTemperatureMax,
+        parameters.whiteTemperatureMin,
+        parameters.whiteTemperatureMax,
       ];
     }
-    if (extendedTemperatureMin != undefined
-      && extendedTemperatureMax != undefined) {
+    if (parameters.extendedTemperatureMin != undefined
+      && parameters.extendedTemperatureMax != undefined) {
       this.extRange = [
-        extendedTemperatureMin,
-        extendedTemperatureMax,
+        parameters.extendedTemperatureMin,
+        parameters.extendedTemperatureMax,
+      ];
+    }
+    if (parameters.pwmMin != undefined
+      && parameters.pwmMax != undefined) {
+      this.pwmRange = [
+        parameters.pwmMin,
+        parameters.pwmMax,
       ];
     }
     this.userConfigTs = 0;
@@ -594,7 +650,7 @@ export class SetUserConfigMessage {
     this.id = Math.floor(Math.random() * 10000 + 1);
   }
   /**
-   * Constructs firmware update message
+   * Constructs temperature range update message
    */
   static buildSetTemperatureRangeMessage(
     whiteTemperatureMin: number,
@@ -603,7 +659,22 @@ export class SetUserConfigMessage {
     extendedTemperatureMax: number,
   ): SetUserConfigMessage {
     const msg = new SetUserConfigMessage();
-    msg.params = new SetUserConfigParameters(whiteTemperatureMin, whiteTemperatureMax, extendedTemperatureMin, extendedTemperatureMax);
+    msg.params = new SetUserConfigParameters({
+      whiteTemperatureMin,
+      whiteTemperatureMax,
+      extendedTemperatureMin,
+      extendedTemperatureMax,
+    });
+    return msg;
+  }
+  /**
+   * Constructs SetUserConfig message
+   */
+  static buildSetUserConfigMessage(
+    parameters: SetUserConfigMessageParameters,
+  ): SetUserConfigMessage {
+    const msg = new SetUserConfigMessage();
+    msg.params = new SetUserConfigParameters(parameters);
     return msg;
   }
 }
