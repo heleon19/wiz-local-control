@@ -8,6 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 const networkConstants = require("../constants/communication");
 const class_validator_1 = require("class-validator");
+const helpers_1 = require("../helpers");
 /**
  * MQTT connection status,
  * lamp will report it under some certain testing conditions
@@ -326,15 +327,25 @@ exports.SetPilotMessage = SetPilotMessage;
  * Set system config messages parameters for request
  */
 class SetSystemConfigParameters {
-    constructor(environment, moduleName, extendedWhiteFactor) {
-        if (environment != undefined) {
-            this.env = environment;
+    constructor(parameters) {
+        if (parameters.environment != undefined) {
+            this.env = parameters.environment;
         }
-        if (moduleName != undefined) {
-            this.moduleName = moduleName;
+        if (parameters.moduleName != undefined) {
+            this.moduleName = parameters.moduleName;
         }
-        if (extendedWhiteFactor != undefined) {
-            this.ewf = extendedWhiteFactor;
+        if (parameters.extendedWhiteFactor != undefined) {
+            this.ewf = parameters.extendedWhiteFactor;
+        }
+        if (parameters.pwmRefreshRate != undefined) {
+            this.pwmConf = helpers_1.convertPWMRefreshRateToPWMConf(parameters.pwmRefreshRate);
+        }
+        if (parameters.whiteChannels != undefined
+            && parameters.whiteToColorsRatio != undefined) {
+            this.drvConf = [
+                parameters.whiteToColorsRatio,
+                parameters.whiteChannels,
+            ];
         }
         this.systemConfigTs = 0;
     }
@@ -354,6 +365,14 @@ __decorate([
     class_validator_1.IsOptional(),
     class_validator_1.IsString()
 ], SetSystemConfigParameters.prototype, "ewf", void 0);
+__decorate([
+    class_validator_1.IsOptional(),
+    class_validator_1.IsString()
+], SetSystemConfigParameters.prototype, "pwmConf", void 0);
+__decorate([
+    class_validator_1.IsOptional(),
+    class_validator_1.IsArray()
+], SetSystemConfigParameters.prototype, "drvConf", void 0);
 exports.SetSystemConfigParameters = SetSystemConfigParameters;
 class SetSystemConfigMessage {
     constructor() {
@@ -366,7 +385,9 @@ class SetSystemConfigMessage {
      */
     static buildSetEnvironmentMessage(environment) {
         const msg = new SetSystemConfigMessage();
-        msg.params = new SetSystemConfigParameters(environment, undefined, undefined);
+        msg.params = new SetSystemConfigParameters({
+            environment,
+        });
         return msg;
     }
     /**
@@ -374,7 +395,9 @@ class SetSystemConfigMessage {
      */
     static buildSetModuleNameMessage(moduleName) {
         const msg = new SetSystemConfigMessage();
-        msg.params = new SetSystemConfigParameters(undefined, moduleName, undefined);
+        msg.params = new SetSystemConfigParameters({
+            moduleName,
+        });
         return msg;
     }
     /**
@@ -382,7 +405,17 @@ class SetSystemConfigMessage {
      */
     static buildSetExtendedWhiteFactorMessage(extendedWhiteFactor) {
         const msg = new SetSystemConfigMessage();
-        msg.params = new SetSystemConfigParameters(undefined, undefined, extendedWhiteFactor);
+        msg.params = new SetSystemConfigParameters({
+            extendedWhiteFactor,
+        });
+        return msg;
+    }
+    /**
+     * Constructs general message
+     */
+    static buildSetSystemConfigMessage(parameters) {
+        const msg = new SetSystemConfigMessage();
+        msg.params = new SetSystemConfigParameters(parameters);
         return msg;
     }
 }
@@ -394,19 +427,26 @@ exports.SetSystemConfigMessage = SetSystemConfigMessage;
  * Set system config messages parameters for request
  */
 class SetUserConfigParameters {
-    constructor(whiteTemperatureMin, whiteTemperatureMax, extendedTemperatureMin, extendedTemperatureMax) {
-        if (whiteTemperatureMin != undefined
-            && whiteTemperatureMax != undefined) {
+    constructor(parameters) {
+        if (parameters.whiteTemperatureMin != undefined
+            && parameters.whiteTemperatureMax != undefined) {
             this.whiteRange = [
-                whiteTemperatureMin,
-                whiteTemperatureMax,
+                parameters.whiteTemperatureMin,
+                parameters.whiteTemperatureMax,
             ];
         }
-        if (extendedTemperatureMin != undefined
-            && extendedTemperatureMax != undefined) {
+        if (parameters.extendedTemperatureMin != undefined
+            && parameters.extendedTemperatureMax != undefined) {
             this.extRange = [
-                extendedTemperatureMin,
-                extendedTemperatureMax,
+                parameters.extendedTemperatureMin,
+                parameters.extendedTemperatureMax,
+            ];
+        }
+        if (parameters.pwmMin != undefined
+            && parameters.pwmMax != undefined) {
+            this.pwmRange = [
+                parameters.pwmMin,
+                parameters.pwmMax,
             ];
         }
         this.userConfigTs = 0;
@@ -423,6 +463,10 @@ __decorate([
     class_validator_1.IsOptional(),
     class_validator_1.IsArray()
 ], SetUserConfigParameters.prototype, "extRange", void 0);
+__decorate([
+    class_validator_1.IsOptional(),
+    class_validator_1.IsArray()
+], SetUserConfigParameters.prototype, "pwmRange", void 0);
 exports.SetUserConfigParameters = SetUserConfigParameters;
 class SetUserConfigMessage {
     constructor() {
@@ -431,11 +475,24 @@ class SetUserConfigMessage {
         this.id = Math.floor(Math.random() * 10000 + 1);
     }
     /**
-     * Constructs firmware update message
+     * Constructs temperature range update message
      */
     static buildSetTemperatureRangeMessage(whiteTemperatureMin, whiteTemperatureMax, extendedTemperatureMin, extendedTemperatureMax) {
         const msg = new SetUserConfigMessage();
-        msg.params = new SetUserConfigParameters(whiteTemperatureMin, whiteTemperatureMax, extendedTemperatureMin, extendedTemperatureMax);
+        msg.params = new SetUserConfigParameters({
+            whiteTemperatureMin,
+            whiteTemperatureMax,
+            extendedTemperatureMin,
+            extendedTemperatureMax,
+        });
+        return msg;
+    }
+    /**
+     * Constructs SetUserConfig message
+     */
+    static buildSetUserConfigMessage(parameters) {
+        const msg = new SetUserConfigMessage();
+        msg.params = new SetUserConfigParameters(parameters);
         return msg;
     }
 }
