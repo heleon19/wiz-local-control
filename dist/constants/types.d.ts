@@ -315,7 +315,7 @@ export declare class SetUserConfigMessage {
 export declare class UpdateFirmwareParameters {
     fw: string;
     force: number;
-    constructor();
+    constructor(firmwareVersion: string | undefined);
 }
 export declare class UpdateFirmwareMessage {
     method: "updateOta";
@@ -326,7 +326,7 @@ export declare class UpdateFirmwareMessage {
     /**
      * Constructs firmware update message
      */
-    static buildUpdateFirmwareMessage(): UpdateFirmwareMessage;
+    static buildUpdateFirmwareMessage(firmwareVersion: string | undefined): UpdateFirmwareMessage;
 }
 export declare class ResetMessage {
     method: "reset";
