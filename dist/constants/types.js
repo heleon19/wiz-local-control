@@ -504,8 +504,8 @@ exports.SetUserConfigMessage = SetUserConfigMessage;
  * Update firmware messages parameters for request
  */
 class UpdateFirmwareParameters {
-    constructor() {
-        this.fw = "default";
+    constructor(firmwareVersion) {
+        this.fw = firmwareVersion || "default";
         this.force = 1;
     }
 }
@@ -527,9 +527,9 @@ class UpdateFirmwareMessage {
     /**
      * Constructs firmware update message
      */
-    static buildUpdateFirmwareMessage() {
+    static buildUpdateFirmwareMessage(firmwareVersion) {
         const msg = new UpdateFirmwareMessage();
-        msg.params = new UpdateFirmwareParameters();
+        msg.params = new UpdateFirmwareParameters(firmwareVersion);
         return msg;
     }
 }
