@@ -65,8 +65,8 @@ export default class WiZLocalControl {
    * Requests firmware update of WiZ Light
    * @param lightIp Light IP address
    */
-  async updateFirmware(lightIp: string): Promise<Result<any>> {
-    const msg = UpdateFirmwareMessage.buildUpdateFirmwareMessage();
+  async updateFirmware(firmwareVersion: string | undefined, lightIp: string): Promise<Result<any>> {
+    const msg = UpdateFirmwareMessage.buildUpdateFirmwareMessage(firmwareVersion);
     const validationErrors = await validate(msg);
     if (validationErrors.length > 0) {
       throw Error(JSON.stringify(validationErrors));
