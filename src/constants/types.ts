@@ -690,8 +690,8 @@ export class UpdateFirmwareParameters {
   @Max(1)
   force: number;
 
-  constructor() {
-    this.fw = "default";
+  constructor(firmwareVersion: string | undefined) {
+    this.fw = firmwareVersion || "default";
     this.force = 1;
   }
 }
@@ -710,9 +710,9 @@ export class UpdateFirmwareMessage {
   /**
    * Constructs firmware update message
    */
-  static buildUpdateFirmwareMessage(): UpdateFirmwareMessage {
+  static buildUpdateFirmwareMessage(firmwareVersion: string | undefined): UpdateFirmwareMessage {
     const msg = new UpdateFirmwareMessage();
-    msg.params = new UpdateFirmwareParameters();
+    msg.params = new UpdateFirmwareParameters(firmwareVersion);
     return msg;
   }
 }

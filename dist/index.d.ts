@@ -26,7 +26,7 @@ export default class WiZLocalControl {
      * Requests firmware update of WiZ Light
      * @param lightIp Light IP address
      */
-    updateFirmware(lightIp: string): Promise<Result<any>>;
+    updateFirmware(firmwareVersion: string | undefined, lightIp: string): Promise<Result<any>>;
     /**
      * Reset WiZ Light
      * @param lightIp Light IP address
