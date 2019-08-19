@@ -71,6 +71,19 @@ export declare type SyncPilotMessage = {
     };
 };
 /**
+ * Incoming message that lamp is updating firmware and the status changed
+ */
+export declare type UpdateOtaMessage = {
+    method: "updateOta";
+    id: number;
+    env: string;
+    timestamp: Date;
+    ip: string;
+    params: {
+        updateStatus?: number;
+    };
+};
+/**
  * Acknowledgement message device should send to
  * the lamp on receiving SyncPilot message
  */
@@ -401,7 +414,7 @@ export declare class GetSystemConfigMessage {
     constructor(ip: string);
 }
 export declare type WiZControlMessage = SetPilotMessage | SyncPilotAckMessage | RegistrationMessage | UpdateFirmwareMessage | GetSystemConfigMessage | SetSystemConfigMessage | ResetMessage | RebootMessage | SetUserConfigMessage;
-export declare type WiZMessage = GetPilotMessage | SetPilotMessage | SyncPilotMessage | FirstBeatMessage | RegistrationMessage | UpdateFirmwareMessage | SetSystemConfigMessage | ResetMessage | RebootMessage | SetUserConfigMessage;
+export declare type WiZMessage = GetPilotMessage | SetPilotMessage | SyncPilotMessage | UpdateOtaMessage | FirstBeatMessage | RegistrationMessage | UpdateFirmwareMessage | SetSystemConfigMessage | ResetMessage | RebootMessage | SetUserConfigMessage;
 export declare type WiZMessageResponse = GetSystemConfigResponse;
 export declare type Result<T extends WiZMessageResponse> = {
     type: "success";
