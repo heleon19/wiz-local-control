@@ -88,6 +88,19 @@ export type SyncPilotMessage = {
     src: string;
   };
 };
+/**
+ * Incoming message that lamp is updating firmware and the status changed
+ */
+export type UpdateOtaMessage = {
+  method: "updateOta";
+  id: number;
+  env: string;
+  timestamp: Date;
+  ip: string;
+  params: {
+    updateStatus?: number;
+  };
+};
 
 /**
  * Acknowledgement message device should send to
@@ -838,6 +851,7 @@ export type WiZMessage =
   | GetPilotMessage
   | SetPilotMessage
   | SyncPilotMessage
+  | UpdateOtaMessage
   | FirstBeatMessage
   | RegistrationMessage
   | UpdateFirmwareMessage
