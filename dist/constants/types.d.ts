@@ -43,7 +43,7 @@ export declare enum MQTTConnectionStatus {
     NoCredentials = 2,
     MQTTClientInitFailure = 3,
     ErrorLoadingPasswordFromFlash = 4,
-    PasswordError = 5
+    PasswordError = 5,
 }
 /**
  * Incoming message that lamp sends to report its status

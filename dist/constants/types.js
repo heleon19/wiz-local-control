@@ -136,7 +136,7 @@ class SetPilotParametersSceneAndBrightness {
 __decorate([
     class_validator_1.IsInt(),
     class_validator_1.Min(1),
-    class_validator_1.Max(28)
+    class_validator_1.Max(32)
 ], SetPilotParametersSceneAndBrightness.prototype, "sceneId", void 0);
 __decorate([
     class_validator_1.IsInt(),
@@ -340,12 +340,9 @@ class SetSystemConfigParameters {
         if (parameters.pwmRefreshRate != undefined) {
             this.pwmConf = helpers_1.convertPWMRefreshRateToPWMConf(parameters.pwmRefreshRate);
         }
-        if (parameters.whiteChannels != undefined
-            && parameters.whiteToColorsRatio != undefined) {
-            this.drvConf = [
-                parameters.whiteToColorsRatio,
-                parameters.whiteChannels,
-            ];
+        if (parameters.whiteChannels != undefined &&
+            parameters.whiteToColorsRatio != undefined) {
+            this.drvConf = [parameters.whiteToColorsRatio, parameters.whiteChannels];
         }
         this.systemConfigTs = 0;
     }
@@ -428,26 +425,22 @@ exports.SetSystemConfigMessage = SetSystemConfigMessage;
  */
 class SetUserConfigParameters {
     constructor(parameters) {
-        if (parameters.whiteTemperatureMin != undefined
-            && parameters.whiteTemperatureMax != undefined) {
+        if (parameters.whiteTemperatureMin != undefined &&
+            parameters.whiteTemperatureMax != undefined) {
             this.whiteRange = [
                 parameters.whiteTemperatureMin,
                 parameters.whiteTemperatureMax,
             ];
         }
-        if (parameters.extendedTemperatureMin != undefined
-            && parameters.extendedTemperatureMax != undefined) {
+        if (parameters.extendedTemperatureMin != undefined &&
+            parameters.extendedTemperatureMax != undefined) {
             this.extRange = [
                 parameters.extendedTemperatureMin,
                 parameters.extendedTemperatureMax,
             ];
         }
-        if (parameters.pwmMin != undefined
-            && parameters.pwmMax != undefined) {
-            this.pwmRange = [
-                parameters.pwmMin,
-                parameters.pwmMax,
-            ];
+        if (parameters.pwmMin != undefined && parameters.pwmMax != undefined) {
+            this.pwmRange = [parameters.pwmMin, parameters.pwmMax];
         }
         this.userConfigTs = 0;
     }
