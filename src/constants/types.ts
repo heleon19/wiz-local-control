@@ -230,7 +230,7 @@ export class SetPilotParametersScene {
 export class SetPilotParametersSceneAndBrightness {
   @IsInt()
   @Min(1)
-  @Max(28)
+  @Max(32)
   sceneId?: number;
   @IsInt()
   @Min(10)
@@ -513,9 +513,7 @@ export class SetSystemConfigParameters {
   @IsArray()
   drvConf?: number[];
 
-  constructor(
-    parameters: SetSystemConfigMessageParameters,
-  ) {
+  constructor(parameters: SetSystemConfigMessageParameters) {
     if (parameters.environment != undefined) {
       this.env = parameters.environment;
     }
@@ -528,12 +526,11 @@ export class SetSystemConfigParameters {
     if (parameters.pwmRefreshRate != undefined) {
       this.pwmConf = convertPWMRefreshRateToPWMConf(parameters.pwmRefreshRate);
     }
-    if (parameters.whiteChannels != undefined
-      && parameters.whiteToColorsRatio != undefined) {
-      this.drvConf = [
-        parameters.whiteToColorsRatio,
-        parameters.whiteChannels,
-      ];
+    if (
+      parameters.whiteChannels != undefined &&
+      parameters.whiteToColorsRatio != undefined
+    ) {
+      this.drvConf = [parameters.whiteToColorsRatio, parameters.whiteChannels];
     }
     this.systemConfigTs = 0;
   }
@@ -565,9 +562,7 @@ export class SetSystemConfigMessage {
   /**
    * Constructs changing of module name message
    */
-  static buildSetModuleNameMessage(
-    moduleName: string,
-  ): SetSystemConfigMessage {
+  static buildSetModuleNameMessage(moduleName: string): SetSystemConfigMessage {
     const msg = new SetSystemConfigMessage();
     msg.params = new SetSystemConfigParameters({
       moduleName,
@@ -623,29 +618,27 @@ export class SetUserConfigParameters {
   @IsArray()
   pwmRange?: number[];
 
-  constructor(
-    parameters: SetUserConfigMessageParameters,
-  ) {
-    if (parameters.whiteTemperatureMin != undefined
-      && parameters.whiteTemperatureMax != undefined) {
+  constructor(parameters: SetUserConfigMessageParameters) {
+    if (
+      parameters.whiteTemperatureMin != undefined &&
+      parameters.whiteTemperatureMax != undefined
+    ) {
       this.whiteRange = [
         parameters.whiteTemperatureMin,
         parameters.whiteTemperatureMax,
       ];
     }
-    if (parameters.extendedTemperatureMin != undefined
-      && parameters.extendedTemperatureMax != undefined) {
+    if (
+      parameters.extendedTemperatureMin != undefined &&
+      parameters.extendedTemperatureMax != undefined
+    ) {
       this.extRange = [
         parameters.extendedTemperatureMin,
         parameters.extendedTemperatureMax,
       ];
     }
-    if (parameters.pwmMin != undefined
-      && parameters.pwmMax != undefined) {
-      this.pwmRange = [
-        parameters.pwmMin,
-        parameters.pwmMax,
-      ];
+    if (parameters.pwmMin != undefined && parameters.pwmMax != undefined) {
+      this.pwmRange = [parameters.pwmMin, parameters.pwmMax];
     }
     this.userConfigTs = 0;
   }
@@ -723,7 +716,9 @@ export class UpdateFirmwareMessage {
   /**
    * Constructs firmware update message
    */
-  static buildUpdateFirmwareMessage(firmwareVersion: string | undefined): UpdateFirmwareMessage {
+  static buildUpdateFirmwareMessage(
+    firmwareVersion: string | undefined,
+  ): UpdateFirmwareMessage {
     const msg = new UpdateFirmwareMessage();
     msg.params = new UpdateFirmwareParameters(firmwareVersion);
     return msg;
