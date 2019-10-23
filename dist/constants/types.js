@@ -121,7 +121,7 @@ class SetPilotParametersScene {
 __decorate([
     class_validator_1.IsInt(),
     class_validator_1.Min(1),
-    class_validator_1.Max(28)
+    class_validator_1.Max(32)
 ], SetPilotParametersScene.prototype, "sceneId", void 0);
 exports.SetPilotParametersScene = SetPilotParametersScene;
 /**
@@ -729,6 +729,26 @@ exports.staticScenes = [
         type: "scene",
         sceneId: 28,
         name: "Halloween",
+    },
+    {
+        type: "scene",
+        sceneId: 29,
+        name: "Candlelight",
+    },
+    {
+        type: "scene",
+        sceneId: 30,
+        name: "Golden White",
+    },
+    {
+        type: "scene",
+        sceneId: 31,
+        name: "Pulse",
+    },
+    {
+        type: "scene",
+        sceneId: 32,
+        name: "Steampunk",
     },
 ];
 //# sourceMappingURL=types.js.map

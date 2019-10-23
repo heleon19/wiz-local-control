@@ -216,7 +216,7 @@ export class SetPilotParametersColorAndBrightness {
 export class SetPilotParametersScene {
   @IsInt()
   @Min(1)
-  @Max(28)
+  @Max(32)
   sceneId?: number;
 
   constructor(sceneId: number) {
@@ -1008,6 +1008,26 @@ export const staticScenes: Array<LightMode> = [
     type: "scene",
     sceneId: 28,
     name: "Halloween",
+  },
+  {
+    type: "scene",
+    sceneId: 29,
+    name: "Candlelight",
+  },
+  {
+    type: "scene",
+    sceneId: 30,
+    name: "Golden White",
+  },
+  {
+    type: "scene",
+    sceneId: 31,
+    name: "Pulse",
+  },
+  {
+    type: "scene",
+    sceneId: 32,
+    name: "Steampunk",
   },
 ];
 
