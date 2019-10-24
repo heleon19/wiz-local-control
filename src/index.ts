@@ -47,26 +47,18 @@ export default class WiZLocalControl {
   async stopListening() {
     await this.udpManager.stopListening();
   }
-  /**
-   * Changes brightness of WiZ Light
-   * @param brightness Brightness level, 10-100
-   * @param lightIp Light IP address
-   */
-  async changeBrightness(
-    brightness: number,
-    lightIp: string,
-  ): Promise<Result<any>> {
-    const msg = SetPilotMessage.buildDimmingControlMessage(brightness);
-    await this.validateMsg(msg);
-    return this.udpManager.sendUDPCommand(msg, lightIp);
-  }
 
   /**
    * Requests firmware update of WiZ Light
    * @param lightIp Light IP address
    */
-  async updateFirmware(firmwareVersion: string | undefined, lightIp: string): Promise<Result<any>> {
-    const msg = UpdateFirmwareMessage.buildUpdateFirmwareMessage(firmwareVersion);
+  async updateFirmware(
+    firmwareVersion: string | undefined,
+    lightIp: string,
+  ): Promise<Result<any>> {
+    const msg = UpdateFirmwareMessage.buildUpdateFirmwareMessage(
+      firmwareVersion,
+    );
     const validationErrors = await validate(msg);
     if (validationErrors.length > 0) {
       throw Error(JSON.stringify(validationErrors));
@@ -143,7 +135,9 @@ export default class WiZLocalControl {
     extendedWhiteFactor: string,
     lightIp: string,
   ): Promise<Result<any>> {
-    const msg = SetSystemConfigMessage.buildSetExtendedWhiteFactorMessage(extendedWhiteFactor);
+    const msg = SetSystemConfigMessage.buildSetExtendedWhiteFactorMessage(
+      extendedWhiteFactor,
+    );
     const validationErrors = await validate(msg);
     if (validationErrors.length > 0) {
       throw Error(JSON.stringify(validationErrors));
@@ -207,6 +201,20 @@ export default class WiZLocalControl {
     if (validationErrors.length > 0) {
       throw Error(JSON.stringify(validationErrors));
     }
+    return this.udpManager.sendUDPCommand(msg, lightIp);
+  }
+
+  /**
+   * Changes brightness of WiZ Light
+   * @param brightness Brightness level, 10-100
+   * @param lightIp Light IP address
+   */
+  async changeBrightness(
+    brightness: number,
+    lightIp: string,
+  ): Promise<Result<any>> {
+    const msg = SetPilotMessage.buildDimmingControlMessage(brightness);
+    await this.validateMsg(msg);
     return this.udpManager.sendUDPCommand(msg, lightIp);
   }
 
@@ -307,6 +315,17 @@ export default class WiZLocalControl {
    */
   async changeStatus(status: boolean, lightIp: string): Promise<Result<any>> {
     const msg = SetPilotMessage.buildStatusControlMessage(status);
+    await this.validateMsg(msg);
+    return this.udpManager.sendUDPCommand(msg, lightIp);
+  }
+
+  /**
+   * Changes ratio of WiZ Light (for supported products)
+   * @param ratio Ratio between top and bottom part, number in range 0..100
+   * @param lightIp Light IP address
+   */
+  async changeRatio(ratio: number, lightIp: string): Promise<Result<any>> {
+    const msg = SetPilotMessage.buildRatioControlMessage(ratio);
     await this.validateMsg(msg);
     return this.udpManager.sendUDPCommand(msg, lightIp);
   }

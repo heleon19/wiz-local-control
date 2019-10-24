@@ -17,12 +17,6 @@ export default class WiZLocalControl {
      */
     stopListening(): Promise<void>;
     /**
-     * Changes brightness of WiZ Light
-     * @param brightness Brightness level, 10-100
-     * @param lightIp Light IP address
-     */
-    changeBrightness(brightness: number, lightIp: string): Promise<Result<any>>;
-    /**
      * Requests firmware update of WiZ Light
      * @param lightIp Light IP address
      */
@@ -74,6 +68,12 @@ export default class WiZLocalControl {
      */
     setUserConfig(parameters: SetUserConfigMessageParameters, lightIp: string): Promise<Result<any>>;
     /**
+     * Changes brightness of WiZ Light
+     * @param brightness Brightness level, 10-100
+     * @param lightIp Light IP address
+     */
+    changeBrightness(brightness: number, lightIp: string): Promise<Result<any>>;
+    /**
      * Changes light mode of WiZ Light
      * @param lightMode Light mode, check LightMode type for details
      * @param lightIp Light IP address
@@ -98,6 +98,12 @@ export default class WiZLocalControl {
      * @param lightIp
      */
     changeStatus(status: boolean, lightIp: string): Promise<Result<any>>;
+    /**
+     * Changes ratio of WiZ Light (for supported products)
+     * @param ratio Ratio between top and bottom part, number in range 0..100
+     * @param lightIp Light IP address
+     */
+    changeRatio(ratio: number, lightIp: string): Promise<Result<any>>;
     /**
      * Retrieves system configuration for WiZ Device (like FW version)
      * @param lightIp

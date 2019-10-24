@@ -22,16 +22,6 @@ class WiZLocalControl {
         await this.udpManager.stopListening();
     }
     /**
-     * Changes brightness of WiZ Light
-     * @param brightness Brightness level, 10-100
-     * @param lightIp Light IP address
-     */
-    async changeBrightness(brightness, lightIp) {
-        const msg = types_2.SetPilotMessage.buildDimmingControlMessage(brightness);
-        await this.validateMsg(msg);
-        return this.udpManager.sendUDPCommand(msg, lightIp);
-    }
-    /**
      * Requests firmware update of WiZ Light
      * @param lightIp Light IP address
      */
@@ -146,6 +136,16 @@ class WiZLocalControl {
         return this.udpManager.sendUDPCommand(msg, lightIp);
     }
     /**
+     * Changes brightness of WiZ Light
+     * @param brightness Brightness level, 10-100
+     * @param lightIp Light IP address
+     */
+    async changeBrightness(brightness, lightIp) {
+        const msg = types_2.SetPilotMessage.buildDimmingControlMessage(brightness);
+        await this.validateMsg(msg);
+        return this.udpManager.sendUDPCommand(msg, lightIp);
+    }
+    /**
      * Changes light mode of WiZ Light
      * @param lightMode Light mode, check LightMode type for details
      * @param lightIp Light IP address
@@ -211,6 +211,16 @@ class WiZLocalControl {
      */
     async changeStatus(status, lightIp) {
         const msg = types_2.SetPilotMessage.buildStatusControlMessage(status);
+        await this.validateMsg(msg);
+        return this.udpManager.sendUDPCommand(msg, lightIp);
+    }
+    /**
+     * Changes ratio of WiZ Light (for supported products)
+     * @param ratio Ratio between top and bottom part, number in range 0..100
+     * @param lightIp Light IP address
+     */
+    async changeRatio(ratio, lightIp) {
+        const msg = types_2.SetPilotMessage.buildRatioControlMessage(ratio);
         await this.validateMsg(msg);
         return this.udpManager.sendUDPCommand(msg, lightIp);
     }

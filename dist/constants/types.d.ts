@@ -68,6 +68,7 @@ export declare type SyncPilotMessage = {
         mac: string;
         mqttCd?: number;
         src: string;
+        ratio?: number;
     };
 };
 /**
@@ -134,6 +135,13 @@ export declare class SetPilotParametersScene {
     constructor(sceneId: number);
 }
 /**
+ * Set Pilot messages parameters for ratio
+ */
+export declare class SetPilotParametersRatio {
+    ratio?: number;
+    constructor(ratio: number);
+}
+/**
  * Set Pilot messages parameters for scene and brightness
  */
 export declare class SetPilotParametersSceneAndBrightness {
@@ -177,7 +185,7 @@ export declare class SetPilotParametersColorTemperature {
     temp?: number;
     constructor(temperature: number);
 }
-export declare type SetPilotParams = SetPilotParametersColor | SetPilotParametersColorAndBrightness | SetPilotParametersColorTemperature | SetPilotParametersColorTemperatureAndBrightness | SetPilotParametersDimming | SetPilotParametersScene | SetPilotParametersSceneAndBrightness | SetPilotParametersSpeed | SetPilotParametersStatus;
+export declare type SetPilotParams = SetPilotParametersColor | SetPilotParametersColorAndBrightness | SetPilotParametersColorTemperature | SetPilotParametersColorTemperatureAndBrightness | SetPilotParametersDimming | SetPilotParametersScene | SetPilotParametersSceneAndBrightness | SetPilotParametersSpeed | SetPilotParametersStatus | SetPilotParametersRatio;
 export declare class SetPilotMessage {
     method: "setPilot";
     version: number;
@@ -245,6 +253,11 @@ export declare class SetPilotMessage {
      * @param speed Playing speed, valid range 20-200
      */
     static buildSpeedControlMessage(speed: number): SetPilotMessage;
+    /**
+     * Constructs ratio control message
+     * @param ratio - Ratio between zones brightess, number in range 0..100
+     */
+    static buildRatioControlMessage(ratio: number): SetPilotMessage;
 }
 export interface SetSystemConfigMessageParameters {
     environment?: string;

@@ -86,6 +86,7 @@ export type SyncPilotMessage = {
     mac: string;
     mqttCd?: number;
     src: string;
+    ratio?: number;
   };
 };
 /**
@@ -225,6 +226,20 @@ export class SetPilotParametersScene {
 }
 
 /**
+ * Set Pilot messages parameters for ratio
+ */
+export class SetPilotParametersRatio {
+  @IsInt()
+  @Min(0)
+  @Max(100)
+  ratio?: number;
+
+  constructor(ratio: number) {
+    this.ratio = ratio;
+  }
+}
+
+/**
  * Set Pilot messages parameters for scene and brightness
  */
 export class SetPilotParametersSceneAndBrightness {
@@ -324,7 +339,8 @@ export type SetPilotParams =
   | SetPilotParametersScene
   | SetPilotParametersSceneAndBrightness
   | SetPilotParametersSpeed
-  | SetPilotParametersStatus;
+  | SetPilotParametersStatus
+  | SetPilotParametersRatio;
 
 export class SetPilotMessage {
   method: "setPilot";
@@ -478,6 +494,16 @@ export class SetPilotMessage {
   static buildSpeedControlMessage(speed: number) {
     const msg = new SetPilotMessage();
     msg.params = new SetPilotParametersSpeed(speed);
+    return msg;
+  }
+
+  /**
+   * Constructs ratio control message
+   * @param ratio - Ratio between zones brightess, number in range 0..100
+   */
+  static buildRatioControlMessage(ratio: number) {
+    const msg = new SetPilotMessage();
+    msg.params = new SetPilotParametersRatio(ratio);
     return msg;
   }
 }

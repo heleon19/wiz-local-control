@@ -125,6 +125,20 @@ __decorate([
 ], SetPilotParametersScene.prototype, "sceneId", void 0);
 exports.SetPilotParametersScene = SetPilotParametersScene;
 /**
+ * Set Pilot messages parameters for ratio
+ */
+class SetPilotParametersRatio {
+    constructor(ratio) {
+        this.ratio = ratio;
+    }
+}
+__decorate([
+    class_validator_1.IsInt(),
+    class_validator_1.Min(0),
+    class_validator_1.Max(100)
+], SetPilotParametersRatio.prototype, "ratio", void 0);
+exports.SetPilotParametersRatio = SetPilotParametersRatio;
+/**
  * Set Pilot messages parameters for scene and brightness
  */
 class SetPilotParametersSceneAndBrightness {
@@ -316,6 +330,15 @@ class SetPilotMessage {
     static buildSpeedControlMessage(speed) {
         const msg = new SetPilotMessage();
         msg.params = new SetPilotParametersSpeed(speed);
+        return msg;
+    }
+    /**
+     * Constructs ratio control message
+     * @param ratio - Ratio between zones brightess, number in range 0..100
+     */
+    static buildRatioControlMessage(ratio) {
+        const msg = new SetPilotMessage();
+        msg.params = new SetPilotParametersRatio(ratio);
         return msg;
     }
 }
