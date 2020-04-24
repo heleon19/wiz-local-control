@@ -43,7 +43,7 @@ export declare enum MQTTConnectionStatus {
     NoCredentials = 2,
     MQTTClientInitFailure = 3,
     ErrorLoadingPasswordFromFlash = 4,
-    PasswordError = 5,
+    PasswordError = 5
 }
 /**
  * Incoming message that lamp sends to report its status
@@ -64,6 +64,7 @@ export declare type SyncPilotMessage = {
         sceneId?: number;
         temp?: number;
         dimming?: number;
+        speed?: number;
         rssi: number;
         mac: string;
         mqttCd?: number;
