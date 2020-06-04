@@ -82,6 +82,7 @@ export type SyncPilotMessage = {
     sceneId?: number;
     temp?: number;
     dimming?: number;
+    speed?: number;
     rssi: number;
     mac: string;
     mqttCd?: number;
