@@ -12,4 +12,6 @@ exports.resetMethod = "reset";
 exports.rebootMethod = "reboot";
 exports.setSystemConfigMethod = "setSystemConfig";
 exports.setUserConfigMethod = "setUserConfig";
+exports.setFavoritesMethod = "setFavs";
+exports.setWiZClickMethod = "setWiZClick";
 //# sourceMappingURL=communication.js.map

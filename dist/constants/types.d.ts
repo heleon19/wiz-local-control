@@ -7,6 +7,18 @@ export declare type Scene = {
     sceneId: number;
     name: string;
 };
+export declare type Color = {
+    type: "color";
+    r: number;
+    g: number;
+    b: number;
+    cw: number;
+    ww: number;
+};
+export declare type Temperature = {
+    type: "temperature";
+    colorTemperature: number;
+};
 /**
  * Light Mode type,
  * could be either
@@ -16,17 +28,7 @@ export declare type Scene = {
  * 3 RGB or 2 RGB + 1 White or 2 Whites
  * 3. Color temperature – form color temperature using Cool and Warm white LEDs (2000-9000)
  */
-export declare type LightMode = Scene | {
-    type: "color";
-    r: number;
-    g: number;
-    b: number;
-    cw: number;
-    ww: number;
-} | {
-    type: "temperature";
-    colorTemperature: number;
-};
+export declare type LightMode = Scene | Color | Temperature;
 /**
  * MQTT connection status,
  * lamp will report it under some certain testing conditions
@@ -355,6 +357,92 @@ export declare class UpdateFirmwareMessage {
      */
     static buildUpdateFirmwareMessage(firmwareVersion: string | undefined): UpdateFirmwareMessage;
 }
+export declare class FavoriteLightMode {
+    sceneId: number;
+    r: number;
+    g: number;
+    b: number;
+    ww: number;
+    cw: number;
+    temperature: number;
+    dim?: number;
+    spd?: number;
+    ratio?: number;
+    /**
+     * Builds favorite light mode for the Scene (dynamic or static)
+     * @param scene Scene that should be played as favorite
+     * @param dimming Dimming level (for light modes that support dimming)
+     * @param speed Speed level (for dynamic light modes)
+     * @param ratio Ratio level (for products that support ratio)
+     */
+    static buildFavoriteForScene(scene: Scene, dimming?: number, speed?: number, ratio?: number): FavoriteLightMode;
+    /**
+     * Builds favorite light mode for Color
+     * @param color Color definition that should be played as favorite
+     * @param dimming Dimming level (for light modes that support dimming)
+     * @param ratio Ratio level (for products that support ratio)
+     */
+    static buildFavoriteForColor(color: Color, dimming?: number, ratio?: number): FavoriteLightMode;
+    /**
+     * Builds favorite light mode for Temperature
+     * @param cct Temperature definition that should be played as favorite
+     * @param dimming Dimming level (for light modes that support dimming)
+     * @param ratio Ratio level (for products that support ratio)
+     */
+    static buildFavoriteForTemperature(cct: Temperature, dimming?: number, ratio?: number): FavoriteLightMode;
+    /**
+     * Builds favorite light mode for Turning light On or Off as a favorite
+     * @param onOff Should the light been turned on or off
+     */
+    static buildFavoriteForOnOff(onOff: boolean): FavoriteLightMode;
+    /**
+     * Builds favorite light mode for keeping previous mode when applying a favorite
+     */
+    static buildFavoriteForDoNothing(): FavoriteLightMode;
+    extractLightModeArray(): number[];
+    extractOptObject(): object;
+}
+export declare class SetFavoritesParameters {
+    favs: number[][];
+    opts: object[];
+    favConfigTs: number;
+    static buildFromFavorites(favorite1: FavoriteLightMode, favorite2: FavoriteLightMode, favorite3: FavoriteLightMode, favorite4: FavoriteLightMode): SetFavoritesParameters;
+}
+export declare class SetFavoritesMessage {
+    method: string;
+    version: number;
+    id: number;
+    params: SetFavoritesParameters;
+    constructor();
+    /**
+     * Constructs set favorites message
+     */
+    static buildSetFavoritesMessage(params: SetFavoritesParameters): SetFavoritesMessage;
+}
+export declare type WiZClickMode = FavoriteLightMode;
+export declare class SetWiZClickParameters {
+    wizc1: {
+        mode: number[];
+        opts: object;
+    };
+    wizc2: {
+        mode: number[];
+        opts: object;
+    };
+    confTs: number;
+    static buildFromWiZClickModes(wizClick1: WiZClickMode, wizClick2: WiZClickMode): SetWiZClickParameters;
+}
+export declare class SetWiZClickMessage {
+    method: string;
+    version: number;
+    id: number;
+    params: SetWiZClickParameters;
+    constructor();
+    /**
+     * Constructs set WiZ Click message
+     */
+    static buildSetWiZClickMessage(params: SetWiZClickParameters): SetWiZClickMessage;
+}
 export declare class ResetMessage {
     method: "reset";
     version: number;
@@ -427,7 +515,7 @@ export declare class GetSystemConfigMessage {
     id: number;
     constructor(ip: string);
 }
-export declare type WiZControlMessage = SetPilotMessage | SyncPilotAckMessage | RegistrationMessage | UpdateFirmwareMessage | GetSystemConfigMessage | SetSystemConfigMessage | ResetMessage | RebootMessage | SetUserConfigMessage;
+export declare type WiZControlMessage = SetPilotMessage | SyncPilotAckMessage | RegistrationMessage | UpdateFirmwareMessage | GetSystemConfigMessage | SetSystemConfigMessage | ResetMessage | RebootMessage | SetUserConfigMessage | SetFavoritesMessage | SetWiZClickMessage;
 export declare type WiZMessage = GetPilotMessage | SetPilotMessage | SyncPilotMessage | UpdateOtaMessage | FirstBeatMessage | RegistrationMessage | UpdateFirmwareMessage | SetSystemConfigMessage | ResetMessage | RebootMessage | SetUserConfigMessage;
 export declare type WiZMessageResponse = GetSystemConfigResponse;
 export declare type Result<T extends WiZMessageResponse> = {
@@ -439,8 +527,3 @@ export declare type Result<T extends WiZMessageResponse> = {
     message: string;
 };
 export declare const staticScenes: Array<LightMode>;
-export declare type Color = {
-    red: number;
-    green: number;
-    blue: number;
-};

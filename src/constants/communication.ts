@@ -11,3 +11,5 @@ export const resetMethod = "reset";
 export const rebootMethod = "reboot";
 export const setSystemConfigMethod = "setSystemConfig";
 export const setUserConfigMethod = "setUserConfig";
+export const setFavoritesMethod = "setFavs";
+export const setWiZClickMethod = "setWiZClick";

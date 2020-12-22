@@ -8,6 +8,10 @@ import {
   SetPilotParametersDimming,
   GetSystemConfigMessage,
   UpdateFirmwareMessage,
+  SetFavoritesMessage,
+  FavoriteLightMode,
+  WiZClickMode,
+  SetWiZClickMessage,
 } from "./constants/types";
 
 describe("Creating instance", () => {
@@ -175,4 +179,29 @@ describe("Sending commands", () => {
     expect(msg).to.be.instanceof(GetSystemConfigMessage);
     expect(ip).to.be.equal(targetIp);
   });
+
+  it("should form and send set favorites message", async () => {
+    const spy: sinon.SinonSpy = this.sendCommandSpy;
+    const targetIp = "127.0.0.1";
+    const fav1 = FavoriteLightMode.buildFavoriteForDoNothing();
+    await this.control.setFavorites(fav1, fav1, fav1, fav1, targetIp);
+    const msg = spy.getCall(0).args[0];
+    const ip = spy.getCall(0).args[1];
+
+    expect(msg).to.be.instanceof(SetFavoritesMessage);
+    expect(ip).to.be.equal(targetIp);
+  });
+
+  it("should form and send set wizclick message", async () => {
+    const spy: sinon.SinonSpy = this.sendCommandSpy;
+    const targetIp = "127.0.0.1";
+    const wizClick1 = FavoriteLightMode.buildFavoriteForDoNothing();
+    await this.control.setWiZClick(wizClick1, wizClick1, targetIp);
+    const msg = spy.getCall(0).args[0];
+    const ip = spy.getCall(0).args[1];
+
+    expect(msg).to.be.instanceof(SetWiZClickMessage);
+    expect(ip).to.be.equal(targetIp);
+  });
+
 });

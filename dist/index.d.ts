@@ -1,6 +1,6 @@
-import { WiZMessage, Result, LightMode, GetSystemConfigResponse, SetSystemConfigMessageParameters, SetUserConfigMessageParameters } from "./constants/types";
+import { WiZMessage, Result, LightMode, GetSystemConfigResponse, SetSystemConfigMessageParameters, SetUserConfigMessageParameters, FavoriteLightMode, WiZControlMessage, WiZClickMode } from "./constants/types";
 import UDPManager from "./UDPManager";
-import { SetPilotMessage } from "./constants/types";
+import { staticScenes } from "./constants/types";
 export declare type WiZLocalControlConfig = {
     incomingMsgCallback: (msg: WiZMessage, sourceIp: string) => void;
     interfaceName?: string;
@@ -109,5 +109,22 @@ export default class WiZLocalControl {
      * @param lightIp
      */
     getSystemConfig(lightIp: string): Promise<Result<GetSystemConfigResponse>>;
-    validateMsg(msg: SetPilotMessage): Promise<void>;
+    validateMsg(msg: WiZControlMessage, skipMissingProperties?: boolean): Promise<void>;
+    /**
+     * Sets favorites on the light
+     * @param favorite1
+     * @param favorite2
+     * @param favorite3
+     * @param favorite4
+     * @param lightIp
+     */
+    setFavorites(favorite1: FavoriteLightMode, favorite2: FavoriteLightMode, favorite3: FavoriteLightMode, favorite4: FavoriteLightMode, lightIp: string): Promise<Result<any>>;
+    /**
+     * Sets WiZ CLick settings on the light
+     * @param wizClick1
+     * @param wizClick2
+     * @param lightIp
+     */
+    setWiZClick(wizClick1: WiZClickMode, wizClick2: WiZClickMode, lightIp: string): Promise<Result<any>>;
 }
+export { staticScenes, FavoriteLightMode };
