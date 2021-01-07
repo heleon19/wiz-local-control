@@ -630,6 +630,7 @@ export interface SetUserConfigMessageParameters {
   extendedTemperatureMax?: number;
   pwmMin?: number;
   pwmMax?: number;
+  dftDim?: number;
 }
 
 /**
@@ -647,6 +648,8 @@ export class SetUserConfigParameters {
   @IsOptional()
   @IsArray()
   pwmRange?: number[];
+  @IsInt()
+  dftDim: number;
 
   constructor(parameters: SetUserConfigMessageParameters) {
     if (
@@ -670,6 +673,8 @@ export class SetUserConfigParameters {
     if (parameters.pwmMin != undefined && parameters.pwmMax != undefined) {
       this.pwmRange = [parameters.pwmMin, parameters.pwmMax];
     }
+
+    this.dftDim = parameters.dftDim || 100;
     this.userConfigTs = 0;
   }
 }

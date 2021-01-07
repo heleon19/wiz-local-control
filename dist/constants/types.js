@@ -465,6 +465,7 @@ class SetUserConfigParameters {
         if (parameters.pwmMin != undefined && parameters.pwmMax != undefined) {
             this.pwmRange = [parameters.pwmMin, parameters.pwmMax];
         }
+        this.dftDim = parameters.dftDim || 100;
         this.userConfigTs = 0;
     }
 }
@@ -483,6 +484,10 @@ __decorate([
     class_validator_1.IsOptional(),
     class_validator_1.IsArray()
 ], SetUserConfigParameters.prototype, "pwmRange", void 0);
+__decorate([
+    class_validator_1.IsOptional(),
+    class_validator_1.IsInt()
+], SetUserConfigParameters.prototype, "dftDim", void 0);
 exports.SetUserConfigParameters = SetUserConfigParameters;
 class SetUserConfigMessage {
     constructor() {

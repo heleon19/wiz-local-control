@@ -312,6 +312,7 @@ export interface SetUserConfigMessageParameters {
     extendedTemperatureMax?: number;
     pwmMin?: number;
     pwmMax?: number;
+    dftDim?: number;
 }
 /**
  * Set system config messages parameters for request
@@ -321,6 +322,7 @@ export declare class SetUserConfigParameters {
     whiteRange?: number[];
     extRange?: number[];
     pwmRange?: number[];
+    dftDim?: number;
     constructor(parameters: SetUserConfigMessageParameters);
 }
 export declare class SetUserConfigMessage {
