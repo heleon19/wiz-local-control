@@ -15,6 +15,8 @@ import {
   WiZClickMode,
   SetWiZClickParameters,
   SetWiZClickMessage,
+  GetPowerResponse,
+  GetPowerMessage,
 } from "./constants/types";
 import UDPManager from "./UDPManager";
 import {
@@ -317,7 +319,18 @@ export default class WiZLocalControl {
     lightIp: string,
   ): Promise<Result<GetSystemConfigResponse>> {
     const msg = new GetSystemConfigMessage(lightIp);
-    return this.udpManager.sendUDPCommand(msg, lightIp);
+    return this.udpManager.sendUDPCommand<GetSystemConfigResponse>(msg, lightIp);
+  }
+
+  /**
+   * Retrieves system configuration for WiZ Device (like FW version)
+   * @param lightIp
+   */
+  async getPower(
+    lightIp: string,
+  ): Promise<Result<GetPowerResponse>> {
+    const msg = new GetPowerMessage(lightIp);
+    return this.udpManager.sendUDPCommand<GetPowerResponse>(msg, lightIp);
   }
 
   async validateMsg(msg: WiZControlMessage, skipMissingProperties: boolean = false): Promise<void> {
@@ -331,11 +344,11 @@ export default class WiZLocalControl {
 
   /**
    * Sets favorites on the light
-   * @param favorite1 
-   * @param favorite2 
-   * @param favorite3 
-   * @param favorite4 
-   * @param lightIp 
+   * @param favorite1
+   * @param favorite2
+   * @param favorite3
+   * @param favorite4
+   * @param lightIp
    */
   async setFavorites(
     favorite1: FavoriteLightMode,
@@ -352,9 +365,9 @@ export default class WiZLocalControl {
 
   /**
    * Sets WiZ CLick settings on the light
-   * @param wizClick1 
-   * @param wizClick2 
-   * @param lightIp 
+   * @param wizClick1
+   * @param wizClick2
+   * @param lightIp
    */
   async setWiZClick(
     wizClick1: WiZClickMode,

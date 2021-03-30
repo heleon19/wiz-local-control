@@ -33,7 +33,7 @@ export type Color = {
 export type Temperature = {
   type: "temperature";
   colorTemperature: number;
-} 
+}
 /**
  * Light Mode type,
  * could be either
@@ -1113,6 +1113,29 @@ export class GetSystemConfigMessage {
   }
 }
 
+/**
+ * WiZ Light power load
+ */
+export type GetPowerResponse = {
+  method: "getPower";
+  result: {
+    power: number;
+  };
+};
+/**
+ * Message sent to the lamp requesting its power load
+ */
+export class GetPowerMessage {
+  method: "getPower";
+  version: number;
+  id: number;
+  constructor(ip: string) {
+    this.method = networkConstants.getPower;
+    this.id = Math.floor(Math.random() * 10000 + 1);
+    this.version = 1;
+  }
+}
+
 export type WiZControlMessage =
   | SetPilotMessage
   | SyncPilotAckMessage
@@ -1124,7 +1147,8 @@ export type WiZControlMessage =
   | RebootMessage
   | SetUserConfigMessage
   | SetFavoritesMessage
-  | SetWiZClickMessage;
+  | SetWiZClickMessage
+  | GetPowerMessage;
 
 export type WiZMessage =
   | GetPilotMessage
@@ -1139,7 +1163,7 @@ export type WiZMessage =
   | RebootMessage
   | SetUserConfigMessage;
 
-export type WiZMessageResponse = GetSystemConfigResponse;
+export type WiZMessageResponse = GetSystemConfigResponse | GetPowerResponse;
 
 export type Result<T extends WiZMessageResponse> =
   | {

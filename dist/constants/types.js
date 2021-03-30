@@ -860,6 +860,17 @@ class GetSystemConfigMessage {
     }
 }
 exports.GetSystemConfigMessage = GetSystemConfigMessage;
+/**
+ * Message sent to the lamp requesting its power load
+ */
+class GetPowerMessage {
+    constructor(ip) {
+        this.method = networkConstants.getPower;
+        this.id = Math.floor(Math.random() * 10000 + 1);
+        this.version = 1;
+    }
+}
+exports.GetPowerMessage = GetPowerMessage;
 exports.staticScenes = [
     {
         type: "scene",
