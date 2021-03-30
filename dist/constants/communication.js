@@ -12,4 +12,5 @@ exports.resetMethod = "reset";
 exports.rebootMethod = "reboot";
 exports.setSystemConfigMethod = "setSystemConfig";
 exports.setUserConfigMethod = "setUserConfig";
+exports.getPower = "getPower";
 //# sourceMappingURL=communication.js.map

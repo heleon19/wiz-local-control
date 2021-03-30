@@ -1,4 +1,4 @@
-import { WiZMessage, Result, LightMode, GetSystemConfigResponse, SetSystemConfigMessageParameters, SetUserConfigMessageParameters } from "./constants/types";
+import { WiZMessage, Result, LightMode, GetSystemConfigResponse, SetSystemConfigMessageParameters, SetUserConfigMessageParameters, GetPowerResponse } from "./constants/types";
 import UDPManager from "./UDPManager";
 import { SetPilotMessage } from "./constants/types";
 export declare type WiZLocalControlConfig = {
@@ -24,6 +24,7 @@ export default class WiZLocalControl {
     changeBrightness(brightness: number, lightIp: string): Promise<Result<any>>;
     /**
      * Requests firmware update of WiZ Light
+     * @param firmwareVersion
      * @param lightIp Light IP address
      */
     updateFirmware(firmwareVersion: string | undefined, lightIp: string): Promise<Result<any>>;
@@ -103,5 +104,10 @@ export default class WiZLocalControl {
      * @param lightIp
      */
     getSystemConfig(lightIp: string): Promise<Result<GetSystemConfigResponse>>;
+    /**
+     * Retrieves system configuration for WiZ Device (like FW version)
+     * @param lightIp
+     */
+    getPower(lightIp: string): Promise<Result<GetPowerResponse>>;
     validateMsg(msg: SetPilotMessage): Promise<void>;
 }

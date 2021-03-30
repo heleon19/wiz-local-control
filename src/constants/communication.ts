@@ -11,3 +11,4 @@ export const resetMethod = "reset";
 export const rebootMethod = "reboot";
 export const setSystemConfigMethod = "setSystemConfig";
 export const setUserConfigMethod = "setUserConfig";
+export const getPower = "getPower";

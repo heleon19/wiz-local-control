@@ -7,7 +7,7 @@ import {
   SetPilotMessage,
   SetPilotParametersDimming,
   GetSystemConfigMessage,
-  UpdateFirmwareMessage,
+  UpdateFirmwareMessage, GetPowerMessage,
 } from "./constants/types";
 
 describe("Creating instance", () => {
@@ -153,7 +153,7 @@ describe("Sending commands", () => {
     expect(msg).to.be.instanceof(UpdateFirmwareMessage);
     expect(ip).to.be.equal(targetIp);
   });
-  
+
   it("should form and send get system config command", async () => {
     const spy: sinon.SinonSpy = this.sendCommandSpy;
     const targetIp = "127.0.0.1";
@@ -162,6 +162,17 @@ describe("Sending commands", () => {
     const ip = spy.getCall(0).args[1];
 
     expect(msg).to.be.instanceof(GetSystemConfigMessage);
+    expect(ip).to.be.equal(targetIp);
+  });
+
+  it("should form and send get power command", async () => {
+    const spy: sinon.SinonSpy = this.sendCommandSpy;
+    const targetIp = "127.0.0.1";
+    await this.control.getPower(targetIp);
+    const msg = spy.getCall(0).args[0];
+    const ip = spy.getCall(0).args[1];
+
+    expect(msg).to.be.instanceof(GetPowerMessage);
     expect(ip).to.be.equal(targetIp);
   });
 });

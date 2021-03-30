@@ -8,6 +8,8 @@ import {
   SetUserConfigMessage,
   SetSystemConfigMessageParameters,
   SetUserConfigMessageParameters,
+  GetPowerResponse,
+  GetPowerMessage,
 } from "./constants/types";
 import UDPManager from "./UDPManager";
 import {
@@ -319,7 +321,18 @@ export default class WiZLocalControl {
     lightIp: string,
   ): Promise<Result<GetSystemConfigResponse>> {
     const msg = new GetSystemConfigMessage(lightIp);
-    return this.udpManager.sendUDPCommand(msg, lightIp);
+    return this.udpManager.sendUDPCommand<GetSystemConfigResponse>(msg, lightIp);
+  }
+
+  /**
+   * Retrieves system configuration for WiZ Device (like FW version)
+   * @param lightIp
+   */
+  async getPower(
+    lightIp: string,
+  ): Promise<Result<GetPowerResponse>> {
+    const msg = new GetPowerMessage(lightIp);
+    return this.udpManager.sendUDPCommand<GetPowerResponse>(msg, lightIp);
   }
 
   async validateMsg(msg: SetPilotMessage): Promise<void> {

@@ -43,7 +43,7 @@ export declare enum MQTTConnectionStatus {
     NoCredentials = 2,
     MQTTClientInitFailure = 3,
     ErrorLoadingPasswordFromFlash = 4,
-    PasswordError = 5
+    PasswordError = 5,
 }
 /**
  * Incoming message that lamp sends to report its status
@@ -413,9 +413,27 @@ export declare class GetSystemConfigMessage {
     id: number;
     constructor(ip: string);
 }
-export declare type WiZControlMessage = SetPilotMessage | SyncPilotAckMessage | RegistrationMessage | UpdateFirmwareMessage | GetSystemConfigMessage | SetSystemConfigMessage | ResetMessage | RebootMessage | SetUserConfigMessage;
+/**
+ * WiZ Light power load
+ */
+export declare type GetPowerResponse = {
+    method: "getPower";
+    result: {
+        power: number;
+    };
+};
+/**
+ * Message sent to the lamp requesting its power load
+ */
+export declare class GetPowerMessage {
+    method: "getPower";
+    version: number;
+    id: number;
+    constructor(ip: string);
+}
+export declare type WiZControlMessage = SetPilotMessage | SyncPilotAckMessage | RegistrationMessage | UpdateFirmwareMessage | GetSystemConfigMessage | SetSystemConfigMessage | ResetMessage | RebootMessage | SetUserConfigMessage | GetPowerMessage;
 export declare type WiZMessage = GetPilotMessage | SetPilotMessage | SyncPilotMessage | UpdateOtaMessage | FirstBeatMessage | RegistrationMessage | UpdateFirmwareMessage | SetSystemConfigMessage | ResetMessage | RebootMessage | SetUserConfigMessage;
-export declare type WiZMessageResponse = GetSystemConfigResponse;
+export declare type WiZMessageResponse = GetSystemConfigResponse | GetPowerResponse;
 export declare type Result<T extends WiZMessageResponse> = {
     type: "success";
     method: string;

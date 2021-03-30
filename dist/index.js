@@ -33,6 +33,7 @@ class WiZLocalControl {
     }
     /**
      * Requests firmware update of WiZ Light
+     * @param firmwareVersion
      * @param lightIp Light IP address
      */
     async updateFirmware(firmwareVersion, lightIp) {
@@ -220,6 +221,14 @@ class WiZLocalControl {
      */
     async getSystemConfig(lightIp) {
         const msg = new types_1.GetSystemConfigMessage(lightIp);
+        return this.udpManager.sendUDPCommand(msg, lightIp);
+    }
+    /**
+     * Retrieves system configuration for WiZ Device (like FW version)
+     * @param lightIp
+     */
+    async getPower(lightIp) {
+        const msg = new types_1.GetPowerMessage(lightIp);
         return this.udpManager.sendUDPCommand(msg, lightIp);
     }
     async validateMsg(msg) {

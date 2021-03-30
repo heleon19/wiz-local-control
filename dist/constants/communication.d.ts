@@ -10,3 +10,4 @@ export declare const resetMethod = "reset";
 export declare const rebootMethod = "reboot";
 export declare const setSystemConfigMethod = "setSystemConfig";
 export declare const setUserConfigMethod = "setUserConfig";
+export declare const getPower = "getPower";
