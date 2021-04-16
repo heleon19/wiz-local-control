@@ -7,11 +7,7 @@ import {
   SetPilotMessage,
   SetPilotParametersDimming,
   GetSystemConfigMessage,
-  UpdateFirmwareMessage,
-  SetFavoritesMessage,
-  FavoriteLightMode,
-  WiZClickMode,
-  SetWiZClickMessage,
+  UpdateFirmwareMessage, GetPowerMessage,
 } from "./constants/types";
 
 describe("Creating instance", () => {
@@ -147,17 +143,6 @@ describe("Sending commands", () => {
     expect(ip).to.be.equal(targetIp);
   });
 
-  it("should form and send ratio change command", async () => {
-    const spy: sinon.SinonSpy = this.sendCommandSpy;
-    const targetIp = "127.0.0.1";
-    await this.control.changeRatio(100, targetIp);
-    const msg = spy.getCall(0).args[0];
-    const ip = spy.getCall(0).args[1];
-
-    expect(msg).to.be.instanceof(SetPilotMessage);
-    expect(ip).to.be.equal(targetIp);
-  });
-
   it("should form and send update firmware command", async () => {
     const spy: sinon.SinonSpy = this.sendCommandSpy;
     const targetIp = "127.0.0.1";
@@ -180,28 +165,14 @@ describe("Sending commands", () => {
     expect(ip).to.be.equal(targetIp);
   });
 
-  it("should form and send set favorites message", async () => {
+  it("should form and send get power command", async () => {
     const spy: sinon.SinonSpy = this.sendCommandSpy;
     const targetIp = "127.0.0.1";
-    const fav1 = FavoriteLightMode.buildFavoriteForDoNothing();
-    await this.control.setFavorites(fav1, fav1, fav1, fav1, targetIp);
+    await this.control.getPower(targetIp);
     const msg = spy.getCall(0).args[0];
     const ip = spy.getCall(0).args[1];
 
-    expect(msg).to.be.instanceof(SetFavoritesMessage);
+    expect(msg).to.be.instanceof(GetPowerMessage);
     expect(ip).to.be.equal(targetIp);
   });
-
-  it("should form and send set wizclick message", async () => {
-    const spy: sinon.SinonSpy = this.sendCommandSpy;
-    const targetIp = "127.0.0.1";
-    const wizClick1 = FavoriteLightMode.buildFavoriteForDoNothing();
-    await this.control.setWiZClick(wizClick1, wizClick1, targetIp);
-    const msg = spy.getCall(0).args[0];
-    const ip = spy.getCall(0).args[1];
-
-    expect(msg).to.be.instanceof(SetWiZClickMessage);
-    expect(ip).to.be.equal(targetIp);
-  });
-
 });

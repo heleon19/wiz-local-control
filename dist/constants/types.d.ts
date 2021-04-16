@@ -7,18 +7,6 @@ export declare type Scene = {
     sceneId: number;
     name: string;
 };
-export declare type Color = {
-    type: "color";
-    r: number;
-    g: number;
-    b: number;
-    cw: number;
-    ww: number;
-};
-export declare type Temperature = {
-    type: "temperature";
-    colorTemperature: number;
-};
 /**
  * Light Mode type,
  * could be either
@@ -28,7 +16,17 @@ export declare type Temperature = {
  * 3 RGB or 2 RGB + 1 White or 2 Whites
  * 3. Color temperature – form color temperature using Cool and Warm white LEDs (2000-9000)
  */
-export declare type LightMode = Scene | Color | Temperature;
+export declare type LightMode = Scene | {
+    type: "color";
+    r: number;
+    g: number;
+    b: number;
+    cw: number;
+    ww: number;
+} | {
+    type: "temperature";
+    colorTemperature: number;
+};
 /**
  * MQTT connection status,
  * lamp will report it under some certain testing conditions
@@ -45,7 +43,7 @@ export declare enum MQTTConnectionStatus {
     NoCredentials = 2,
     MQTTClientInitFailure = 3,
     ErrorLoadingPasswordFromFlash = 4,
-    PasswordError = 5
+    PasswordError = 5,
 }
 /**
  * Incoming message that lamp sends to report its status
@@ -66,12 +64,10 @@ export declare type SyncPilotMessage = {
         sceneId?: number;
         temp?: number;
         dimming?: number;
-        speed?: number;
         rssi: number;
         mac: string;
         mqttCd?: number;
         src: string;
-        ratio?: number;
     };
 };
 /**
@@ -138,13 +134,6 @@ export declare class SetPilotParametersScene {
     constructor(sceneId: number);
 }
 /**
- * Set Pilot messages parameters for ratio
- */
-export declare class SetPilotParametersRatio {
-    ratio?: number;
-    constructor(ratio: number);
-}
-/**
  * Set Pilot messages parameters for scene and brightness
  */
 export declare class SetPilotParametersSceneAndBrightness {
@@ -188,7 +177,7 @@ export declare class SetPilotParametersColorTemperature {
     temp?: number;
     constructor(temperature: number);
 }
-export declare type SetPilotParams = SetPilotParametersColor | SetPilotParametersColorAndBrightness | SetPilotParametersColorTemperature | SetPilotParametersColorTemperatureAndBrightness | SetPilotParametersDimming | SetPilotParametersScene | SetPilotParametersSceneAndBrightness | SetPilotParametersSpeed | SetPilotParametersStatus | SetPilotParametersRatio;
+export declare type SetPilotParams = SetPilotParametersColor | SetPilotParametersColorAndBrightness | SetPilotParametersColorTemperature | SetPilotParametersColorTemperatureAndBrightness | SetPilotParametersDimming | SetPilotParametersScene | SetPilotParametersSceneAndBrightness | SetPilotParametersSpeed | SetPilotParametersStatus;
 export declare class SetPilotMessage {
     method: "setPilot";
     version: number;
@@ -256,11 +245,6 @@ export declare class SetPilotMessage {
      * @param speed Playing speed, valid range 20-200
      */
     static buildSpeedControlMessage(speed: number): SetPilotMessage;
-    /**
-     * Constructs ratio control message
-     * @param ratio - Ratio between zones brightess, number in range 0..100
-     */
-    static buildRatioControlMessage(ratio: number): SetPilotMessage;
 }
 export interface SetSystemConfigMessageParameters {
     environment?: string;
@@ -312,7 +296,6 @@ export interface SetUserConfigMessageParameters {
     extendedTemperatureMax?: number;
     pwmMin?: number;
     pwmMax?: number;
-    dftDim?: number;
 }
 /**
  * Set system config messages parameters for request
@@ -322,7 +305,6 @@ export declare class SetUserConfigParameters {
     whiteRange?: number[];
     extRange?: number[];
     pwmRange?: number[];
-    dftDim?: number;
     constructor(parameters: SetUserConfigMessageParameters);
 }
 export declare class SetUserConfigMessage {
@@ -358,92 +340,6 @@ export declare class UpdateFirmwareMessage {
      * Constructs firmware update message
      */
     static buildUpdateFirmwareMessage(firmwareVersion: string | undefined): UpdateFirmwareMessage;
-}
-export declare class FavoriteLightMode {
-    sceneId: number;
-    r: number;
-    g: number;
-    b: number;
-    ww: number;
-    cw: number;
-    temperature: number;
-    dim?: number;
-    spd?: number;
-    ratio?: number;
-    /**
-     * Builds favorite light mode for the Scene (dynamic or static)
-     * @param scene Scene that should be played as favorite
-     * @param dimming Dimming level (for light modes that support dimming)
-     * @param speed Speed level (for dynamic light modes)
-     * @param ratio Ratio level (for products that support ratio)
-     */
-    static buildFavoriteForScene(scene: Scene, dimming?: number, speed?: number, ratio?: number): FavoriteLightMode;
-    /**
-     * Builds favorite light mode for Color
-     * @param color Color definition that should be played as favorite
-     * @param dimming Dimming level (for light modes that support dimming)
-     * @param ratio Ratio level (for products that support ratio)
-     */
-    static buildFavoriteForColor(color: Color, dimming?: number, ratio?: number): FavoriteLightMode;
-    /**
-     * Builds favorite light mode for Temperature
-     * @param cct Temperature definition that should be played as favorite
-     * @param dimming Dimming level (for light modes that support dimming)
-     * @param ratio Ratio level (for products that support ratio)
-     */
-    static buildFavoriteForTemperature(cct: Temperature, dimming?: number, ratio?: number): FavoriteLightMode;
-    /**
-     * Builds favorite light mode for Turning light On or Off as a favorite
-     * @param onOff Should the light been turned on or off
-     */
-    static buildFavoriteForOnOff(onOff: boolean): FavoriteLightMode;
-    /**
-     * Builds favorite light mode for keeping previous mode when applying a favorite
-     */
-    static buildFavoriteForDoNothing(): FavoriteLightMode;
-    extractLightModeArray(): number[];
-    extractOptObject(): object;
-}
-export declare class SetFavoritesParameters {
-    favs: number[][];
-    opts: object[];
-    favConfigTs: number;
-    static buildFromFavorites(favorite1: FavoriteLightMode, favorite2: FavoriteLightMode, favorite3: FavoriteLightMode, favorite4: FavoriteLightMode): SetFavoritesParameters;
-}
-export declare class SetFavoritesMessage {
-    method: string;
-    version: number;
-    id: number;
-    params: SetFavoritesParameters;
-    constructor();
-    /**
-     * Constructs set favorites message
-     */
-    static buildSetFavoritesMessage(params: SetFavoritesParameters): SetFavoritesMessage;
-}
-export declare type WiZClickMode = FavoriteLightMode;
-export declare class SetWiZClickParameters {
-    wizc1: {
-        mode: number[];
-        opts: object;
-    };
-    wizc2: {
-        mode: number[];
-        opts: object;
-    };
-    confTs: number;
-    static buildFromWiZClickModes(wizClick1: WiZClickMode, wizClick2: WiZClickMode): SetWiZClickParameters;
-}
-export declare class SetWiZClickMessage {
-    method: string;
-    version: number;
-    id: number;
-    params: SetWiZClickParameters;
-    constructor();
-    /**
-     * Constructs set WiZ Click message
-     */
-    static buildSetWiZClickMessage(params: SetWiZClickParameters): SetWiZClickMessage;
 }
 export declare class ResetMessage {
     method: "reset";
@@ -517,9 +413,27 @@ export declare class GetSystemConfigMessage {
     id: number;
     constructor(ip: string);
 }
-export declare type WiZControlMessage = SetPilotMessage | SyncPilotAckMessage | RegistrationMessage | UpdateFirmwareMessage | GetSystemConfigMessage | SetSystemConfigMessage | ResetMessage | RebootMessage | SetUserConfigMessage | SetFavoritesMessage | SetWiZClickMessage;
+/**
+ * WiZ Light power load
+ */
+export declare type GetPowerResponse = {
+    method: "getPower";
+    result: {
+        power: number;
+    };
+};
+/**
+ * Message sent to the lamp requesting its power load
+ */
+export declare class GetPowerMessage {
+    method: "getPower";
+    version: number;
+    id: number;
+    constructor(ip: string);
+}
+export declare type WiZControlMessage = SetPilotMessage | SyncPilotAckMessage | RegistrationMessage | UpdateFirmwareMessage | GetSystemConfigMessage | SetSystemConfigMessage | ResetMessage | RebootMessage | SetUserConfigMessage | GetPowerMessage;
 export declare type WiZMessage = GetPilotMessage | SetPilotMessage | SyncPilotMessage | UpdateOtaMessage | FirstBeatMessage | RegistrationMessage | UpdateFirmwareMessage | SetSystemConfigMessage | ResetMessage | RebootMessage | SetUserConfigMessage;
-export declare type WiZMessageResponse = GetSystemConfigResponse;
+export declare type WiZMessageResponse = GetSystemConfigResponse | GetPowerResponse;
 export declare type Result<T extends WiZMessageResponse> = {
     type: "success";
     method: string;
@@ -529,3 +443,8 @@ export declare type Result<T extends WiZMessageResponse> = {
     message: string;
 };
 export declare const staticScenes: Array<LightMode>;
+export declare type Color = {
+    red: number;
+    green: number;
+    blue: number;
+};
