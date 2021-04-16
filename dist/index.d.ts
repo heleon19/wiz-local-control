@@ -1,6 +1,6 @@
-import { WiZMessage, Result, LightMode, GetSystemConfigResponse, SetSystemConfigMessageParameters, SetUserConfigMessageParameters, GetPowerResponse } from "./constants/types";
+import { WiZMessage, Result, LightMode, GetSystemConfigResponse, SetSystemConfigMessageParameters, SetUserConfigMessageParameters, FavoriteLightMode, WiZControlMessage, WiZClickMode, GetPowerResponse } from "./constants/types";
 import UDPManager from "./UDPManager";
-import { SetPilotMessage } from "./constants/types";
+import { staticScenes } from "./constants/types";
 export declare type WiZLocalControlConfig = {
     incomingMsgCallback: (msg: WiZMessage, sourceIp: string) => void;
     interfaceName?: string;
@@ -17,14 +17,7 @@ export default class WiZLocalControl {
      */
     stopListening(): Promise<void>;
     /**
-     * Changes brightness of WiZ Light
-     * @param brightness Brightness level, 10-100
-     * @param lightIp Light IP address
-     */
-    changeBrightness(brightness: number, lightIp: string): Promise<Result<any>>;
-    /**
      * Requests firmware update of WiZ Light
-     * @param firmwareVersion
      * @param lightIp Light IP address
      */
     updateFirmware(firmwareVersion: string | undefined, lightIp: string): Promise<Result<any>>;
@@ -75,6 +68,12 @@ export default class WiZLocalControl {
      */
     setUserConfig(parameters: SetUserConfigMessageParameters, lightIp: string): Promise<Result<any>>;
     /**
+     * Changes brightness of WiZ Light
+     * @param brightness Brightness level, 10-100
+     * @param lightIp Light IP address
+     */
+    changeBrightness(brightness: number, lightIp: string): Promise<Result<any>>;
+    /**
      * Changes light mode of WiZ Light
      * @param lightMode Light mode, check LightMode type for details
      * @param lightIp Light IP address
@@ -100,6 +99,12 @@ export default class WiZLocalControl {
      */
     changeStatus(status: boolean, lightIp: string): Promise<Result<any>>;
     /**
+     * Changes ratio of WiZ Light (for supported products)
+     * @param ratio Ratio between top and bottom part, number in range 0..100
+     * @param lightIp Light IP address
+     */
+    changeRatio(ratio: number, lightIp: string): Promise<Result<any>>;
+    /**
      * Retrieves system configuration for WiZ Device (like FW version)
      * @param lightIp
      */
@@ -109,5 +114,22 @@ export default class WiZLocalControl {
      * @param lightIp
      */
     getPower(lightIp: string): Promise<Result<GetPowerResponse>>;
-    validateMsg(msg: SetPilotMessage): Promise<void>;
+    validateMsg(msg: WiZControlMessage, skipMissingProperties?: boolean): Promise<void>;
+    /**
+     * Sets favorites on the light
+     * @param favorite1
+     * @param favorite2
+     * @param favorite3
+     * @param favorite4
+     * @param lightIp
+     */
+    setFavorites(favorite1: FavoriteLightMode, favorite2: FavoriteLightMode, favorite3: FavoriteLightMode, favorite4: FavoriteLightMode, lightIp: string): Promise<Result<any>>;
+    /**
+     * Sets WiZ CLick settings on the light
+     * @param wizClick1
+     * @param wizClick2
+     * @param lightIp
+     */
+    setWiZClick(wizClick1: WiZClickMode, wizClick2: WiZClickMode, lightIp: string): Promise<Result<any>>;
 }
+export { staticScenes, FavoriteLightMode };

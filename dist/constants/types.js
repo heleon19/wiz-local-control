@@ -485,7 +485,6 @@ __decorate([
     class_validator_1.IsArray()
 ], SetUserConfigParameters.prototype, "pwmRange", void 0);
 __decorate([
-    class_validator_1.IsOptional(),
     class_validator_1.IsInt()
 ], SetUserConfigParameters.prototype, "dftDim", void 0);
 exports.SetUserConfigParameters = SetUserConfigParameters;
