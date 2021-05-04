@@ -15,4 +15,5 @@ exports.setUserConfigMethod = "setUserConfig";
 exports.setFavoritesMethod = "setFavs";
 exports.setWiZClickMethod = "setWiZClick";
 exports.getPower = "getPower";
+exports.setModelConfigMethod = "setModelConfig";
 //# sourceMappingURL=communication.js.map

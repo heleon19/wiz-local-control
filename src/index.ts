@@ -1,33 +1,32 @@
 import {
-  WiZMessage,
-  Result,
-  LightMode,
+  FavoriteLightMode,
+  GetPowerMessage,
+  GetPowerResponse,
   GetSystemConfigMessage,
   GetSystemConfigResponse,
-  SetSystemConfigMessage,
-  SetUserConfigMessage,
-  SetSystemConfigMessageParameters,
-  SetUserConfigMessageParameters,
-  FavoriteLightMode,
+  LightMode,
+  RebootMessage,
+  ResetMessage,
+  Result,
   SetFavoritesMessage,
   SetFavoritesParameters,
-  WiZControlMessage,
-  WiZClickMode,
-  SetWiZClickParameters,
+  SetModelConfigMessage,
+  SetModelConfigMessageParameters,
+  SetPilotMessage,
+  SetSystemConfigMessage,
+  SetSystemConfigMessageParameters,
+  SetUserConfigMessage,
+  SetUserConfigMessageParameters,
   SetWiZClickMessage,
-  GetPowerResponse,
-  GetPowerMessage,
+  SetWiZClickParameters,
+  staticScenes,
+  UpdateFirmwareMessage,
+  WiZClickMode,
+  WiZControlMessage,
+  WiZMessage,
 } from "./constants/types";
 import UDPManager from "./UDPManager";
-import {
-  SetPilotMessage,
-  UpdateFirmwareMessage,
-  ResetMessage,
-  RebootMessage,
-  staticScenes
-} from "./constants/types";
 import { validate } from "class-validator";
-import { stat } from "fs";
 
 export type WiZLocalControlConfig = {
   incomingMsgCallback: (msg: WiZMessage, sourceIp: string) => void;
@@ -35,6 +34,7 @@ export type WiZLocalControlConfig = {
 };
 export default class WiZLocalControl {
   udpManager: UDPManager;
+
   constructor(options: WiZLocalControlConfig) {
     const interfaceName = options.interfaceName || "eth0";
     this.udpManager = new UDPManager(
@@ -49,6 +49,7 @@ export default class WiZLocalControl {
   async startListening() {
     return this.udpManager.startListening();
   }
+
   /**
    * Stops listening to status updates of WiZ lights
    */
@@ -58,6 +59,7 @@ export default class WiZLocalControl {
 
   /**
    * Requests firmware update of WiZ Light
+   * @param firmwareVersion target fw version, if undefined - then default
    * @param lightIp Light IP address
    */
   async updateFirmware(
@@ -92,7 +94,7 @@ export default class WiZLocalControl {
   }
 
   /**
-   * Sets environment of WiZ Light
+   * Sets environment of WiZ Light (OBSOLETE after fw 1.18)
    * @param environment system environment
    * @param lightIp Light IP address
    */
@@ -150,8 +152,25 @@ export default class WiZLocalControl {
   }
 
   /**
+   * Sets model config for WiZ Light
+   * @param parameters SetModelConfig message parameters
+   * @param lightIp Light IP address
+   */
+  async setModelConfig(
+    parameters: SetModelConfigMessageParameters,
+    lightIp: string,
+  ): Promise<Result<any>> {
+    const msg = SetModelConfigMessage.buildSetModelConfigMessage(parameters);
+    await this.validateMsg(msg);
+    return this.udpManager.sendUDPCommand(msg, lightIp);
+  }
+
+  /**
    * Changes temperature ranges for WiZ Light
-   * @param extendedWhiteFactor extended white factor
+   * @param whiteTemperatureMin the temperature in Kelvin for the native warm white
+   * @param whiteTemperatureMax the temperature in Kelvin for the native cool white
+   * @param extendedTemperatureMin the temperature in Kelvin for the extended warm white where red and blue need to be added.
+   * @param extendedTemperatureMax the temperature in Kelvin for the extended cool white where red and blue need to be added.
    * @param lightIp Light IP address
    */
   async setTemperatureRanges(
@@ -318,7 +337,7 @@ export default class WiZLocalControl {
   async getSystemConfig(
     lightIp: string,
   ): Promise<Result<GetSystemConfigResponse>> {
-    const msg = new GetSystemConfigMessage(lightIp);
+    const msg = new GetSystemConfigMessage();
     return this.udpManager.sendUDPCommand<GetSystemConfigResponse>(msg, lightIp);
   }
 
@@ -329,7 +348,7 @@ export default class WiZLocalControl {
   async getPower(
     lightIp: string,
   ): Promise<Result<GetPowerResponse>> {
-    const msg = new GetPowerMessage(lightIp);
+    const msg = new GetPowerMessage();
     return this.udpManager.sendUDPCommand<GetPowerResponse>(msg, lightIp);
   }
 
@@ -355,7 +374,7 @@ export default class WiZLocalControl {
     favorite2: FavoriteLightMode,
     favorite3: FavoriteLightMode,
     favorite4: FavoriteLightMode,
-    lightIp: string
+    lightIp: string,
   ): Promise<Result<any>> {
     const params = SetFavoritesParameters.buildFromFavorites(favorite1, favorite2, favorite3, favorite4);
     const msg = SetFavoritesMessage.buildSetFavoritesMessage(params);
@@ -372,7 +391,7 @@ export default class WiZLocalControl {
   async setWiZClick(
     wizClick1: WiZClickMode,
     wizClick2: WiZClickMode,
-    lightIp: string
+    lightIp: string,
   ): Promise<Result<any>> {
     const params = SetWiZClickParameters.buildFromWiZClickModes(wizClick1, wizClick2);
     const msg = SetWiZClickMessage.buildSetWiZClickMessage(params);

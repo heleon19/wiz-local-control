@@ -1,36 +1,46 @@
-import {} from "mocha";
 import { expect } from "chai";
 import * as sinon from "sinon";
 import WiZLocalControl from "./index";
 import UDPManager from "./UDPManager";
 import {
-  SetPilotMessage,
-  SetPilotParametersDimming,
+  GetPowerMessage,
   GetSystemConfigMessage,
-  UpdateFirmwareMessage, GetPowerMessage,
+  SetModelConfigMessage,
+  SetPilotMessage,
+  SetSystemConfigMessage,
+  SetUserConfigMessage,
+  UpdateFirmwareMessage,
 } from "./constants/types";
 
 describe("Creating instance", () => {
   it("should create UDP manager when creating new instance", () => {
-    const control = new WiZLocalControl({ incomingMsgCallback: () => {} });
+    const control = new WiZLocalControl({
+      incomingMsgCallback: () => {
+      },
+    });
     expect(control.udpManager).to.be.instanceof(UDPManager);
   });
 
   it("should pass interface name to UDP manager when provided", () => {
     const interfaceName = "test";
     const control = new WiZLocalControl({
-      incomingMsgCallback: () => {},
+      incomingMsgCallback: () => {
+      },
       interfaceName,
     });
     expect(control.udpManager.interfaceName).to.be.equal(interfaceName);
   });
 
   it("should start listening when asked", async () => {
-    const manager = new UDPManager(() => {}, "eth0");
+    const manager = new UDPManager(() => {
+    }, "eth0");
     const spyStart = sinon.stub(manager, "startListening");
-    const spyStop = sinon.stub(manager, "stopListening");
+    sinon.stub(manager, "stopListening");
 
-    const control = new WiZLocalControl({ incomingMsgCallback: () => {} });
+    const control = new WiZLocalControl({
+      incomingMsgCallback: () => {
+      },
+    });
     control.udpManager = manager;
     await control.startListening();
     await control.stopListening();
@@ -38,11 +48,15 @@ describe("Creating instance", () => {
   });
 
   it("should stop listening when asked", async () => {
-    const manager = new UDPManager(() => {}, "eth0");
-    const spyStart = sinon.stub(manager, "startListening");
+    const manager = new UDPManager(() => {
+    }, "eth0");
+    sinon.stub(manager, "startListening");
     const spyStop = sinon.stub(manager, "stopListening");
 
-    const control = new WiZLocalControl({ incomingMsgCallback: () => {} });
+    const control = new WiZLocalControl({
+      incomingMsgCallback: () => {
+      },
+    });
     control.udpManager = manager;
 
     await control.startListening();
@@ -53,10 +67,14 @@ describe("Creating instance", () => {
 
 describe("Sending commands", () => {
   beforeEach(() => {
-    const manager = new UDPManager(() => {}, "eth0");
+    const manager = new UDPManager(() => {
+    }, "eth0");
     const spy = sinon.stub(manager, "sendUDPCommand");
 
-    this.control = new WiZLocalControl({ incomingMsgCallback: () => {} });
+    this.control = new WiZLocalControl({
+      incomingMsgCallback: () => {
+      },
+    });
     this.control.udpManager = manager;
     this.sendCommandSpy = spy;
   });
@@ -135,7 +153,7 @@ describe("Sending commands", () => {
   it("should form and send status change command", async () => {
     const spy: sinon.SinonSpy = this.sendCommandSpy;
     const targetIp = "127.0.0.1";
-    await this.control.changeStatus(100, targetIp);
+    await this.control.changeStatus(Boolean(100), targetIp);
     const msg = spy.getCall(0).args[0];
     const ip = spy.getCall(0).args[1];
 
@@ -173,6 +191,61 @@ describe("Sending commands", () => {
     const ip = spy.getCall(0).args[1];
 
     expect(msg).to.be.instanceof(GetPowerMessage);
+    expect(ip).to.be.equal(targetIp);
+  });
+
+  it("should form and send setModelConfig command", async () => {
+    const spy: sinon.SinonSpy = this.sendCommandSpy;
+    const targetIp = "127.0.0.1";
+    const params = {
+      confTs: 1596790372,
+      ps: 2,
+      pwmFreq: 1000,
+      pwmRange: [0, 100],
+      wcr: 20,
+      nowc: 2,
+      cctRange: [2200, 2700, 6500, 9000],
+      renderFactor: "ff0000ff00000051f5b2",
+      hasAdjMinDim: true,
+      hasTapSensor: true,
+      pm: 1,
+      fanSpeed: 6,
+    };
+    await this.control.setModelConfig(params, targetIp);
+    const msg = spy.getCall(0).args[0];
+    const ip = spy.getCall(0).args[1];
+    expect(msg).to.be.instanceof(SetModelConfigMessage);
+    expect(ip).to.be.equal(targetIp);
+  });
+
+  it("should form and send setSystemConfig command", async () => {
+    const spy: sinon.SinonSpy = this.sendCommandSpy;
+    const targetIp = "127.0.0.1";
+    const params = {
+      moduleName: "thisIsA32CharacterLongModuleName",
+      drvConf: [20, 2],
+      ewf: "ff0000ff00000051f5b2",
+      fs: 6,
+    };
+    await this.control.setSystemConfig(params, targetIp);
+    const msg = spy.getCall(0).args[0];
+    const ip = spy.getCall(0).args[1];
+    expect(msg).to.be.instanceof(SetSystemConfigMessage);
+    expect(ip).to.be.equal(targetIp);
+  });
+
+  it("should form and send setUserConfig command", async () => {
+    const spy: sinon.SinonSpy = this.sendCommandSpy;
+    const targetIp = "127.0.0.1";
+    const params = {
+      pwmRange: [0, 100],
+      whiteRange: [2700, 6500],
+      extRange: [2200, 9000],
+    };
+    await this.control.setUserConfig(params, targetIp);
+    const msg = spy.getCall(0).args[0];
+    const ip = spy.getCall(0).args[1];
+    expect(msg).to.be.instanceof(SetUserConfigMessage);
     expect(ip).to.be.equal(targetIp);
   });
 });
