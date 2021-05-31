@@ -1,6 +1,5 @@
-import { WiZMessage, Result, LightMode, GetSystemConfigResponse, SetSystemConfigMessageParameters, SetUserConfigMessageParameters, FavoriteLightMode, WiZControlMessage, WiZClickMode } from "./constants/types";
+import { FavoriteLightMode, GetPowerResponse, GetSystemConfigResponse, LightMode, Result, SetModelConfigMessageParameters, SetSystemConfigMessageParameters, SetUserConfigMessageParameters, staticScenes, WiZClickMode, WiZControlMessage, WiZMessage } from "./constants/types";
 import UDPManager from "./UDPManager";
-import { staticScenes } from "./constants/types";
 export declare type WiZLocalControlConfig = {
     incomingMsgCallback: (msg: WiZMessage, sourceIp: string) => void;
     interfaceName?: string;
@@ -18,6 +17,7 @@ export default class WiZLocalControl {
     stopListening(): Promise<void>;
     /**
      * Requests firmware update of WiZ Light
+     * @param firmwareVersion target fw version, if undefined - then default
      * @param lightIp Light IP address
      */
     updateFirmware(firmwareVersion: string | undefined, lightIp: string): Promise<Result<any>>;
@@ -32,7 +32,7 @@ export default class WiZLocalControl {
      */
     reboot(lightIp: string): Promise<Result<any>>;
     /**
-     * Sets environment of WiZ Light
+     * Sets environment of WiZ Light (OBSOLETE after fw 1.18)
      * @param environment system environment
      * @param lightIp Light IP address
      */
@@ -56,8 +56,17 @@ export default class WiZLocalControl {
      */
     setSystemConfig(parameters: SetSystemConfigMessageParameters, lightIp: string): Promise<Result<any>>;
     /**
+     * Sets model config for WiZ Light
+     * @param parameters SetModelConfig message parameters
+     * @param lightIp Light IP address
+     */
+    setModelConfig(parameters: SetModelConfigMessageParameters, lightIp: string): Promise<Result<any>>;
+    /**
      * Changes temperature ranges for WiZ Light
-     * @param extendedWhiteFactor extended white factor
+     * @param whiteTemperatureMin the temperature in Kelvin for the native warm white
+     * @param whiteTemperatureMax the temperature in Kelvin for the native cool white
+     * @param extendedTemperatureMin the temperature in Kelvin for the extended warm white where red and blue need to be added.
+     * @param extendedTemperatureMax the temperature in Kelvin for the extended cool white where red and blue need to be added.
      * @param lightIp Light IP address
      */
     setTemperatureRanges(whiteTemperatureMin: number, whiteTemperatureMax: number, extendedTemperatureMin: number, extendedTemperatureMax: number, lightIp: string): Promise<Result<any>>;
@@ -109,6 +118,11 @@ export default class WiZLocalControl {
      * @param lightIp
      */
     getSystemConfig(lightIp: string): Promise<Result<GetSystemConfigResponse>>;
+    /**
+     * Retrieves system configuration for WiZ Device (like FW version)
+     * @param lightIp
+     */
+    getPower(lightIp: string): Promise<Result<GetPowerResponse>>;
     validateMsg(msg: WiZControlMessage, skipMissingProperties?: boolean): Promise<void>;
     /**
      * Sets favorites on the light

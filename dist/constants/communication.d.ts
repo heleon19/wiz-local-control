@@ -12,3 +12,5 @@ export declare const setSystemConfigMethod = "setSystemConfig";
 export declare const setUserConfigMethod = "setUserConfig";
 export declare const setFavoritesMethod = "setFavs";
 export declare const setWiZClickMethod = "setWiZClick";
+export declare const getPower = "getPower";
+export declare const setModelConfigMethod = "setModelConfig";

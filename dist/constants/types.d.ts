@@ -269,6 +269,9 @@ export interface SetSystemConfigMessageParameters {
     pwmRefreshRate?: number;
     whiteChannels?: number;
     whiteToColorsRatio?: number;
+    ewf?: string;
+    fs?: number;
+    drvConf?: number[];
 }
 /**
  * Set system config messages parameters for request
@@ -280,6 +283,7 @@ export declare class SetSystemConfigParameters {
     ewf?: string;
     pwmConf?: string;
     drvConf?: number[];
+    fs?: number;
     constructor(parameters: SetSystemConfigMessageParameters);
 }
 export declare class SetSystemConfigMessage {
@@ -313,6 +317,10 @@ export interface SetUserConfigMessageParameters {
     pwmMin?: number;
     pwmMax?: number;
     dftDim?: number;
+    pwmRange?: number[];
+    whiteRange?: number[];
+    extRange?: number[];
+    startupMode?: string;
 }
 /**
  * Set system config messages parameters for request
@@ -322,7 +330,8 @@ export declare class SetUserConfigParameters {
     whiteRange?: number[];
     extRange?: number[];
     pwmRange?: number[];
-    dftDim?: number;
+    dftDim: number;
+    startupMode: string;
     constructor(parameters: SetUserConfigMessageParameters);
 }
 export declare class SetUserConfigMessage {
@@ -515,11 +524,69 @@ export declare class GetSystemConfigMessage {
     method: "getSystemConfig";
     version: number;
     id: number;
-    constructor(ip: string);
+    constructor();
 }
-export declare type WiZControlMessage = SetPilotMessage | SyncPilotAckMessage | RegistrationMessage | UpdateFirmwareMessage | GetSystemConfigMessage | SetSystemConfigMessage | ResetMessage | RebootMessage | SetUserConfigMessage | SetFavoritesMessage | SetWiZClickMessage;
+/**
+ * WiZ Light power load
+ */
+export declare type GetPowerResponse = {
+    method: "getPower";
+    result: {
+        power: number;
+    };
+};
+/**
+ * Message sent to the lamp requesting its power load
+ */
+export declare class GetPowerMessage {
+    method: "getPower";
+    version: number;
+    id: number;
+    constructor();
+}
+export interface SetModelConfigMessageParameters {
+    confTs: number;
+    ps?: number;
+    pwmFreq: number;
+    pwmRange: number[];
+    wcr: number;
+    nowc: number;
+    cctRange: number[];
+    renderFactor: string;
+    hasAdjMinDim?: boolean;
+    hasTapSensor?: boolean;
+    pm?: number;
+    fanSpeed?: number;
+}
+export declare class SetModelConfigParameters {
+    confTs: number;
+    ps?: number;
+    pwmFreq: number;
+    pwmRange: number[];
+    wcr: number;
+    nowc: number;
+    cctRange: number[];
+    renderFactor: string;
+    hasAdjMinDim?: boolean;
+    hasTapSensor?: boolean;
+    pm?: number;
+    fanSpeed?: number;
+    constructor(parameters: SetModelConfigMessageParameters);
+}
+export declare class SetModelConfigMessage {
+    method: "setModelConfig";
+    version: number;
+    id: number;
+    params: SetModelConfigParameters;
+    constructor();
+    /**
+     * Constructs general message
+     */
+    static buildSetModelConfigMessage(parameters: SetModelConfigMessageParameters): SetModelConfigMessage;
+}
+export declare type WiZControlMessage = SetPilotMessage | SyncPilotAckMessage | RegistrationMessage | UpdateFirmwareMessage | GetSystemConfigMessage | SetSystemConfigMessage | ResetMessage | RebootMessage | SetUserConfigMessage | SetFavoritesMessage | SetWiZClickMessage | GetPowerMessage | SetModelConfigMessage;
 export declare type WiZMessage = GetPilotMessage | SetPilotMessage | SyncPilotMessage | UpdateOtaMessage | FirstBeatMessage | RegistrationMessage | UpdateFirmwareMessage | SetSystemConfigMessage | ResetMessage | RebootMessage | SetUserConfigMessage;
-export declare type WiZMessageResponse = GetSystemConfigResponse;
+export declare type WiZMessageResponse = GetSystemConfigResponse | GetPowerResponse;
 export declare type Result<T extends WiZMessageResponse> = {
     type: "success";
     method: string;

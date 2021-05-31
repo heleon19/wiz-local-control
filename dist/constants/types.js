@@ -367,6 +367,15 @@ class SetSystemConfigParameters {
             parameters.whiteToColorsRatio != undefined) {
             this.drvConf = [parameters.whiteToColorsRatio, parameters.whiteChannels];
         }
+        if (parameters.ewf != undefined) {
+            this.ewf = parameters.ewf;
+        }
+        if (parameters.fs != undefined) {
+            this.fs = parameters.fs;
+        }
+        if (parameters.drvConf != undefined) {
+            this.drvConf = parameters.drvConf;
+        }
         this.systemConfigTs = 0;
     }
 }
@@ -393,6 +402,10 @@ __decorate([
     class_validator_1.IsOptional(),
     class_validator_1.IsArray()
 ], SetSystemConfigParameters.prototype, "drvConf", void 0);
+__decorate([
+    class_validator_1.IsOptional(),
+    class_validator_1.IsInt()
+], SetSystemConfigParameters.prototype, "fs", void 0);
 exports.SetSystemConfigParameters = SetSystemConfigParameters;
 class SetSystemConfigMessage {
     constructor() {
@@ -465,7 +478,17 @@ class SetUserConfigParameters {
         if (parameters.pwmMin != undefined && parameters.pwmMax != undefined) {
             this.pwmRange = [parameters.pwmMin, parameters.pwmMax];
         }
+        if (parameters.pwmRange != undefined) {
+            this.pwmRange = parameters.pwmRange;
+        }
+        if (parameters.whiteRange != undefined) {
+            this.whiteRange = parameters.whiteRange;
+        }
+        if (parameters.extRange != undefined) {
+            this.extRange = parameters.extRange;
+        }
         this.dftDim = parameters.dftDim || 100;
+        this.startupMode = parameters.startupMode || "wizclick";
         this.userConfigTs = 0;
     }
 }
@@ -485,9 +508,11 @@ __decorate([
     class_validator_1.IsArray()
 ], SetUserConfigParameters.prototype, "pwmRange", void 0);
 __decorate([
-    class_validator_1.IsOptional(),
     class_validator_1.IsInt()
 ], SetUserConfigParameters.prototype, "dftDim", void 0);
+__decorate([
+    class_validator_1.IsString()
+], SetUserConfigParameters.prototype, "startupMode", void 0);
 exports.SetUserConfigParameters = SetUserConfigParameters;
 class SetUserConfigMessage {
     constructor() {
@@ -638,14 +663,14 @@ class FavoriteLightMode {
             this.b,
             this.cw,
             this.ww,
-            this.temperature
+            this.temperature,
         ];
     }
     extractOptObject() {
         return {
             dim: this.dim,
             spd: this.spd,
-            ratio: this.ratio
+            ratio: this.ratio,
         };
     }
 }
@@ -709,13 +734,13 @@ class SetFavoritesParameters {
             favorite1.extractLightModeArray(),
             favorite2.extractLightModeArray(),
             favorite3.extractLightModeArray(),
-            favorite4.extractLightModeArray()
+            favorite4.extractLightModeArray(),
         ];
         params.opts = [
             favorite1.extractOptObject(),
             favorite2.extractOptObject(),
             favorite3.extractOptObject(),
-            favorite4.extractOptObject()
+            favorite4.extractOptObject(),
         ];
         return params;
     }
@@ -760,11 +785,11 @@ class SetWiZClickParameters {
         const params = new SetWiZClickParameters();
         params.wizc1 = {
             mode: wizClick1.extractLightModeArray(),
-            opts: wizClick1.extractOptObject()
+            opts: wizClick1.extractOptObject(),
         };
         params.wizc2 = {
             mode: wizClick2.extractLightModeArray(),
-            opts: wizClick2.extractOptObject()
+            opts: wizClick2.extractOptObject(),
         };
         return params;
     }
@@ -811,8 +836,7 @@ class ResetMessage {
      * Constructs reset message
      */
     static buildResetMessage() {
-        const msg = new ResetMessage();
-        return msg;
+        return new ResetMessage();
     }
 }
 exports.ResetMessage = ResetMessage;
@@ -826,8 +850,7 @@ class RebootMessage {
      * Constructs reboot message
      */
     static buildRebootMessage() {
-        const msg = new RebootMessage();
-        return msg;
+        return new RebootMessage();
     }
 }
 exports.RebootMessage = RebootMessage;
@@ -853,13 +876,90 @@ exports.RegistrationMessage = RegistrationMessage;
  * Message sent to the lamp requesting its system configuration (fwVersion for example)
  */
 class GetSystemConfigMessage {
-    constructor(ip) {
+    constructor() {
         this.method = networkConstants.getSystemConfigMethod;
         this.id = Math.floor(Math.random() * 10000 + 1);
         this.version = 1;
     }
 }
 exports.GetSystemConfigMessage = GetSystemConfigMessage;
+/**
+ * Message sent to the lamp requesting its power load
+ */
+class GetPowerMessage {
+    constructor() {
+        this.method = networkConstants.getPower;
+        this.id = Math.floor(Math.random() * 10000 + 1);
+        this.version = 1;
+    }
+}
+exports.GetPowerMessage = GetPowerMessage;
+class SetModelConfigParameters {
+    constructor(parameters) {
+        Object.assign(this, parameters);
+    }
+}
+__decorate([
+    class_validator_1.IsInt()
+], SetModelConfigParameters.prototype, "confTs", void 0);
+__decorate([
+    class_validator_1.IsOptional(),
+    class_validator_1.IsInt()
+], SetModelConfigParameters.prototype, "ps", void 0);
+__decorate([
+    class_validator_1.IsInt()
+], SetModelConfigParameters.prototype, "pwmFreq", void 0);
+__decorate([
+    class_validator_1.IsArray()
+], SetModelConfigParameters.prototype, "pwmRange", void 0);
+__decorate([
+    class_validator_1.IsInt()
+], SetModelConfigParameters.prototype, "wcr", void 0);
+__decorate([
+    class_validator_1.IsInt()
+], SetModelConfigParameters.prototype, "nowc", void 0);
+__decorate([
+    class_validator_1.IsArray()
+], SetModelConfigParameters.prototype, "cctRange", void 0);
+__decorate([
+    class_validator_1.IsString()
+], SetModelConfigParameters.prototype, "renderFactor", void 0);
+__decorate([
+    class_validator_1.IsOptional(),
+    class_validator_1.IsBoolean()
+], SetModelConfigParameters.prototype, "hasAdjMinDim", void 0);
+__decorate([
+    class_validator_1.IsOptional(),
+    class_validator_1.IsBoolean()
+], SetModelConfigParameters.prototype, "hasTapSensor", void 0);
+__decorate([
+    class_validator_1.IsOptional(),
+    class_validator_1.IsInt()
+], SetModelConfigParameters.prototype, "pm", void 0);
+__decorate([
+    class_validator_1.IsOptional(),
+    class_validator_1.IsInt()
+], SetModelConfigParameters.prototype, "fanSpeed", void 0);
+exports.SetModelConfigParameters = SetModelConfigParameters;
+class SetModelConfigMessage {
+    constructor() {
+        this.method = networkConstants.setModelConfigMethod;
+        this.version = 1;
+        this.id = Math.floor(Math.random() * 10000 + 1);
+    }
+    /**
+     * Constructs general message
+     */
+    static buildSetModelConfigMessage(parameters) {
+        const msg = new SetModelConfigMessage();
+        msg.params = new SetModelConfigParameters(parameters);
+        return msg;
+    }
+}
+__decorate([
+    class_validator_1.ValidateNested()
+], SetModelConfigMessage.prototype, "params", void 0);
+exports.SetModelConfigMessage = SetModelConfigMessage;
 exports.staticScenes = [
     {
         type: "scene",

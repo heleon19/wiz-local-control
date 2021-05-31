@@ -6,7 +6,7 @@ export default class RegistrationManager {
      * registration packet
      * @param lightIp IP address of the WiZ Bulb
      */
-    registerDevice(lightIp: string, interfaceName: string, udpPort: number, broadcast?: boolean): Promise<import("src/constants/types").Result<import("src/constants/types").GetSystemConfigResponse>>;
+    registerDevice(lightIp: string, interfaceName: string, udpPort: number, broadcast?: boolean): Promise<import("src/constants/types").Result<import("src/constants/types").WiZMessageResponse>>;
     /**
      * Sends broadcast registration packet immediately 3 times and once every 15 secs.
      */

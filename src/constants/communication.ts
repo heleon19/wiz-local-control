@@ -13,3 +13,5 @@ export const setSystemConfigMethod = "setSystemConfig";
 export const setUserConfigMethod = "setUserConfig";
 export const setFavoritesMethod = "setFavs";
 export const setWiZClickMethod = "setWiZClick";
+export const getPower = "getPower";
+export const setModelConfigMethod = "setModelConfig";
