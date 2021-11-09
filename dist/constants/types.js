@@ -907,21 +907,27 @@ __decorate([
     class_validator_1.IsInt()
 ], SetModelConfigParameters.prototype, "ps", void 0);
 __decorate([
+    class_validator_1.IsOptional(),
     class_validator_1.IsInt()
 ], SetModelConfigParameters.prototype, "pwmFreq", void 0);
 __decorate([
+    class_validator_1.IsOptional(),
     class_validator_1.IsArray()
 ], SetModelConfigParameters.prototype, "pwmRange", void 0);
 __decorate([
+    class_validator_1.IsOptional(),
     class_validator_1.IsInt()
 ], SetModelConfigParameters.prototype, "wcr", void 0);
 __decorate([
+    class_validator_1.IsOptional(),
     class_validator_1.IsInt()
 ], SetModelConfigParameters.prototype, "nowc", void 0);
 __decorate([
+    class_validator_1.IsOptional(),
     class_validator_1.IsArray()
 ], SetModelConfigParameters.prototype, "cctRange", void 0);
 __decorate([
+    class_validator_1.IsOptional(),
     class_validator_1.IsString()
 ], SetModelConfigParameters.prototype, "renderFactor", void 0);
 __decorate([

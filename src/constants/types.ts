@@ -1193,16 +1193,22 @@ export class SetModelConfigParameters {
   @IsOptional()
   @IsInt()
   ps?: number;
+  @IsOptional()
   @IsInt()
   pwmFreq: number;
+  @IsOptional()
   @IsArray()
   pwmRange: number[];
+  @IsOptional()
   @IsInt()
   wcr: number;
+  @IsOptional()
   @IsInt()
   nowc: number;
+  @IsOptional()
   @IsArray()
   cctRange: number[];
+  @IsOptional()
   @IsString()
   renderFactor: string;
   @IsOptional()
