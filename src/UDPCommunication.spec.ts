@@ -1,11 +1,10 @@
-import {} from "mocha";
 import { expect } from "chai";
 import * as sinon from "sinon";
-import { RegistrationMessage } from "./constants/types";
-import { getLocalIPAddress, getLocalMac } from "./ipFunctions";
-import * as networkConstants from "./constants/communication";
+import { getLocalMac } from "./ipFunctions";
+import * as networkConstants from "./constants";
 import * as dgram from "dgram";
 import sendCommand from "./UDPCommunication";
+import { RegistrationMessage } from "./classes/Control";
 
 describe("Send command", () => {
   it("should bind the socket", async () => {
@@ -32,10 +31,8 @@ describe("Send command", () => {
     const localIp = "127.0.0.1";
     const socket = dgram.createSocket("udp4");
 
-    const stubBind = sinon.stub(socket, "bind");
-    stubBind.returns(1);
-
-    const stubOnce = sinon.stub(socket, "once");
+    sinon.stub(socket, "bind").returns(1);
+    sinon.stub(socket, "once");
     const stubClose = sinon.stub(socket, "close");
     const msg = new RegistrationMessage(localIp, getLocalMac());
 
@@ -63,12 +60,13 @@ describe("Send command", () => {
 
     const onStub = sinon
       .stub(socket, "on")
-      .withArgs("message")
-      .callsFake(function(
+      .withArgs("message", () => {})
+      .callsFake(function (
         event: string,
-        callback: (msg: Buffer) => void,
-      ): void {
-        callback(new Buffer(1));
+        callback: (msg: Buffer, rinfo: any) => void,
+      ) {
+        callback(new Buffer(1),{ });
+        return this;
       });
 
     await sendCommand(
@@ -90,12 +88,13 @@ describe("Send command", () => {
 
     const onStub = sinon
       .stub(socket, "on")
-      .withArgs("message")
-      .callsFake(function(
+      .withArgs("message", () => {})
+      .callsFake(function (
         event: string,
-        callback: (msg: Buffer) => void,
-      ): void {
-        callback(new Buffer(1));
+        callback: (msg: Buffer, rinfo: any) => void,
+      ) {
+        callback(Buffer.from("1"),{ });
+        return this;
       });
 
     await sendCommand(
@@ -116,11 +115,15 @@ describe("Send command", () => {
     const spy = sinon.spy(socket, "send");
     const msg = new RegistrationMessage(localIp, getLocalMac());
 
-    const onStub = sinon
+    sinon
       .stub(socket, "once")
-      .withArgs("listening")
-      .callsFake(function(event: string, callback: () => void): void {
-        callback();
+      .withArgs("listening", () => {})
+      .callsFake(function (
+        event: string,
+        callback: (msg: Buffer, rinfo: any) => void,
+      ) {
+        callback(Buffer.from(""),{ });
+        return this;
       });
 
     stubSocketOnMessageCallback(socket, {});
@@ -168,12 +171,13 @@ describe("Send command", () => {
 
     sinon
       .stub(socket, "on")
-      .withArgs("message")
-      .callsFake(function(
+      .withArgs("message", () => {})
+      .callsFake(function (
         event: string,
-        callback: (msg: Buffer) => void,
-      ): void {
-        callback(Buffer.from("123"));
+        callback: (msg: Buffer, rinfo: any) => void,
+      ) {
+        callback(Buffer.from("123"), {});
+        return this;
       });
 
     const result = await sendCommand(
@@ -263,8 +267,9 @@ function stubSocketOnMessageCallback(
 ) {
   sinon
     .stub(socket, "on")
-    .withArgs("message")
-    .callsFake(function(event: string, callback: (msg: Buffer) => void): void {
-      callback(Buffer.from(JSON.stringify(incomingMsg)));
-    });
+    .withArgs("message", () => {})
+    .callsFake(function (event: string, callback: (msg: Buffer, rinfo: any) => void) {
+    callback(Buffer.from(JSON.stringify(incomingMsg)),{});
+    return this;
+  });
 }

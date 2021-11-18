@@ -4,7 +4,7 @@ const chai_1 = require("chai");
 const sinon = require("sinon");
 const dgram = require("dgram");
 const registrationManager_1 = require("./registrationManager");
-const networkConstants = require("./constants/communication");
+const networkConstants = require("./constants");
 describe("Register light with IP", function () { });
 describe("Register all lights", () => {
     beforeEach(() => {
@@ -17,7 +17,7 @@ describe("Register all lights", () => {
         clearInterval(timer);
         return new Promise(resolve => {
             setTimeout(() => {
-                chai_1.expect(stub.calledThrice).to.be.true;
+                (0, chai_1.expect)(stub.calledThrice).to.be.true;
                 resolve();
             }, 50);
         });
@@ -27,7 +27,7 @@ describe("Register all lights", () => {
         const stub = sinon.stub(manager, "registerDevice");
         const timer = await manager.registerAllLights("eth0", networkConstants.LIGHT_UDP_CONTROL_PORT);
         clearInterval(timer);
-        chai_1.expect(timer).to.not.be.undefined;
+        (0, chai_1.expect)(timer).to.not.be.undefined;
     });
 });
 //# sourceMappingURL=registrationManager.spec.js.map

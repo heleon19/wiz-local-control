@@ -2,15 +2,12 @@ import { expect } from "chai";
 import * as sinon from "sinon";
 import WiZLocalControl from "./index";
 import UDPManager from "./UDPManager";
-import {
-  GetPowerMessage,
-  GetSystemConfigMessage,
-  SetModelConfigMessage,
-  SetPilotMessage,
-  SetSystemConfigMessage,
-  SetUserConfigMessage,
-  UpdateFirmwareMessage,
-} from "./constants/types";
+import { SetPilotMessage } from "./classes/Pilot";
+import { UpdateFirmwareMessage } from "./classes/Control";
+import { GetSystemConfigMessage, SetSystemConfigMessage } from "./classes/SystemConfig";
+import { GetPowerMessage } from "./classes/GetMessage";
+import { SetModelConfigMessage, SetUserConfigMessage } from "../dist/constants/types";
+
 
 describe("Creating instance", () => {
   it("should create UDP manager when creating new instance", () => {
@@ -24,8 +21,7 @@ describe("Creating instance", () => {
   it("should pass interface name to UDP manager when provided", () => {
     const interfaceName = "test";
     const control = new WiZLocalControl({
-      incomingMsgCallback: () => {
-      },
+      incomingMsgCallback: () => {},
       interfaceName,
     });
     expect(control.udpManager.interfaceName).to.be.equal(interfaceName);
@@ -66,30 +62,30 @@ describe("Creating instance", () => {
 });
 
 describe("Sending commands", () => {
+  let control: WiZLocalControl, sendCommandSpy: sinon.SinonSpy<any[], any>;
   beforeEach(() => {
     const manager = new UDPManager(() => {
     }, "eth0");
-    const spy = sinon.stub(manager, "sendUDPCommand");
+    sendCommandSpy = sinon.stub(manager, "sendUDPCommand");
 
-    this.control = new WiZLocalControl({
+    control = new WiZLocalControl({
       incomingMsgCallback: () => {
       },
     });
-    this.control.udpManager = manager;
-    this.sendCommandSpy = spy;
+    control.udpManager = manager;
   });
 
   it("msg was validated before sending", async () => {
-    const spy: sinon.SinonSpy = sinon.spy(this.control, "validateMsg");
+    const spy: sinon.SinonSpy = sinon.spy(control, "validateMsg");
     const targetIp = "127.0.0.1";
-    await this.control.changeBrightness(15, targetIp);
+    await control.changeBrightness(15, targetIp);
     expect(spy.called).to.be.true;
   });
 
   it("should form and send brightness command", async () => {
-    const spy: sinon.SinonSpy = this.sendCommandSpy;
+    const spy: sinon.SinonSpy = sendCommandSpy;
     const targetIp = "127.0.0.1";
-    await this.control.changeBrightness(50, targetIp);
+    await control.changeBrightness(50, targetIp);
     const msg = spy.getCall(0).args[0];
     const ip = spy.getCall(0).args[1];
 
@@ -98,9 +94,9 @@ describe("Sending commands", () => {
   });
 
   it("should form and send scene command", async () => {
-    const spy: sinon.SinonSpy = this.sendCommandSpy;
+    const spy: sinon.SinonSpy = sendCommandSpy;
     const targetIp = "127.0.0.1";
-    await this.control.changeLightMode(
+    await control.changeLightMode(
       { type: "scene", sceneId: 5, name: "tmp" },
       targetIp,
     );
@@ -112,9 +108,9 @@ describe("Sending commands", () => {
   });
 
   it("should form and send color command", async () => {
-    const spy: sinon.SinonSpy = this.sendCommandSpy;
+    const spy: sinon.SinonSpy = sendCommandSpy;
     const targetIp = "127.0.0.1";
-    await this.control.changeLightMode(
+    await control.changeLightMode(
       { type: "color", r: 255, g: 255, b: 0, cw: 0, ww: 0 },
       targetIp,
     );
@@ -126,9 +122,9 @@ describe("Sending commands", () => {
   });
 
   it("should form and send color temperature command", async () => {
-    const spy: sinon.SinonSpy = this.sendCommandSpy;
+    const spy: sinon.SinonSpy = sendCommandSpy;
     const targetIp = "127.0.0.1";
-    await this.control.changeLightMode(
+    await control.changeLightMode(
       { type: "temperature", colorTemperature: 2500 },
       targetIp,
     );
@@ -140,9 +136,9 @@ describe("Sending commands", () => {
   });
 
   it("should form and send speed change command", async () => {
-    const spy: sinon.SinonSpy = this.sendCommandSpy;
+    const spy: sinon.SinonSpy = sendCommandSpy;
     const targetIp = "127.0.0.1";
-    await this.control.changeSpeed(100, targetIp);
+    await control.changeSpeed(100, targetIp);
     const msg = spy.getCall(0).args[0];
     const ip = spy.getCall(0).args[1];
 
@@ -151,9 +147,9 @@ describe("Sending commands", () => {
   });
 
   it("should form and send status change command", async () => {
-    const spy: sinon.SinonSpy = this.sendCommandSpy;
+    const spy: sinon.SinonSpy = sendCommandSpy;
     const targetIp = "127.0.0.1";
-    await this.control.changeStatus(Boolean(100), targetIp);
+    await control.changeStatus(Boolean(100), targetIp);
     const msg = spy.getCall(0).args[0];
     const ip = spy.getCall(0).args[1];
 
@@ -162,9 +158,9 @@ describe("Sending commands", () => {
   });
 
   it("should form and send update firmware command", async () => {
-    const spy: sinon.SinonSpy = this.sendCommandSpy;
+    const spy: sinon.SinonSpy = sendCommandSpy;
     const targetIp = "127.0.0.1";
-    await this.control.updateFirmware(undefined, targetIp);
+    await control.updateFirmware(undefined, targetIp);
     const msg = spy.getCall(0).args[0];
     const ip = spy.getCall(0).args[1];
 
@@ -173,9 +169,9 @@ describe("Sending commands", () => {
   });
 
   it("should form and send get system config command", async () => {
-    const spy: sinon.SinonSpy = this.sendCommandSpy;
+    const spy: sinon.SinonSpy = sendCommandSpy;
     const targetIp = "127.0.0.1";
-    await this.control.getSystemConfig(targetIp);
+    await control.getSystemConfig(targetIp);
     const msg = spy.getCall(0).args[0];
     const ip = spy.getCall(0).args[1];
 
@@ -184,9 +180,9 @@ describe("Sending commands", () => {
   });
 
   it("should form and send get power command", async () => {
-    const spy: sinon.SinonSpy = this.sendCommandSpy;
+    const spy: sinon.SinonSpy = sendCommandSpy;
     const targetIp = "127.0.0.1";
-    await this.control.getPower(targetIp);
+    await control.getPower(targetIp);
     const msg = spy.getCall(0).args[0];
     const ip = spy.getCall(0).args[1];
 
@@ -195,7 +191,7 @@ describe("Sending commands", () => {
   });
 
   it("should form and send setModelConfig command", async () => {
-    const spy: sinon.SinonSpy = this.sendCommandSpy;
+    const spy: sinon.SinonSpy = sendCommandSpy;
     const targetIp = "127.0.0.1";
     const params = {
       confTs: 1596790372,
@@ -211,7 +207,7 @@ describe("Sending commands", () => {
       pm: 1,
       fanSpeed: 6,
     };
-    await this.control.setModelConfig(params, targetIp);
+    await control.setModelConfig(params, targetIp);
     const msg = spy.getCall(0).args[0];
     const ip = spy.getCall(0).args[1];
     expect(msg).to.be.instanceof(SetModelConfigMessage);
@@ -219,7 +215,7 @@ describe("Sending commands", () => {
   });
 
   it("should form and send setSystemConfig command", async () => {
-    const spy: sinon.SinonSpy = this.sendCommandSpy;
+    const spy: sinon.SinonSpy = sendCommandSpy;
     const targetIp = "127.0.0.1";
     const params = {
       moduleName: "thisIsA32CharacterLongModuleName",
@@ -227,7 +223,7 @@ describe("Sending commands", () => {
       ewf: "ff0000ff00000051f5b2",
       fs: 6,
     };
-    await this.control.setSystemConfig(params, targetIp);
+    await control.setSystemConfig(params, targetIp);
     const msg = spy.getCall(0).args[0];
     const ip = spy.getCall(0).args[1];
     expect(msg).to.be.instanceof(SetSystemConfigMessage);
@@ -235,14 +231,14 @@ describe("Sending commands", () => {
   });
 
   it("should form and send setUserConfig command", async () => {
-    const spy: sinon.SinonSpy = this.sendCommandSpy;
+    const spy: sinon.SinonSpy = sendCommandSpy;
     const targetIp = "127.0.0.1";
     const params = {
       pwmRange: [0, 100],
       whiteRange: [2700, 6500],
       extRange: [2200, 9000],
     };
-    await this.control.setUserConfig(params, targetIp);
+    await control.setUserConfig(params, targetIp);
     const msg = spy.getCall(0).args[0];
     const ip = spy.getCall(0).args[1];
     expect(msg).to.be.instanceof(SetUserConfigMessage);

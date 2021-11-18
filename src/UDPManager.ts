@@ -1,27 +1,22 @@
+import pino from "pino";
 import * as dgram from "dgram";
 import * as buffer from "buffer";
-import * as pino from "pino";
-import * as networkConstants from "./constants/communication";
-import {
-  WiZMessage,
-  SyncPilotMessage,
-  SyncPilotAckMessage,
-  WiZControlMessage,
-  Result,
-  WiZMessageResponse,
-} from "./constants/types";
+import * as networkConstants from "./constants";
 import RegistrationManager from "./registrationManager";
-import { getLocalMac, getLocalIPAddress } from "./ipFunctions";
+import { getLocalIPAddress, getLocalMac } from "./ipFunctions";
 import sendCommand from "./UDPCommunication";
-import { Socket } from "dgram";
+import { Result, WiZControlMessage, WiZMessage, WiZMessageResponse } from "./classes/types";
+import { SyncPilotAckMessage, SyncPilotMessage } from "./classes/Pilot";
+
 
 const logger = pino();
+
 /**
  * Class that manages UDP sockets, listens to the incoming messages
  * from WiZ devices and sends control commands
  */
 class UDPManager {
-  socket: Socket;
+  socket: dgram.Socket;
   interfaceName: string;
   registerLightsTimer: NodeJS.Timer | undefined;
   broadcastUDPPort: number;
@@ -36,18 +31,20 @@ class UDPManager {
     controlUDPPort: number = networkConstants.LIGHT_UDP_CONTROL_PORT,
     registrationManager: RegistrationManager = new RegistrationManager(),
   ) {
+    this.createSocket()
+      .then(() => {});
     this.interfaceName = interfaceName;
     global.Buffer = global.Buffer || buffer.Buffer;
     this.receivedMsgCallback = receivedMsgCallback;
     this.broadcastUDPPort = broadcastUDPPort;
     this.controlUDPPort = controlUDPPort;
-    this.createSocket();
     this.registrationManager = registrationManager;
   }
 
   async createSocket() {
     this.socket = await dgram.createSocket("udp4");
   }
+
   /**
    * Creates socket, starts listening on UDP port DEVICE_UDP_LISTEN_PORT
    * and initiates WiZ device registration procedure
@@ -59,9 +56,7 @@ class UDPManager {
       try {
         const str = String.fromCharCode.apply(null, new Uint8Array(msg));
         const obj = JSON.parse(str);
-        logger.info(
-          `message received - ${str} with info - ${JSON.stringify(rinfo)}`,
-        );
+        logger.info(`message received - ${str} with info - ${JSON.stringify(rinfo)}`);
         await this.processMessage(obj, rinfo.address);
       } catch (e) {
         logger.warn(`Cannot process the received message because of ${e}`);
@@ -84,8 +79,9 @@ class UDPManager {
     if (this.socket != undefined) {
       try {
         await this.socket.close();
-      } catch (e) {}
-      this.createSocket();
+      } catch (e) {
+      }
+      await this.createSocket();
     }
     return;
   }
@@ -97,6 +93,7 @@ class UDPManager {
     const localIp = await getLocalIPAddress(this.interfaceName);
     return await sendCommand<T>(msg, ip, localIp);
   }
+
   /**
    * Processes incoming message from WiZ device
    * and either
@@ -109,12 +106,12 @@ class UDPManager {
     if (msg) {
       switch (msg.method) {
         case networkConstants.syncPilotMethod:
-          this.sendSyncPilotAcknowledgement(msg, sourceIp);
+          await this.sendSyncPilotAcknowledgement(msg, sourceIp);
           msg.timestamp = new Date();
           msg.ip = sourceIp;
           break;
         case networkConstants.firstBeatMethod:
-          this.registrationManager.registerDevice(
+          await this.registrationManager.registerDevice(
             sourceIp,
             this.interfaceName,
             this.controlUDPPort,
@@ -152,8 +149,10 @@ class UDPManager {
       await getLocalIPAddress(this.interfaceName),
       this.controlUDPPort,
     )
-      .then(() => {})
-      .catch(() => {});
+      .then(() => {
+      })
+      .catch(() => {
+      });
   }
 }
 

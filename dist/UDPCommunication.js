@@ -1,14 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const pino = require("pino");
+const pino_1 = require("pino");
 const dgram = require("dgram");
-const networkConstants = require("./constants/communication");
-const logger = pino();
+const networkConstants = require("./constants");
+const logger = (0, pino_1.default)();
 /**
  * Sends message to the WiZ device
  * @param msg WiZ Control message to be sent to the lamp
  * @param ip WiZ device IP address
  * @param localIp Current device local IP address
+ * @param udpPort udp port to send a command
+ * @param broadcast true/false broadcasting
+ * @param socket socket name
  */
 async function sendCommand(msg, ip, localIp, udpPort = networkConstants.LIGHT_UDP_CONTROL_PORT, broadcast = false, socket = dgram.createSocket("udp4")) {
     return new Promise(async (resolve) => {
@@ -31,9 +34,11 @@ async function sendCommand(msg, ip, localIp, udpPort = networkConstants.LIGHT_UD
                     message: "Timeout",
                 });
             }
-            catch (e) { }
+            catch (e) {
+            }
         }, 1000);
-        socket.once("listening", () => {
+        socket
+            .once("listening", () => {
             const buf = Buffer.from(JSON.stringify(msg), "utf8");
             socket.setBroadcast(broadcast);
             socket.send(buf, 0, buf.length, udpPort, ip, err => {
@@ -43,12 +48,12 @@ async function sendCommand(msg, ip, localIp, udpPort = networkConstants.LIGHT_UD
                         message: JSON.stringify(err),
                     });
             });
-        });
-        socket.on("error", err => resolve({
+        })
+            .on("error", err => resolve({
             type: "error",
             message: JSON.stringify(err),
-        }));
-        socket.on("message", async (incomingMsg) => {
+        }))
+            .on("message", async (incomingMsg) => {
             const str = String.fromCharCode.apply(undefined, new Uint8Array(incomingMsg));
             logger.info(`result of sending ${str}`);
             try {

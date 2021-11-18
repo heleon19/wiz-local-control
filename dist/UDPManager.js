@@ -1,25 +1,26 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const pino_1 = require("pino");
 const dgram = require("dgram");
 const buffer = require("buffer");
-const pino = require("pino");
-const networkConstants = require("./constants/communication");
+const networkConstants = require("./constants");
 const registrationManager_1 = require("./registrationManager");
 const ipFunctions_1 = require("./ipFunctions");
 const UDPCommunication_1 = require("./UDPCommunication");
-const logger = pino();
+const logger = (0, pino_1.default)();
 /**
  * Class that manages UDP sockets, listens to the incoming messages
  * from WiZ devices and sends control commands
  */
 class UDPManager {
     constructor(receivedMsgCallback, interfaceName, broadcastUDPPort = networkConstants.DEVICE_UDP_LISTEN_PORT, controlUDPPort = networkConstants.LIGHT_UDP_CONTROL_PORT, registrationManager = new registrationManager_1.default()) {
+        this.createSocket()
+            .then(() => { });
         this.interfaceName = interfaceName;
         global.Buffer = global.Buffer || buffer.Buffer;
         this.receivedMsgCallback = receivedMsgCallback;
         this.broadcastUDPPort = broadcastUDPPort;
         this.controlUDPPort = controlUDPPort;
-        this.createSocket();
         this.registrationManager = registrationManager;
     }
     async createSocket() {
@@ -57,14 +58,15 @@ class UDPManager {
             try {
                 await this.socket.close();
             }
-            catch (e) { }
-            this.createSocket();
+            catch (e) {
+            }
+            await this.createSocket();
         }
         return;
     }
     async sendUDPCommand(msg, ip) {
-        const localIp = await ipFunctions_1.getLocalIPAddress(this.interfaceName);
-        return await UDPCommunication_1.default(msg, ip, localIp);
+        const localIp = await (0, ipFunctions_1.getLocalIPAddress)(this.interfaceName);
+        return await (0, UDPCommunication_1.default)(msg, ip, localIp);
     }
     /**
      * Processes incoming message from WiZ device
@@ -78,12 +80,12 @@ class UDPManager {
         if (msg) {
             switch (msg.method) {
                 case networkConstants.syncPilotMethod:
-                    this.sendSyncPilotAcknowledgement(msg, sourceIp);
+                    await this.sendSyncPilotAcknowledgement(msg, sourceIp);
                     msg.timestamp = new Date();
                     msg.ip = sourceIp;
                     break;
                 case networkConstants.firstBeatMethod:
-                    this.registrationManager.registerDevice(sourceIp, this.interfaceName, this.controlUDPPort);
+                    await this.registrationManager.registerDevice(sourceIp, this.interfaceName, this.controlUDPPort);
                     break;
                 default:
                     break;
@@ -104,12 +106,14 @@ class UDPManager {
             id: sourceMsg.id,
             env: sourceMsg.env,
             result: {
-                mac: ipFunctions_1.getLocalMac(),
+                mac: (0, ipFunctions_1.getLocalMac)(),
             },
         };
-        UDPCommunication_1.default(msg, sourceIp, await ipFunctions_1.getLocalIPAddress(this.interfaceName), this.controlUDPPort)
-            .then(() => { })
-            .catch(() => { });
+        (0, UDPCommunication_1.default)(msg, sourceIp, await (0, ipFunctions_1.getLocalIPAddress)(this.interfaceName), this.controlUDPPort)
+            .then(() => {
+        })
+            .catch(() => {
+        });
     }
 }
 exports.default = UDPManager;

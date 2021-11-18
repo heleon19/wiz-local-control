@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getLocalMac = exports.getLocalIPAddress = void 0;
 const ip = require("ip");
 /**
  * Obtains local ip address for the interface.

@@ -1,32 +1,25 @@
-import {
-  FavoriteLightMode,
-  GetPowerMessage,
-  GetPowerResponse,
-  GetSystemConfigMessage,
-  GetSystemConfigResponse,
-  LightMode,
-  RebootMessage,
-  ResetMessage,
-  Result,
-  SetFavoritesMessage,
-  SetFavoritesParameters,
-  SetModelConfigMessage,
-  SetModelConfigMessageParameters,
-  SetPilotMessage,
-  SetSystemConfigMessage,
-  SetSystemConfigMessageParameters,
-  SetUserConfigMessage,
-  SetUserConfigMessageParameters,
-  SetWiZClickMessage,
-  SetWiZClickParameters,
-  staticScenes,
-  UpdateFirmwareMessage,
-  WiZClickMode,
-  WiZControlMessage,
-  WiZMessage,
-} from "./constants/types";
 import UDPManager from "./UDPManager";
 import { validate } from "class-validator";
+import { Result, WiZControlMessage, WiZMessage } from "./classes/types";
+import { RebootMessage, ResetMessage, UpdateFirmwareMessage } from "./classes/Control";
+import {
+  GetSystemConfigMessage,
+  GetSystemConfigResponse,
+  SetSystemConfigMessage,
+  SetSystemConfigMessageParameters,
+} from "./classes/SystemConfig";
+import {
+  SetModelConfigMessage,
+  SetModelConfigMessageParameters,
+  SetUserConfigMessage,
+  SetUserConfigMessageParameters,
+  staticScenes
+} from "../dist/constants/types";
+import { SetPilotMessage } from "./classes/Pilot";
+import { LightMode } from "./classes/LightMode";
+import { GetPowerMessage, GetPowerResponse } from "./classes/GetMessage";
+import { SetFavoritesMessage, SetFavoritesParameters, FavoriteLightMode } from "./classes/Favorites";
+import { SetWiZClickMessage, SetWiZClickParameters, WiZClickMode } from "./classes/WiZClick";
 
 export type WiZLocalControlConfig = {
   incomingMsgCallback: (msg: WiZMessage, sourceIp: string) => void;
@@ -36,11 +29,19 @@ export default class WiZLocalControl {
   udpManager: UDPManager;
 
   constructor(options: WiZLocalControlConfig) {
-    const interfaceName = options.interfaceName || "eth0";
     this.udpManager = new UDPManager(
       options.incomingMsgCallback,
-      interfaceName,
+      options.interfaceName || "eth0",
     );
+  }
+
+  async validateMsg(msg: WiZControlMessage, skipMissingProperties: boolean = false): Promise<void> {
+    const validationErrors = await validate(msg, {
+      skipMissingProperties,
+    });
+    if (validationErrors.length > 0) {
+      throw Error(JSON.stringify(validationErrors));
+    }
   }
 
   /**
@@ -66,9 +67,7 @@ export default class WiZLocalControl {
     firmwareVersion: string | undefined,
     lightIp: string,
   ): Promise<Result<any>> {
-    const msg = UpdateFirmwareMessage.buildUpdateFirmwareMessage(
-      firmwareVersion,
-    );
+    const msg = UpdateFirmwareMessage.buildUpdateFirmwareMessage(firmwareVersion);
     await this.validateMsg(msg);
     return this.udpManager.sendUDPCommand(msg, lightIp);
   }
@@ -130,9 +129,7 @@ export default class WiZLocalControl {
     extendedWhiteFactor: string,
     lightIp: string,
   ): Promise<Result<any>> {
-    const msg = SetSystemConfigMessage.buildSetExtendedWhiteFactorMessage(
-      extendedWhiteFactor,
-    );
+    const msg = SetSystemConfigMessage.buildSetExtendedWhiteFactorMessage(extendedWhiteFactor);
     await this.validateMsg(msg);
     return this.udpManager.sendUDPCommand(msg, lightIp);
   }
@@ -265,17 +262,17 @@ export default class WiZLocalControl {
     brightness: number,
     lightIp: string,
   ): Promise<Result<any>> {
+    let msg;
     switch (lightMode.type) {
       case "scene": {
-        const msg = SetPilotMessage.buildSceneAndBrightnessControlMessage(
+        msg = SetPilotMessage.buildSceneAndBrightnessControlMessage(
           lightMode,
           brightness,
         );
-        await this.validateMsg(msg, true);
-        return this.udpManager.sendUDPCommand(msg, lightIp);
+        break;
       }
       case "color": {
-        const msg = SetPilotMessage.buildColorAndBrightnessControlMessage(
+        msg = SetPilotMessage.buildColorAndBrightnessControlMessage(
           lightMode.r,
           lightMode.g,
           lightMode.b,
@@ -283,18 +280,18 @@ export default class WiZLocalControl {
           lightMode.ww,
           brightness,
         );
-        await this.validateMsg(msg, true);
-        return this.udpManager.sendUDPCommand(msg, lightIp);
+        break;
       }
       case "temperature": {
-        const msg = SetPilotMessage.buildColorTemperatureAndBrightnessControlMessage(
+        msg = SetPilotMessage.buildColorTemperatureAndBrightnessControlMessage(
           lightMode.colorTemperature,
           brightness,
         );
-        await this.validateMsg(msg, true);
-        return this.udpManager.sendUDPCommand(msg, lightIp);
+        break;
       }
     }
+    await this.validateMsg(msg, true);
+    return this.udpManager.sendUDPCommand(msg, lightIp);
   }
 
   /**
@@ -350,15 +347,6 @@ export default class WiZLocalControl {
   ): Promise<Result<GetPowerResponse>> {
     const msg = new GetPowerMessage();
     return this.udpManager.sendUDPCommand<GetPowerResponse>(msg, lightIp);
-  }
-
-  async validateMsg(msg: WiZControlMessage, skipMissingProperties: boolean = false): Promise<void> {
-    const validationErrors = await validate(msg, {
-      skipMissingProperties,
-    });
-    if (validationErrors.length > 0) {
-      throw Error(JSON.stringify(validationErrors));
-    }
   }
 
   /**

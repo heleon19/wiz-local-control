@@ -2,11 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const chai_1 = require("chai");
 const sinon = require("sinon");
-const types_1 = require("./constants/types");
 const ipFunctions_1 = require("./ipFunctions");
-const networkConstants = require("./constants/communication");
+const networkConstants = require("./constants");
 const dgram = require("dgram");
 const UDPCommunication_1 = require("./UDPCommunication");
+const Control_1 = require("./classes/Control");
 describe("Send command", () => {
     it("should bind the socket", async () => {
         const lightIp = "127.0.0.1";
@@ -14,21 +14,20 @@ describe("Send command", () => {
         const socket = dgram.createSocket("udp4");
         const stubBind = sinon.stub(socket, "bind");
         stubBind.throws("mockup");
-        const msg = new types_1.RegistrationMessage(localIp, ipFunctions_1.getLocalMac());
-        await UDPCommunication_1.default(msg, lightIp, localIp, networkConstants.LIGHT_UDP_CONTROL_PORT, false, socket);
-        chai_1.expect(stubBind.calledOnce).to.be.true;
+        const msg = new Control_1.RegistrationMessage(localIp, (0, ipFunctions_1.getLocalMac)());
+        await (0, UDPCommunication_1.default)(msg, lightIp, localIp, networkConstants.LIGHT_UDP_CONTROL_PORT, false, socket);
+        (0, chai_1.expect)(stubBind.calledOnce).to.be.true;
     });
     it("should close the socket after timeout", async () => {
         const lightIp = "127.0.0.1";
         const localIp = "127.0.0.1";
         const socket = dgram.createSocket("udp4");
-        const stubBind = sinon.stub(socket, "bind");
-        stubBind.returns(1);
-        const stubOnce = sinon.stub(socket, "once");
+        sinon.stub(socket, "bind").returns(1);
+        sinon.stub(socket, "once");
         const stubClose = sinon.stub(socket, "close");
-        const msg = new types_1.RegistrationMessage(localIp, ipFunctions_1.getLocalMac());
-        await UDPCommunication_1.default(msg, lightIp, localIp, networkConstants.LIGHT_UDP_CONTROL_PORT, false, socket);
-        chai_1.expect(stubClose.calledOnce).to.be.true;
+        const msg = new Control_1.RegistrationMessage(localIp, (0, ipFunctions_1.getLocalMac)());
+        await (0, UDPCommunication_1.default)(msg, lightIp, localIp, networkConstants.LIGHT_UDP_CONTROL_PORT, false, socket);
+        (0, chai_1.expect)(stubClose.calledOnce).to.be.true;
     });
     it("should start listening for state changes", async () => {
         const lightIp = "127.0.0.1";
@@ -37,56 +36,59 @@ describe("Send command", () => {
         const stubBind = sinon.stub(socket, "bind");
         stubBind.resolves(1);
         const stubOnce = sinon.stub(socket, "once");
-        const msg = new types_1.RegistrationMessage(localIp, ipFunctions_1.getLocalMac());
+        const msg = new Control_1.RegistrationMessage(localIp, (0, ipFunctions_1.getLocalMac)());
         const onStub = sinon
             .stub(socket, "on")
-            .withArgs("message")
+            .withArgs("message", () => { })
             .callsFake(function (event, callback) {
-            callback(new Buffer(1));
+            callback(new Buffer(1), {});
+            return this;
         });
-        await UDPCommunication_1.default(msg, lightIp, localIp, networkConstants.LIGHT_UDP_CONTROL_PORT, false, socket);
-        chai_1.expect(stubOnce.calledWith("listening")).to.be.true;
+        await (0, UDPCommunication_1.default)(msg, lightIp, localIp, networkConstants.LIGHT_UDP_CONTROL_PORT, false, socket);
+        (0, chai_1.expect)(stubOnce.calledWith("listening")).to.be.true;
     });
     it("should start listening for incoming messages", async () => {
         const lightIp = "127.0.0.1";
         const localIp = "127.0.0.1";
         const socket = dgram.createSocket("udp4");
-        const msg = new types_1.RegistrationMessage(localIp, ipFunctions_1.getLocalMac());
+        const msg = new Control_1.RegistrationMessage(localIp, (0, ipFunctions_1.getLocalMac)());
         const onStub = sinon
             .stub(socket, "on")
-            .withArgs("message")
+            .withArgs("message", () => { })
             .callsFake(function (event, callback) {
-            callback(new Buffer(1));
+            callback(Buffer.from("1"), {});
+            return this;
         });
-        await UDPCommunication_1.default(msg, lightIp, localIp, networkConstants.LIGHT_UDP_CONTROL_PORT, false, socket);
-        chai_1.expect(onStub.calledOnce).to.be.true;
+        await (0, UDPCommunication_1.default)(msg, lightIp, localIp, networkConstants.LIGHT_UDP_CONTROL_PORT, false, socket);
+        (0, chai_1.expect)(onStub.calledOnce).to.be.true;
     });
     it("should send message when socket comes to Listening state", async () => {
         const lightIp = "127.0.0.1";
         const localIp = "127.0.0.1";
         const socket = dgram.createSocket("udp4");
         const spy = sinon.spy(socket, "send");
-        const msg = new types_1.RegistrationMessage(localIp, ipFunctions_1.getLocalMac());
-        const onStub = sinon
+        const msg = new Control_1.RegistrationMessage(localIp, (0, ipFunctions_1.getLocalMac)());
+        sinon
             .stub(socket, "once")
-            .withArgs("listening")
+            .withArgs("listening", () => { })
             .callsFake(function (event, callback) {
-            callback();
+            callback(Buffer.from(""), {});
+            return this;
         });
         stubSocketOnMessageCallback(socket, {});
-        await UDPCommunication_1.default(msg, lightIp, localIp, networkConstants.LIGHT_UDP_CONTROL_PORT, false, socket);
-        chai_1.expect(spy.calledOnce).to.be.true;
+        await (0, UDPCommunication_1.default)(msg, lightIp, localIp, networkConstants.LIGHT_UDP_CONTROL_PORT, false, socket);
+        (0, chai_1.expect)(spy.calledOnce).to.be.true;
     });
     it("should resolve with success when received msg", async () => {
         const lightIp = "127.0.0.1";
         const localIp = "127.0.0.1";
         const socket = dgram.createSocket("udp4");
-        const msg = new types_1.RegistrationMessage(localIp, ipFunctions_1.getLocalMac());
+        const msg = new Control_1.RegistrationMessage(localIp, (0, ipFunctions_1.getLocalMac)());
         stubSocketOnMessageCallback(socket, {
             result: { success: true, data: {} },
         });
-        const result = await UDPCommunication_1.default(msg, lightIp, localIp, networkConstants.LIGHT_UDP_CONTROL_PORT, false, socket);
-        chai_1.expect(result)
+        const result = await (0, UDPCommunication_1.default)(msg, lightIp, localIp, networkConstants.LIGHT_UDP_CONTROL_PORT, false, socket);
+        (0, chai_1.expect)(result)
             .to.have.property("type")
             .equal("success");
     });
@@ -94,15 +96,16 @@ describe("Send command", () => {
         const lightIp = "127.0.0.1";
         const localIp = "127.0.0.1";
         const socket = dgram.createSocket("udp4");
-        const msg = new types_1.RegistrationMessage(localIp, ipFunctions_1.getLocalMac());
+        const msg = new Control_1.RegistrationMessage(localIp, (0, ipFunctions_1.getLocalMac)());
         sinon
             .stub(socket, "on")
-            .withArgs("message")
+            .withArgs("message", () => { })
             .callsFake(function (event, callback) {
-            callback(Buffer.from("123"));
+            callback(Buffer.from("123"), {});
+            return this;
         });
-        const result = await UDPCommunication_1.default(msg, lightIp, localIp, networkConstants.LIGHT_UDP_CONTROL_PORT, false, socket);
-        chai_1.expect(result)
+        const result = await (0, UDPCommunication_1.default)(msg, lightIp, localIp, networkConstants.LIGHT_UDP_CONTROL_PORT, false, socket);
+        (0, chai_1.expect)(result)
             .to.have.property("type")
             .equal("error");
     });
@@ -110,10 +113,10 @@ describe("Send command", () => {
         const lightIp = "127.0.0.1";
         const localIp = "127.0.0.1";
         const socket = dgram.createSocket("udp4");
-        const msg = new types_1.RegistrationMessage(localIp, ipFunctions_1.getLocalMac());
+        const msg = new Control_1.RegistrationMessage(localIp, (0, ipFunctions_1.getLocalMac)());
         stubSocketOnMessageCallback(socket, {});
-        const result = await UDPCommunication_1.default(msg, lightIp, localIp, networkConstants.LIGHT_UDP_CONTROL_PORT, false, socket);
-        chai_1.expect(result)
+        const result = await (0, UDPCommunication_1.default)(msg, lightIp, localIp, networkConstants.LIGHT_UDP_CONTROL_PORT, false, socket);
+        (0, chai_1.expect)(result)
             .to.have.property("type")
             .equal("error");
     });
@@ -121,14 +124,14 @@ describe("Send command", () => {
         const lightIp = "127.0.0.1";
         const localIp = "127.0.0.1";
         const socket = dgram.createSocket("udp4");
-        const msg = new types_1.RegistrationMessage(localIp, ipFunctions_1.getLocalMac());
+        const msg = new Control_1.RegistrationMessage(localIp, (0, ipFunctions_1.getLocalMac)());
         const errorData = { data: "123" };
         stubSocketOnMessageCallback(socket, { error: errorData });
-        const result = await UDPCommunication_1.default(msg, lightIp, localIp, networkConstants.LIGHT_UDP_CONTROL_PORT, false, socket);
-        chai_1.expect(result)
+        const result = await (0, UDPCommunication_1.default)(msg, lightIp, localIp, networkConstants.LIGHT_UDP_CONTROL_PORT, false, socket);
+        (0, chai_1.expect)(result)
             .to.have.property("type")
             .equal("error");
-        chai_1.expect(result)
+        (0, chai_1.expect)(result)
             .to.have.property("message")
             .equal(JSON.stringify(errorData));
     });
@@ -136,19 +139,20 @@ describe("Send command", () => {
         const lightIp = "127.0.0.1";
         const localIp = "127.0.0.1";
         const socket = dgram.createSocket("udp4");
-        const msg = new types_1.RegistrationMessage(localIp, ipFunctions_1.getLocalMac());
+        const msg = new Control_1.RegistrationMessage(localIp, (0, ipFunctions_1.getLocalMac)());
         const spy = sinon.spy(socket, "close");
         stubSocketOnMessageCallback(socket, {});
-        await UDPCommunication_1.default(msg, lightIp, localIp, networkConstants.LIGHT_UDP_CONTROL_PORT, false, socket);
-        chai_1.expect(spy.calledOnce).to.be.true;
+        await (0, UDPCommunication_1.default)(msg, lightIp, localIp, networkConstants.LIGHT_UDP_CONTROL_PORT, false, socket);
+        (0, chai_1.expect)(spy.calledOnce).to.be.true;
     });
 });
 function stubSocketOnMessageCallback(socket, incomingMsg) {
     sinon
         .stub(socket, "on")
-        .withArgs("message")
+        .withArgs("message", () => { })
         .callsFake(function (event, callback) {
-        callback(Buffer.from(JSON.stringify(incomingMsg)));
+        callback(Buffer.from(JSON.stringify(incomingMsg)), {});
+        return this;
     });
 }
 //# sourceMappingURL=UDPCommunication.spec.js.map

@@ -1,5 +1,11 @@
-import { FavoriteLightMode, GetPowerResponse, GetSystemConfigResponse, LightMode, Result, SetModelConfigMessageParameters, SetSystemConfigMessageParameters, SetUserConfigMessageParameters, staticScenes, WiZClickMode, WiZControlMessage, WiZMessage } from "./constants/types";
 import UDPManager from "./UDPManager";
+import { Result, WiZControlMessage, WiZMessage } from "./classes/types";
+import { GetSystemConfigResponse, SetSystemConfigMessageParameters } from "./classes/SystemConfig";
+import { SetModelConfigMessageParameters, SetUserConfigMessageParameters, staticScenes } from "../dist/constants/types";
+import { LightMode } from "./classes/LightMode";
+import { GetPowerResponse } from "./classes/GetMessage";
+import { FavoriteLightMode } from "./classes/Favorites";
+import { WiZClickMode } from "./classes/WiZClick";
 export declare type WiZLocalControlConfig = {
     incomingMsgCallback: (msg: WiZMessage, sourceIp: string) => void;
     interfaceName?: string;
@@ -7,6 +13,7 @@ export declare type WiZLocalControlConfig = {
 export default class WiZLocalControl {
     udpManager: UDPManager;
     constructor(options: WiZLocalControlConfig);
+    validateMsg(msg: WiZControlMessage, skipMissingProperties?: boolean): Promise<void>;
     /**
      * Starts listening to status updates of WiZ lights
      */
@@ -123,7 +130,6 @@ export default class WiZLocalControl {
      * @param lightIp
      */
     getPower(lightIp: string): Promise<Result<GetPowerResponse>>;
-    validateMsg(msg: WiZControlMessage, skipMissingProperties?: boolean): Promise<void>;
     /**
      * Sets favorites on the light
      * @param favorite1
