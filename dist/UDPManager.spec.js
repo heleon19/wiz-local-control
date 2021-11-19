@@ -39,9 +39,9 @@ describe("Start listening", () => {
             manager.socket = await dgram.createSocket("udp4");
             sinon
                 .stub(manager.socket, "on")
-                .withArgs("message", () => { })
+                .withArgs("message")
                 .callsFake(function (event, callback) {
-                callback(new Buffer(JSON.stringify({})), { address: 1 });
+                callback(Buffer.from(JSON.stringify({})), { address: 1 });
                 return this;
             });
             return;
@@ -51,12 +51,11 @@ describe("Start listening", () => {
         await manager.stopListening();
     });
     it("should save the timer saved after registering all lights and clear after stopping listening", async () => {
+        // ToDo const clock = sinon.useFakeTimers();
         const registrationManager = new registrationManager_1.default();
         sinon
             .stub(registrationManager, "registerAllLights")
-            .returns(new Promise(() => {
-            setInterval(() => Promise.resolve(), 5000);
-        }));
+            .returns(setInterval(() => { }, 500));
         const manager = await new UDPManager_1.default(() => { }, "eth0", networkConstants.DEVICE_UDP_LISTEN_PORT, networkConstants.LIGHT_UDP_CONTROL_PORT, registrationManager);
         await manager.startListening();
         (0, chai_1.expect)(manager.registerLightsTimer).to.not.be.undefined;
@@ -87,9 +86,9 @@ describe("Process message", () => {
             manager.socket = await dgram.createSocket("udp4");
             sinon
                 .stub(manager.socket, "on")
-                .withArgs("message", () => { })
+                .withArgs("message")
                 .callsFake(function (event, callback) {
-                callback(new Buffer(JSON.stringify({ method: "syncPilot", params: {} })), { address: "1" });
+                callback(Buffer.from(JSON.stringify({ method: "syncPilot", params: {} })), { address: "1" });
                 return this;
             });
             return;
@@ -109,9 +108,9 @@ describe("Process message", () => {
             manager.socket = await dgram.createSocket("udp4");
             sinon
                 .stub(manager.socket, "on")
-                .withArgs("message", () => { })
+                .withArgs("message")
                 .callsFake(function (event, callback) {
-                callback(new Buffer(JSON.stringify({ method: "firstBeat", params: {} })), { address: "1" });
+                callback(Buffer.from(JSON.stringify({ method: "firstBeat", params: {} })), { address: "1" });
                 return this;
             });
             return;

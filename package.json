@@ -10,7 +10,7 @@
     "test": "ts-mocha src/**/*.spec.ts"
   },
   "repository": "git@gitlab.com:wizlighting/wiz-local-control.git",
-  "author": "Gleb Vodovozov",
+  "author": "Gleb Vodovozov, Eugene Khrapykin",
   "license": "MIT",
   "private": true,
   "devDependencies": {

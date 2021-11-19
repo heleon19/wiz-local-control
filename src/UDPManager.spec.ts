@@ -61,12 +61,12 @@ describe("Start listening", () => {
       manager.socket = await dgram.createSocket("udp4");
       sinon
         .stub(manager.socket, "on")
-        .withArgs("message", () => {})
+        .withArgs("message")
         .callsFake(function (
           event: string,
           callback: (msg: Buffer, rinfo: any) => void,
         ) {
-          callback(new Buffer(JSON.stringify({})), { address: 1 });
+          callback(Buffer.from(JSON.stringify({})), { address: 1 });
           return this;
         });
       return;
@@ -77,12 +77,11 @@ describe("Start listening", () => {
   });
 
   it("should save the timer saved after registering all lights and clear after stopping listening", async () => {
+    // ToDo const clock = sinon.useFakeTimers();
     const registrationManager = new RegistrationManager();
     sinon
       .stub(registrationManager, "registerAllLights")
-      .returns(new Promise(() => {
-        setInterval(() => Promise.resolve(), 5000);
-      }));
+      .returns(setInterval(() => {}, 500));
     const manager = await new UDPManager(
       ()=>{},
       "eth0",
@@ -138,12 +137,12 @@ describe("Process message", () => {
       manager.socket = await dgram.createSocket("udp4");
       sinon
         .stub(manager.socket, "on")
-        .withArgs("message", () => {})
+        .withArgs("message")
         .callsFake(function (
           event: string,
           callback: (msg: Buffer, rinfo: any) => void,
         ) {
-          callback(new Buffer(JSON.stringify({ method: "syncPilot", params: {} })),{ address: "1" });
+          callback(Buffer.from(JSON.stringify({ method: "syncPilot", params: {} })),{ address: "1" });
           return this;
         });
       return;
@@ -171,12 +170,12 @@ describe("Process message", () => {
       manager.socket = await dgram.createSocket("udp4");
       sinon
         .stub(manager.socket, "on")
-        .withArgs("message", () => {})
+        .withArgs("message")
         .callsFake(function(
           event: string,
           callback: (msg: Buffer, rinfo: any) => void,
         ) {
-          callback(new Buffer(JSON.stringify({ method: "firstBeat", params: {} })),{ address: "1" });
+          callback(Buffer.from(JSON.stringify({ method: "firstBeat", params: {} })),{ address: "1" });
           return this;
         });
       return;

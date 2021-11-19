@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import * as dgram from "dgram";
+import { Socket } from "dgram";
 import { Result, WiZControlMessage, WiZMessageResponse } from "./classes/types";
 /**
  * Sends message to the WiZ device
@@ -10,4 +10,4 @@ import { Result, WiZControlMessage, WiZMessageResponse } from "./classes/types";
  * @param broadcast true/false broadcasting
  * @param socket socket name
  */
-export default function sendCommand<T extends WiZMessageResponse>(msg: WiZControlMessage, ip: string, localIp: string, udpPort?: number, broadcast?: boolean, socket?: dgram.Socket): Promise<Result<T>>;
+export default function sendCommand<T extends WiZMessageResponse>(msg: WiZControlMessage, ip: string, localIp: string, udpPort?: number, broadcast?: boolean, socket?: Socket): Promise<Result<T>>;
