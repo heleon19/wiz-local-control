@@ -12,6 +12,7 @@ export interface SetSystemConfigMessageParameters {
   ewf?: string;
   fs?: number;
   drvConf?: number[];
+  systemConfigTs?: number;
 }
 
 /**
@@ -41,7 +42,27 @@ export class SetSystemConfigParameters {
   fs?: number;
 
   constructor(parameters: SetSystemConfigMessageParameters) {
-    Object.assign(this, parameters);
+    const excludedKeys = ["environment", "extendedWhiteFactor", "pwmRefreshRate", "whiteChannels", "whiteToColorsRatio"];
+    Object.assign(this, Object.keys(parameters).filter(key => !excludedKeys.includes(key)).reduce((result, key) => {
+      // @ts-ignore
+      result[key] = parameters[key];
+      return result;
+    }, {} as Record<string, any>));
+    if (parameters.environment != undefined) {
+      this.env = parameters.environment;
+    }
+    if (parameters.extendedWhiteFactor != undefined) {
+      this.ewf = parameters.extendedWhiteFactor;
+    }
+    if (parameters.pwmRefreshRate != undefined) {
+      this.pwmConf = convertPWMRefreshRateToPWMConf(parameters.pwmRefreshRate);
+    }
+    if (parameters.whiteChannels != undefined && parameters.whiteToColorsRatio != undefined) {
+      this.drvConf = [parameters.whiteToColorsRatio, parameters.whiteChannels];
+    }
+    if (parameters.systemConfigTs == undefined) {
+      this.systemConfigTs = 0;
+    }
   }
 }
 

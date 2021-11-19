@@ -1,0 +1,16 @@
+export declare const DEVICE_UDP_LISTEN_PORT = 38900;
+export declare const LIGHT_UDP_CONTROL_PORT = 38899;
+export declare const syncPilotMethod = "syncPilot";
+export declare const firstBeatMethod = "firstBeat";
+export declare const registrationMethod = "registration";
+export declare const getSystemConfigMethod = "getSystemConfig";
+export declare const setPilotMethod = "setPilot";
+export declare const updateOtaMethod = "updateOta";
+export declare const resetMethod = "reset";
+export declare const rebootMethod = "reboot";
+export declare const setSystemConfigMethod = "setSystemConfig";
+export declare const setUserConfigMethod = "setUserConfig";
+export declare const setFavoritesMethod = "setFavs";
+export declare const setWiZClickMethod = "setWiZClick";
+export declare const getPower = "getPower";
+export declare const setModelConfigMethod = "setModelConfig";

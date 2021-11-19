@@ -13,6 +13,7 @@ export interface SetUserConfigMessageParameters {
   whiteRange?: number[];
   extRange?: number[];
   startupMode?: string;
+  userConfigTs?: number;
 }
 
 /**
@@ -21,7 +22,7 @@ export interface SetUserConfigMessageParameters {
 export class SetUserConfigParameters {
   @IsOptional()
   @IsInt()
-  userConfigTs: number;
+  userConfigTs?: number;
   @IsOptional()
   @IsArray()
   whiteRange?: number[];
@@ -38,8 +39,36 @@ export class SetUserConfigParameters {
   @IsString()
   startupMode: string;
 
+
   constructor(parameters: SetUserConfigMessageParameters) {
+    const excludedKeys = ["whiteTemperatureMin", "whiteTemperatureMax", "extendedTemperatureMin", "extendedTemperatureMax", "pwmMin", "pwmMax", "pwmRange", "whiteRange", "extRange"];
+    Object.assign(this, Object.keys(parameters).filter(key => !excludedKeys.includes(key)).reduce((result, key) => {
+      // @ts-ignore
+      result[key] = parameters[key];
+      return result;
+    }, {} as Record<string, any>));
     Object.assign(this, parameters);
+    if (parameters.whiteTemperatureMin != undefined && parameters.whiteTemperatureMax != undefined) {
+      this.whiteRange = [parameters.whiteTemperatureMin, parameters.whiteTemperatureMax];
+    }
+    if (parameters.extendedTemperatureMin != undefined && parameters.extendedTemperatureMax != undefined) {
+      this.extRange = [parameters.extendedTemperatureMin, parameters.extendedTemperatureMax];
+    }
+    if (parameters.pwmMin != undefined && parameters.pwmMax != undefined) {
+      this.pwmRange = [parameters.pwmMin, parameters.pwmMax];
+    }
+    if (parameters.pwmRange != undefined) {
+      this.pwmRange = parameters.pwmRange;
+    }
+    if (parameters.whiteRange != undefined) {
+      this.whiteRange = parameters.whiteRange;
+    }
+    if (parameters.extRange != undefined) {
+      this.extRange = parameters.extRange;
+    }
+    if (parameters.userConfigTs == undefined) {
+      this.userConfigTs = 0;
+    }
   }
 }
 
