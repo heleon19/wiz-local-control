@@ -6,7 +6,8 @@ import { SetPilotMessage } from "./classes/Pilot";
 import { UpdateFirmwareMessage } from "./classes/Control";
 import { GetSystemConfigMessage, SetSystemConfigMessage } from "./classes/SystemConfig";
 import { GetPowerMessage } from "./classes/GetMessage";
-import { SetModelConfigMessage, SetUserConfigMessage } from "../dist/constants/types";
+import { SetUserConfigMessage } from "./classes/SetUserConfig";
+import { SetModelConfigMessage } from "./classes/SetModelConfig";
 
 
 describe("Creating instance", () => {

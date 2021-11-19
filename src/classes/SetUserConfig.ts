@@ -16,9 +16,10 @@ export interface SetUserConfigMessageParameters {
 }
 
 /**
- * Set system config messages parameters for request
+ * Set user config messages parameters for request
  */
 export class SetUserConfigParameters {
+  @IsOptional()
   @IsInt()
   userConfigTs: number;
   @IsOptional()
@@ -30,46 +31,15 @@ export class SetUserConfigParameters {
   @IsOptional()
   @IsArray()
   pwmRange?: number[];
+  @IsOptional()
   @IsInt()
   dftDim: number;
+  @IsOptional()
   @IsString()
   startupMode: string;
 
   constructor(parameters: SetUserConfigMessageParameters) {
-    if (
-      parameters.whiteTemperatureMin != undefined &&
-      parameters.whiteTemperatureMax != undefined
-    ) {
-      this.whiteRange = [
-        parameters.whiteTemperatureMin,
-        parameters.whiteTemperatureMax,
-      ];
-    }
-    if (
-      parameters.extendedTemperatureMin != undefined &&
-      parameters.extendedTemperatureMax != undefined
-    ) {
-      this.extRange = [
-        parameters.extendedTemperatureMin,
-        parameters.extendedTemperatureMax,
-      ];
-    }
-    if (parameters.pwmMin != undefined && parameters.pwmMax != undefined) {
-      this.pwmRange = [parameters.pwmMin, parameters.pwmMax];
-    }
-
-    if (parameters.pwmRange != undefined) {
-      this.pwmRange = parameters.pwmRange;
-    }
-    if (parameters.whiteRange != undefined) {
-      this.whiteRange = parameters.whiteRange;
-    }
-    if (parameters.extRange != undefined) {
-      this.extRange = parameters.extRange;
-    }
-    this.dftDim = parameters.dftDim || 100;
-    this.startupMode = parameters.startupMode || "wizclick";
-    this.userConfigTs = 0;
+    Object.assign(this, parameters);
   }
 }
 

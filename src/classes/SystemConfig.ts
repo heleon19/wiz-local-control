@@ -21,6 +21,7 @@ export class SetSystemConfigParameters {
   @IsOptional()
   @IsString()
   env?: string;
+  @IsOptional()
   @IsInt()
   systemConfigTs: number;
   @IsOptional()
@@ -40,34 +41,7 @@ export class SetSystemConfigParameters {
   fs?: number;
 
   constructor(parameters: SetSystemConfigMessageParameters) {
-    if (parameters.environment != undefined) {
-      this.env = parameters.environment;
-    }
-    if (parameters.moduleName != undefined) {
-      this.moduleName = parameters.moduleName;
-    }
-    if (parameters.extendedWhiteFactor != undefined) {
-      this.ewf = parameters.extendedWhiteFactor;
-    }
-    if (parameters.pwmRefreshRate != undefined) {
-      this.pwmConf = convertPWMRefreshRateToPWMConf(parameters.pwmRefreshRate);
-    }
-    if (
-      parameters.whiteChannels != undefined &&
-      parameters.whiteToColorsRatio != undefined
-    ) {
-      this.drvConf = [parameters.whiteToColorsRatio, parameters.whiteChannels];
-    }
-    if (parameters.ewf != undefined) {
-      this.ewf = parameters.ewf;
-    }
-    if (parameters.fs != undefined) {
-      this.fs = parameters.fs;
-    }
-    if (parameters.drvConf != undefined) {
-      this.drvConf = parameters.drvConf;
-    }
-    this.systemConfigTs = 0;
+    Object.assign(this, parameters);
   }
 }
 
