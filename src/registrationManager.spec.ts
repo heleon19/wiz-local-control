@@ -5,7 +5,7 @@ import * as sinon from "sinon";
 import * as dgram from "dgram";
 
 import RegistrationManager from "./registrationManager";
-import * as networkConstants from "./constants/communication";
+import * as networkConstants from "./constants";
 
 describe("Register light with IP", function() {});
 

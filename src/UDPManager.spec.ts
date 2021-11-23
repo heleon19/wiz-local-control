@@ -1,9 +1,7 @@
-import {} from "mocha";
 import { expect } from "chai";
 import * as sinon from "sinon";
 import UDPManager from "./UDPManager";
-import * as networkConstants from "./constants/communication";
-import { WiZMessage } from "./constants/types";
+import * as networkConstants from "./constants";
 import * as dgram from "dgram";
 import RegistrationManager from "./registrationManager";
 
@@ -12,7 +10,7 @@ describe("Start listening", () => {
     const registrationManager = new RegistrationManager();
     sinon.stub(registrationManager, "registerAllLights");
     const manager = new UDPManager(
-      (msg: WiZMessage) => {},
+      () => {},
       "eth0",
       networkConstants.DEVICE_UDP_LISTEN_PORT,
       networkConstants.LIGHT_UDP_CONTROL_PORT,
@@ -29,7 +27,7 @@ describe("Start listening", () => {
     const registrationManager = new RegistrationManager();
     sinon.stub(registrationManager, "registerAllLights");
     const manager = await new UDPManager(
-      (msg: WiZMessage) => {},
+      () => {},
       "eth0",
       networkConstants.DEVICE_UDP_LISTEN_PORT,
       networkConstants.LIGHT_UDP_CONTROL_PORT,
@@ -51,7 +49,7 @@ describe("Start listening", () => {
     const registrationManager = new RegistrationManager();
     sinon.stub(registrationManager, "registerAllLights");
     const manager = await new UDPManager(
-      (msg: WiZMessage) => {},
+      () => {},
       "eth0",
       networkConstants.DEVICE_UDP_LISTEN_PORT,
       networkConstants.LIGHT_UDP_CONTROL_PORT,
@@ -61,14 +59,15 @@ describe("Start listening", () => {
 
     sinon.stub(manager, "createSocket").callsFake(async () => {
       manager.socket = await dgram.createSocket("udp4");
-      const onStub = sinon
+      sinon
         .stub(manager.socket, "on")
         .withArgs("message")
-        .callsFake(function(
+        .callsFake(function (
           event: string,
           callback: (msg: Buffer, rinfo: any) => void,
-        ): void {
-          callback(new Buffer(JSON.stringify({})), { address: 1 });
+        ) {
+          callback(Buffer.from(JSON.stringify({})), { address: 1 });
+          return this;
         });
       return;
     });
@@ -78,12 +77,13 @@ describe("Start listening", () => {
   });
 
   it("should save the timer saved after registering all lights and clear after stopping listening", async () => {
+    // ToDo const clock = sinon.useFakeTimers();
     const registrationManager = new RegistrationManager();
     sinon
       .stub(registrationManager, "registerAllLights")
       .returns(setInterval(() => {}, 500));
     const manager = await new UDPManager(
-      (msg: WiZMessage) => {},
+      ()=>{},
       "eth0",
       networkConstants.DEVICE_UDP_LISTEN_PORT,
       networkConstants.LIGHT_UDP_CONTROL_PORT,
@@ -101,7 +101,7 @@ describe("Stop listening", () => {
     const registrationManager = new RegistrationManager();
     sinon.stub(registrationManager, "registerAllLights");
     const manager = await new UDPManager(
-      (msg: WiZMessage) => {},
+      () => {},
       "eth0",
       networkConstants.DEVICE_UDP_LISTEN_PORT,
       networkConstants.LIGHT_UDP_CONTROL_PORT,
@@ -121,7 +121,7 @@ describe("Process message", () => {
     const registrationManager = new RegistrationManager();
     sinon.stub(registrationManager, "registerAllLights");
     const manager = await new UDPManager(
-      (msg: WiZMessage) => {},
+      () => {},
       "eth0",
       networkConstants.DEVICE_UDP_LISTEN_PORT,
       networkConstants.LIGHT_UDP_CONTROL_PORT,
@@ -135,17 +135,15 @@ describe("Process message", () => {
 
     sinon.stub(manager, "createSocket").callsFake(async () => {
       manager.socket = await dgram.createSocket("udp4");
-      const onStub = sinon
+      sinon
         .stub(manager.socket, "on")
         .withArgs("message")
-        .callsFake(function(
+        .callsFake(function (
           event: string,
           callback: (msg: Buffer, rinfo: any) => void,
-        ): void {
-          callback(
-            new Buffer(JSON.stringify({ method: "syncPilot", params: {} })),
-            { address: "1" },
-          );
+        ) {
+          callback(Buffer.from(JSON.stringify({ method: "syncPilot", params: {} })),{ address: "1" });
+          return this;
         });
       return;
     });
@@ -160,27 +158,25 @@ describe("Process message", () => {
     sinon.stub(registrationManager, "registerAllLights");
     const spy = sinon.stub(registrationManager, "registerDevice");
     const manager = await new UDPManager(
-      (msg: WiZMessage) => {},
+      () => {},
       "eth0",
       networkConstants.DEVICE_UDP_LISTEN_PORT,
       networkConstants.LIGHT_UDP_CONTROL_PORT,
       registrationManager,
     );
-    const spyReceivedMsgCallback = sinon.stub(manager, "receivedMsgCallback");
+    // const spyReceivedMsgCallback = sinon.stub(manager, "receivedMsgCallback");
 
     sinon.stub(manager, "createSocket").callsFake(async () => {
       manager.socket = await dgram.createSocket("udp4");
-      const onStub = sinon
+      sinon
         .stub(manager.socket, "on")
         .withArgs("message")
         .callsFake(function(
           event: string,
           callback: (msg: Buffer, rinfo: any) => void,
-        ): void {
-          callback(
-            new Buffer(JSON.stringify({ method: "firstBeat", params: {} })),
-            { address: "1" },
-          );
+        ) {
+          callback(Buffer.from(JSON.stringify({ method: "firstBeat", params: {} })),{ address: "1" });
+          return this;
         });
       return;
     });

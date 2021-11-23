@@ -1,13 +1,14 @@
 /// <reference types="node" />
-import { WiZMessage, SyncPilotMessage, WiZControlMessage, Result, WiZMessageResponse } from "./constants/types";
+import * as dgram from "dgram";
 import RegistrationManager from "./registrationManager";
-import { Socket } from "dgram";
+import { Result, WiZControlMessage, WiZMessage, WiZMessageResponse } from "./classes/types";
+import { SyncPilotMessage } from "./classes/Pilot";
 /**
  * Class that manages UDP sockets, listens to the incoming messages
  * from WiZ devices and sends control commands
  */
 declare class UDPManager {
-    socket: Socket;
+    socket: dgram.Socket;
     interfaceName: string;
     registerLightsTimer: NodeJS.Timer | undefined;
     broadcastUDPPort: number;

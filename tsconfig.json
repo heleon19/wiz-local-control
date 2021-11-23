@@ -8,7 +8,7 @@
     "experimentalDecorators": true,
     "strictNullChecks": true,
     "outDir": "dist",
-    "baseUrl": ".",
+    "baseUrl": "./src",
     "paths": {
       "*": [
         "node_modules/*",
@@ -23,5 +23,9 @@
   },
   "include": [
     "src/**/*"
-  ]
+  ],
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts"
+  ],
 }

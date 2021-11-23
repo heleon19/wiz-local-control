@@ -1,17 +1,16 @@
-import {} from "mocha";
 import { expect } from "chai";
 import * as sinon from "sinon";
-import { RegistrationMessage } from "./constants/types";
-import { getLocalIPAddress, getLocalMac } from "./ipFunctions";
-import * as networkConstants from "./constants/communication";
-import * as dgram from "dgram";
+import { getLocalMac } from "./ipFunctions";
+import * as networkConstants from "./constants";
+import { Socket, createSocket } from "dgram";
 import sendCommand from "./UDPCommunication";
+import { RegistrationMessage } from "./classes/Control";
 
 describe("Send command", () => {
   it("should bind the socket", async () => {
     const lightIp = "127.0.0.1";
     const localIp = "127.0.0.1";
-    const socket = dgram.createSocket("udp4");
+    const socket = createSocket("udp4");
     const stubBind = sinon.stub(socket, "bind");
     stubBind.throws("mockup");
     const msg = new RegistrationMessage(localIp, getLocalMac());
@@ -30,12 +29,10 @@ describe("Send command", () => {
   it("should close the socket after timeout", async () => {
     const lightIp = "127.0.0.1";
     const localIp = "127.0.0.1";
-    const socket = dgram.createSocket("udp4");
+    const socket = createSocket("udp4");
 
-    const stubBind = sinon.stub(socket, "bind");
-    stubBind.returns(1);
-
-    const stubOnce = sinon.stub(socket, "once");
+    sinon.stub(socket, "bind").returns(1);
+    sinon.stub(socket, "once");
     const stubClose = sinon.stub(socket, "close");
     const msg = new RegistrationMessage(localIp, getLocalMac());
 
@@ -53,7 +50,7 @@ describe("Send command", () => {
   it("should start listening for state changes", async () => {
     const lightIp = "127.0.0.1";
     const localIp = "127.0.0.1";
-    const socket = dgram.createSocket("udp4");
+    const socket = createSocket("udp4");
     const stubBind = sinon.stub(socket, "bind");
     stubBind.resolves(1);
 
@@ -61,14 +58,15 @@ describe("Send command", () => {
 
     const msg = new RegistrationMessage(localIp, getLocalMac());
 
-    const onStub = sinon
+    sinon
       .stub(socket, "on")
       .withArgs("message")
       .callsFake(function(
         event: string,
-        callback: (msg: Buffer) => void,
-      ): void {
-        callback(new Buffer(1));
+        callback: (msg: Buffer, rinfo: any) => void,
+      ) {
+        callback(Buffer.from("1"), {});
+        return this;
       });
 
     await sendCommand(
@@ -85,7 +83,7 @@ describe("Send command", () => {
   it("should start listening for incoming messages", async () => {
     const lightIp = "127.0.0.1";
     const localIp = "127.0.0.1";
-    const socket = dgram.createSocket("udp4");
+    const socket = createSocket("udp4");
     const msg = new RegistrationMessage(localIp, getLocalMac());
 
     const onStub = sinon
@@ -93,9 +91,10 @@ describe("Send command", () => {
       .withArgs("message")
       .callsFake(function(
         event: string,
-        callback: (msg: Buffer) => void,
-      ): void {
-        callback(new Buffer(1));
+        callback: (msg: Buffer, rinfo: any) => void,
+      ) {
+        callback(Buffer.from("1"), {});
+        return this;
       });
 
     await sendCommand(
@@ -112,15 +111,19 @@ describe("Send command", () => {
   it("should send message when socket comes to Listening state", async () => {
     const lightIp = "127.0.0.1";
     const localIp = "127.0.0.1";
-    const socket = dgram.createSocket("udp4");
+    const socket = createSocket("udp4");
     const spy = sinon.spy(socket, "send");
     const msg = new RegistrationMessage(localIp, getLocalMac());
 
-    const onStub = sinon
+    sinon
       .stub(socket, "once")
       .withArgs("listening")
-      .callsFake(function(event: string, callback: () => void): void {
-        callback();
+      .callsFake(function(
+        event: string,
+        callback: (msg: Buffer, rinfo: any) => void,
+      ) {
+        callback(Buffer.from(""), {});
+        return this;
       });
 
     stubSocketOnMessageCallback(socket, {});
@@ -140,7 +143,7 @@ describe("Send command", () => {
   it("should resolve with success when received msg", async () => {
     const lightIp = "127.0.0.1";
     const localIp = "127.0.0.1";
-    const socket = dgram.createSocket("udp4");
+    const socket = createSocket("udp4");
     const msg = new RegistrationMessage(localIp, getLocalMac());
 
     stubSocketOnMessageCallback(socket, {
@@ -163,7 +166,7 @@ describe("Send command", () => {
   it("should resolve with error if failed to parse the received msg", async () => {
     const lightIp = "127.0.0.1";
     const localIp = "127.0.0.1";
-    const socket = dgram.createSocket("udp4");
+    const socket = createSocket("udp4");
     const msg = new RegistrationMessage(localIp, getLocalMac());
 
     sinon
@@ -171,9 +174,10 @@ describe("Send command", () => {
       .withArgs("message")
       .callsFake(function(
         event: string,
-        callback: (msg: Buffer) => void,
-      ): void {
-        callback(Buffer.from("123"));
+        callback: (msg: Buffer, rinfo: any) => void,
+      ) {
+        callback(Buffer.from("123"), {});
+        return this;
       });
 
     const result = await sendCommand(
@@ -193,7 +197,7 @@ describe("Send command", () => {
   it("should resolve with error if msg has no result field and has no error field", async () => {
     const lightIp = "127.0.0.1";
     const localIp = "127.0.0.1";
-    const socket = dgram.createSocket("udp4");
+    const socket = createSocket("udp4");
     const msg = new RegistrationMessage(localIp, getLocalMac());
 
     stubSocketOnMessageCallback(socket, {});
@@ -214,7 +218,7 @@ describe("Send command", () => {
   it("should resolve with error if msg has no result field and has error field", async () => {
     const lightIp = "127.0.0.1";
     const localIp = "127.0.0.1";
-    const socket = dgram.createSocket("udp4");
+    const socket = createSocket("udp4");
     const msg = new RegistrationMessage(localIp, getLocalMac());
 
     const errorData = { data: "123" };
@@ -240,7 +244,7 @@ describe("Send command", () => {
   it("should close the socket after finishing with message processing", async () => {
     const lightIp = "127.0.0.1";
     const localIp = "127.0.0.1";
-    const socket = dgram.createSocket("udp4");
+    const socket = createSocket("udp4");
     const msg = new RegistrationMessage(localIp, getLocalMac());
     const spy = sinon.spy(socket, "close");
     stubSocketOnMessageCallback(socket, {});
@@ -258,13 +262,14 @@ describe("Send command", () => {
 });
 
 function stubSocketOnMessageCallback(
-  socket: dgram.Socket,
+  socket: Socket,
   incomingMsg: object,
 ) {
   sinon
     .stub(socket, "on")
     .withArgs("message")
-    .callsFake(function(event: string, callback: (msg: Buffer) => void): void {
-      callback(Buffer.from(JSON.stringify(incomingMsg)));
+    .callsFake(function(event: string, callback: (msg: Buffer, rinfo: any) => void) {
+      callback(Buffer.from(JSON.stringify(incomingMsg)), {});
+      return this;
     });
 }

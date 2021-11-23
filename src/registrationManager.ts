@@ -1,7 +1,6 @@
-import * as dgram from "dgram";
-import { RegistrationMessage } from "./constants/types";
 import { getLocalIPAddress, getLocalMac } from "./ipFunctions";
 import sendCommand from "./UDPCommunication";
+import { RegistrationMessage } from "./classes/Control";
 
 export default class RegistrationManager {
   /**
@@ -9,6 +8,9 @@ export default class RegistrationManager {
    * wants to listen for the status update, we need to send so-called
    * registration packet
    * @param lightIp IP address of the WiZ Bulb
+   * @param interfaceName interface name
+   * @param udpPort udp port for ssending message
+   * @param broadcast true/false broadcasting
    */
   async registerDevice(
     lightIp: string,
@@ -18,9 +20,8 @@ export default class RegistrationManager {
   ) {
     const ip = await getLocalIPAddress(interfaceName);
     const msg = new RegistrationMessage(ip, getLocalMac());
-    const socket = dgram.createSocket("udp4");
 
-    return await sendCommand(msg, lightIp, ip, udpPort, broadcast, socket);
+    return await sendCommand(msg, lightIp, ip, udpPort, broadcast);
   }
 
   /**
@@ -31,17 +32,10 @@ export default class RegistrationManager {
     udpPort: number,
   ): Promise<NodeJS.Timer> {
     for (const i of Array(3).keys()) {
-      await this.registerDevice(
-        "255.255.255.255",
-        interfaceName,
-        udpPort,
-        true,
-      );
+      await this.registerDevice("255.255.255.255", interfaceName, udpPort, true);
     }
-    return setInterval(
-      () =>
-        this.registerDevice("255.255.255.255", interfaceName, udpPort, true),
-      15000,
+    return setInterval(() =>
+      this.registerDevice("255.255.255.255", interfaceName, udpPort, true), 15000,
     );
   }
 }
