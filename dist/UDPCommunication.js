@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const pino_1 = require("pino");
 const dgram_1 = require("dgram");
 const networkConstants = require("./constants");
-const logger = (0, pino_1.default)();
+const logger = (0, pino_1.default)({ enabled: !!process.env.PINO_LOG });
 /**
  * Sends message to the WiZ device
  * @param msg WiZ Control message to be sent to the lamp

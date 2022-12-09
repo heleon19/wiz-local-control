@@ -7,7 +7,7 @@ const networkConstants = require("./constants");
 const registrationManager_1 = require("./registrationManager");
 const ipFunctions_1 = require("./ipFunctions");
 const UDPCommunication_1 = require("./UDPCommunication");
-const logger = (0, pino_1.default)();
+const logger = (0, pino_1.default)({ enabled: !!process.env.PINO_LOG });
 /**
  * Class that manages UDP sockets, listens to the incoming messages
  * from WiZ devices and sends control commands
