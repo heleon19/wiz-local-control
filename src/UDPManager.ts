@@ -9,7 +9,7 @@ import { Result, WiZControlMessage, WiZMessage, WiZMessageResponse } from "./cla
 import { SyncPilotAckMessage, SyncPilotMessage } from "./classes/Pilot";
 
 
-const logger = pino();
+const logger = pino({ enabled: !!process.env.PINO_LOG });
 
 /**
  * Class that manages UDP sockets, listens to the incoming messages

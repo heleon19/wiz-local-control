@@ -3,7 +3,7 @@ import { Socket, createSocket } from "dgram";
 import * as networkConstants from "./constants";
 import { Result, WiZControlMessage, WiZMessageResponse } from "./classes/types";
 
-const logger = pino();
+const logger = pino({ enabled: !!process.env.PINO_LOG });
 
 /**
  * Sends message to the WiZ device
